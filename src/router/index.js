@@ -12,6 +12,10 @@ const router = createRouter({
 			path: '/market',
 			component: () => import('../views/Market.vue')
 		},
+		{
+			path: '/search',
+			component: () => import('../views/Search.vue')
+		},
 
 	],
 })

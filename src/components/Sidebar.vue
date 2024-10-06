@@ -20,6 +20,10 @@
 				<span class="material-icons">store</span>
 				<span class="text">Explore Bots</span>
 			</router-link>
+			<router-link to="/search" class="button">
+				<span class="material-icons">search</span>
+				<span class="text">Search</span>
+			</router-link>
 		</div>
 		
 		<h3 class="chat-h3">Chat</h3>
