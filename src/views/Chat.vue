@@ -9,7 +9,7 @@
           v-model="text" 
           @keyup.enter="sendMsg"
         />
-        <button class="send-button" @click="sendMsg()">➤</button>
+        <button class="send-button" @click="">➤</button>
       </div>
     </div>
   </template>
@@ -18,6 +18,7 @@
   export default {
     data() {
       return {
+        userName: 'a',
         suggestions: [
           "Give me ideas",
           "Tell me a fun fact",
@@ -32,66 +33,58 @@
       };
     },
     mounted() {
-      this.webSocketInit();
+      // WebSocket
+      if ('WebSocket' in window) {
+        this.websocket = new WebSocket(`ws://localhost:8081/chat`)
+        this.initWebSocket()
+      } else {
+        alert('当前浏览器 Not support websocket')
+      }
+    },
+    beforeDestroy () {
+      this.onbeforeunload()
     },
     methods: {
-      webSocketInit() {
-        if (!window.WebSocket) {
-          alert('WebSocket is not supported by your browser');
-          return;
-        }
-        this.websocket = new WebSocket(`ws://127.0.0.1:3000/chat`);
-        
-        this.websocket.onopen = () => {
-          this.linkSuccess(this.self, this.self, "链接成功");
-        };
+      initWebSocket () {
+        // 连接错误
+        this.websocket.onerror = this.setErrorMessage
+
+        // 连接成功
+        this.websocket.onopen = this.setOnopenMessage
+
+        // 收到消息的回调
+        this.websocket.onmessage = this.setOnmessageMessage
+
+        // 连接关闭的回调
+        this.websocket.onclose = this.setOncloseMessage
+
+        // 监听窗口关闭事件，当窗口关闭时，主动去关闭websocket连接，防止连接还没断开就关闭窗口，server端会抛异常。
+        window.onbeforeunload = this.onbeforeunload
         
         this.websocket.onmessage = (event) => {
-          const data = JSON.parse(event.data);
-          this.createContent("b", null, data.message);
-        };
-  
-        this.websocket.onerror = () => {
-          alert("WebSocket连接发生错误");
-        };
-        
-        this.websocket.onclose = () => {
-          alert("WebSocket连接关闭");
-        };
-  
-        window.onbeforeunload = () => {
-          this.websocket.close();
+          const serverMessage = event.data; // 获取消息内容
+          console.log('info: ' + serverMessage);
         };
       },
-      sendMsg() {
-        if (!this.text) {
-          this.$message({ type: 'warning', message: "请输入内容" });
-          return;
-        }
-        console.error('sus')
-        this.createContent(null, "a", this.text);
-        const msg = {
-          from: this.self,
-          to: this.other,
-          createTime: new Date(),
-          message: this.text
-        };
-        
-        this.websocket.addEventListener('open', function () {
-            this.websocket.send(JSON.stringify(msg))
-        });
-        this.text = ""; // 清空输入框
+      setErrorMessage () {
+        console.log('WebSocket连接发生错误   状态码：' + this.websocket.readyState)
       },
-      linkSuccess(from, to, msg) {
-        
-
-        const successMsg = {
-          from: from,
-          to: to,
-          createTime: new Date(),
-          message: msg
-        };
-        this.websocket.send(JSON.stringify(successMsg));
+      setOnopenMessage () {
+        this.websocket.send('hello')
+        console.log('WebSocket连接成功    状态码：' + this.websocket.readyState)
+      },
+      setOnmessageMessage (event) {
+        // 根据服务器推送的消息做自己的业务处理
+        console.log('服务端返回：' + event.data)
+      },
+      setOncloseMessage () {
+        console.log('WebSocket连接关闭    状态码：' + this.websocket.readyState)
+      },
+      onbeforeunload () {
+        this.closeWebSocket()
+      },
+      closeWebSocket () {
+        this.websocket.close()
       },
       createContent(bot, user, text) {
         let html = "";
