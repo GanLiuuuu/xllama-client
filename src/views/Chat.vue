@@ -1,8 +1,7 @@
 <template>
 	<div class="chat-area">
 	  
-	  <div style="overflow: auto;" v-html="content">
-		
+	  <div style="overflow: auto;height: 500px; " v-html="content">
 	  </div>
 	  <div class="chat-input-container">
 		<input type="text" class="chat-input" placeholder="Message XLlama" v-model="text"/>
@@ -101,7 +100,7 @@
   }
   
   .chat-input-container {
-     margin-top: 500px; /* 固定在页面底部 */
+     margin-top: 50px; /* 固定在页面底部 */
       width: 1000px;
     }
 
