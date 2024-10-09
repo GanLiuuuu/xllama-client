@@ -9,7 +9,7 @@
           v-model="text" 
           @keyup.enter="sendMsg"
         />
-        <button class="send-button" @click="">➤</button>
+        <button class="send-button" @click="sendTextMessage">➤</button>
       </div>
     </div>
   </template>
@@ -18,7 +18,6 @@
   export default {
     data() {
       return {
-        userName: 'a',
         suggestions: [
           "Give me ideas",
           "Tell me a fun fact",
@@ -28,8 +27,6 @@
         content: '',
         text: "",
         websocket: null,
-        self: "user_one",
-        other: "user_two"
       };
     },
     mounted() {
@@ -64,8 +61,18 @@
         this.websocket.onmessage = (event) => {
           const serverMessage = event.data; // 获取消息内容
           console.log('info: ' + serverMessage);
+          this.createContent('gpt',null,serverMessage);//把bot回复的内容显示在网页上
         };
       },
+      sendTextMessage(){
+        if(!this.text){
+          return;
+        }
+        this.createContent(null,'human',this.text);
+        this.websocket.send(this.text)
+        this.text = "";
+      },
+
       setErrorMessage () {
         console.log('WebSocket连接发生错误   状态码：' + this.websocket.readyState)
       },
