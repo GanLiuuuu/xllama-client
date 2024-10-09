@@ -48,28 +48,24 @@
             console.log('h')
             // 当前用户消息
             if (user) { 
-                html = "<div class=\"el-row\" style=\"padding: 5px 0\">\n" +
-                    "  <div class=\"el-col el-col-22\" style=\"text-align: right; padding-right: 10px\">\n" +
-                    "    <div class=\"tip left\">" + text + "</div>\n" +
-                    "  </div>\n" +
-                    "  <div class=\"el-col el-col-2\">\n" +
-                    "  <span class=\"el-avatar el-avatar--circle\" style=\"height: 40px; width: 40px; line-height: 40px;\">\n" +
-                    "    <img src=\"https://cube.elemecdn.com/3/7c/3ea6beec64369c2642b92c6726f1epng.png\" style=\"object-fit: cover;\">\n" +
-                    "  </span>\n" +
-                    "  </div>\n" +
-                    "</div>";
-            } else if (bot) {   
-                html = "<div class=\"el-row\" style=\"padding: 5px 0\">\n" +
-                    "  <div class=\"el-col el-col-2\" style=\"text-align: right\">\n" +
-                    "  <span class=\"el-avatar el-avatar--circle\" style=\"height: 40px; width: 40px; line-height: 40px;\">\n" +
-                    "    <img src=\"https://cube.elemecdn.com/3/7c/3ea6beec64369c2642b92c6726f1epng.png\" style=\"object-fit: cover;\">\n" +
-                    "  </span>\n" +
-                    "  </div>\n" +
-                    "  <div class=\"el-col el-col-22\" style=\"text-align: left; padding-left: 10px\">\n" +
-                    "    <div class=\"tip right\">" + text + "</div>\n" +
-                    "  </div>\n" +
-                    "</div>";
-            }
+            html = "<div class=\"chat-row\" style=\"display: flex; align-items: center; padding: 5px 0\">\n" +
+                "  <div class=\"chat-message\" style=\"flex: 1; text-align: right; padding-right: 10px;\">\n" +
+                "    <div class=\"tip left\" style=\"background-color: #f0f0f0; padding: 10px; border-radius: 8px; display: inline-block; max-width: 70%;\">" + text + "</div>\n" +
+                "  </div>\n" +
+                "  <div class=\"chat-avatar\" style=\"width: 40px; height: 40px;\">\n" +
+                "    <img src=\"https://cube.elemecdn.com/3/7c/3ea6beec64369c2642b92c6726f1epng.png\" style=\"width: 100%; height: 100%; border-radius: 50%; object-fit: cover;\">\n" +
+                "  </div>\n" +
+                "</div>";
+        } else if (bot) {   
+            html = "<div class=\"chat-row\" style=\"display: flex; align-items: center; padding: 5px 0\">\n" +
+                "  <div class=\"chat-avatar\" style=\"width: 40px; height: 40px;\">\n" +
+                "    <img src=\"https://cube.elemecdn.com/3/7c/3ea6beec64369c2642b92c6726f1epng.png\" style=\"width: 100%; height: 100%; border-radius: 50%; object-fit: cover;\">\n" +
+                "  </div>\n" +
+                "  <div class=\"chat-message\" style=\"flex: 1; text-align: left; padding-left: 10px;\">\n" +
+                "    <div class=\"tip right\" style=\"background-color: #e0f7fa; padding: 10px; border-radius: 8px; display: inline-block; max-width: 70%;\">" + text + "</div>\n" +
+                "  </div>\n" +
+                "</div>";
+        }
             console.log(html)
             this.content += html;
         },
