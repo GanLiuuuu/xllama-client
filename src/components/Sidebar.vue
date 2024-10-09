@@ -29,9 +29,9 @@
 		<h3 class="chat-h3">Chat</h3>
 		<div class="chat">
 			
-			<router-link to="/chat01" class="button">
+			<router-link to="/chat" class="button">
 				<span class = "material-icons">forum</span>
-				<span class="text">Chat01</span>
+				<span class="text">Chat</span>
 			</router-link>
 		</div>
 
