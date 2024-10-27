@@ -39,6 +39,10 @@
 		<div class="flex"></div>
 		
 		<div class="menu">
+			<router-link to="/profile" class="button">
+				<span class="material-icons">account_circle</span>
+				<span class="text">Profile</span>
+			</router-link>
 			<router-link to="/settings" class="button">
 				<span class="material-icons">settings</span>
 				<span class="text">Settings</span>
