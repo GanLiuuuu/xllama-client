@@ -1,6 +1,6 @@
 <template>
 	<div id="app">
-	  <router-view></router-view> <!-- 这里将显示当前路由对应的组件 -->
+	  <router-view></router-view> 
 	</div>
   </template>
   
@@ -8,7 +8,6 @@
   export default {
 	data() {
 	  return {
-		// 判断用户是否登录
 		isLoggedIn: !!localStorage.getItem('user'),
 	  };
 	},
