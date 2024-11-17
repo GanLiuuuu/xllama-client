@@ -116,3 +116,10 @@ npm run dev
 ```
 
 Once the front-end and back-end are connected successfully, click on "Settings" in the interface. You should see the data you inserted into the database, completing the front-end and back-end integration. It should look like this:![front_back_end](./imgs/front_back_end.png)
+
+## Tips
+When adding new tailwind UI components, run:
+```
+npx tailwindcss -i ./src/assets/input.css -o ./src/assets/output.css --watch
+```
+
