@@ -8,7 +8,7 @@ const store = createStore({
                 isLoggedIn: false,
                 email: '',
                 username: '',
-                bio: 'Welcome to my personal page！',
+                bio: 'Welcome to my personal page',
                 avatarUrl: '',
                 userType: '',
                 points: 0,
