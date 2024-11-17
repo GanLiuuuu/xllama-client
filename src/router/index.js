@@ -1,6 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import Home from '../views/Home.vue'
-
+import LandingPage from '../views/LandingPageView.vue'
 const router = createRouter({
 	history: createWebHistory(),
 	routes: [
@@ -27,6 +27,14 @@ const router = createRouter({
 		{
 			path: '/profile',
 			component: () => import('../views/Profile.vue')
+		},
+		{
+			path: '/login',
+			component: () => import('../views/LoginPageView.vue')
+		},
+		{
+			path: '/register',
+			component: () => import('../views/RegisterPageView.vue')
 		}
 
 	],
