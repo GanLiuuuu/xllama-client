@@ -55,7 +55,7 @@
                 <h1 class="text-balance text-5xl font-semibold tracking-tight text-white sm:text-7xl">Discover and Deploy LLM-Powered AI Bots</h1>
                 <p class="mt-8 text-pretty text-lg font-medium text-gray-500 sm:text-xl/8">Browse a marketplace of AI bots built with powerful language models. Upload your own creations, purchase bots from other users, and seamlessly deploy them to meet your needs—whether for business, research, or personal projects.</p>
                 <div class="mt-10 flex items-center justify-center gap-x-6">
-                  <a href="#" class="rounded-md bg-indigo-600 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">Get started</a>
+                  <a href="/login" class="rounded-md bg-indigo-600 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">Get started</a>
                   <a href="#" class="text-sm/6 font-semibold text-white">Learn more <span aria-hidden="true">→</span></a>
                 </div>
               </div>
@@ -120,7 +120,7 @@
             <h2 class="text-balance text-4xl font-semibold tracking-tight text-white sm:text-5xl">Supercharge your workflow with AI bots.</h2>
             <p class="mx-auto mt-6 max-w-xl text-pretty text-lg/8 text-gray-600">Whether you’re creating or deploying, our platform simplifies the process. Discover ready-to-use bots or upload your own for fast integration into your projects.</p>
             <div class="mt-10 flex items-center justify-center gap-x-6">
-              <a href="#" class="rounded-md bg-indigo-600 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">Get started</a>
+              <a href="/login" class="rounded-md bg-indigo-600 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">Get started</a>
               <a href="#" class="text-sm/6 font-semibold text-white">Learn more <span aria-hidden="true">→</span></a>
             </div>
           </div>
