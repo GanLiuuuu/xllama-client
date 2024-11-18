@@ -156,10 +156,10 @@
             <!--TODO: -->
             </div>
           </div>
-
+          
 
           <div v-if="currentNavItem == 'Discover' ">
-          
+            <Discover/>
           </div>
         </main>
   
@@ -170,6 +170,7 @@
 
 
 <script setup>
+import Discover from './DiscoverView.vue'
 import EditForm from '../components/EditForm.vue';
 import { ref } from 'vue'
 import {

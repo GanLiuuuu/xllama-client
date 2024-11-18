@@ -25,6 +25,10 @@ const router = createRouter({
 		{
 			path: '/home',
 			component: HomePage
+		},
+		{
+			path: '/discover',
+			component: () => import('../views/DiscoverView.vue')
 		}
 	],
 })
