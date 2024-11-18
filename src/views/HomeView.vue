@@ -243,5 +243,200 @@ const secondaryNavigation = [
   { name: 'Settings', href: '#', current: false },
   { name: 'Usage stats', href: '#', current: false }
 ]
+
 </script>
 
+<script>
+import axios from "axios";
+
+export default {
+  computed: {
+    user() {
+      return this.$store.state.user;
+    }
+  },
+  data() {
+    return {
+      usageStats:[],
+      Mybots: [], // 存储从后端获取的 bots 数据
+      reviews: [],
+      editForm: {
+        username: '',
+        bio: '',
+        selectedFile: null,
+      },
+      showEditBioPopup: false,
+      showRename: false,
+      showEditAvatars: false,
+      showRecharge: false,
+      showConvert: false,
+      rechargeAmount: '',
+      convertPoints: '',
+      selectedOption: 0,
+      options: ['News', 'My custom bot','usage stats'],
+    };
+  },
+  methods: {
+    formatDate(isoDate) {
+      if (!isoDate) return "No recent interactions";
+      const date = new Date(isoDate);
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, "0"); // 月份从0开始
+      const day = String(date.getDate()).padStart(2, "0");
+      const hours = String(date.getHours()).padStart(2, "0");
+      const minutes = String(date.getMinutes()).padStart(2, "0");
+      const seconds = String(date.getSeconds()).padStart(2, "0");
+      return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+    },
+
+    handleFileChange(event) {
+      this.editForm.selectedFile = event.target.files[0]; // 获取选择的文件
+    },
+    openEditBio() {
+      this.editForm.bio = this.user.bio;
+      this.showEditBioPopup = true;
+    },
+    confirmEditBio() {
+      this.$store.dispatch('updateBio', this.editForm.bio).then(success => {
+        if (success) {
+          alert(`updateBio successfully!`);
+        } else {
+          alert("updateBio failed.");
+        }
+      }).catch(error => {
+        console.log("An error occurred during updateBio:", error);
+      });
+      this.showEditBioPopup = false;
+    },
+    confirmRename() {
+      this.$store.dispatch('rename', this.editForm.username).then(success => {
+        if (success) {
+          alert(`rename successfully!`);
+        } else {
+          alert("rename failed.");
+        }
+      }).catch(error => {
+        console.log("An error occurred during rename:", error);
+      });
+      this.showRename = false;
+    },
+    uploadImage() {
+      if (this.editForm.selectedFile !== null) {
+        this.$store.dispatch('EditAvatars', this.editForm.selectedFile).then(success => {
+          if (success) {
+            alert(`EditAvatars successfully!`);
+          } else {
+            alert("EditAvatars failed.");
+          }
+        }).catch(error => {
+          console.log("An error occurred during EditAvatars:", error);
+        });
+       this.showEditAvatars = false;
+      }else {
+        alert("please upload a picture");
+      }
+
+    },
+    showAvatarsPopup(){
+      this.showEditAvatars = true;
+    },
+    showRenamePopup() {
+      this.showRename = true;
+    },
+    showRechargePopup() {
+      this.showRecharge = true;
+    },
+    showConvertPopup() {
+      this.showConvert = true;
+    },
+    confirmRecharge() {
+      if (this.rechargeAmount !== '') {
+        this.$store.dispatch('recharge', this.rechargeAmount).then(success => {
+          if (success) {
+            alert(`Recharged successfully! Current points: ${this.user.points}`);
+          } else {
+            alert("Recharge failed.");
+          }
+        }).catch(error => {
+          console.log("An error occurred during recharge:", error);
+        });
+
+        this.closePopup();
+      } else {
+        alert('Please enter points to recharge');
+      }
+    },
+    closePopup() {
+      this.showRecharge = false;
+    },
+    convertPointsToTokens() {
+      if (this.convertPoints !== '') {
+        const pointsToConvert = parseInt(this.convertPoints);
+        if (pointsToConvert <= this.user.points) {
+
+          this.$store.dispatch('redeem', pointsToConvert).then(success => {
+            if (success) {
+              alert(`redeem successfully! Current points: ${this.user.points}`);
+            } else {
+              alert("redeem failed.");
+            }
+          }).catch(error => {
+            console.log("An error occurred during recharge:", error);
+          });
+          this.closeConvertPopup();
+
+        } else {
+          alert('Insufficient points');
+        }
+      } else {
+        alert("Enter points to redeem");
+      }
+    },
+    closeConvertPopup() {
+      this.showConvert = false;
+    },
+    selectOption(index) {
+      this.selectedOption = index;
+    },
+  },
+  mounted () {
+    const isLoggedIn = this.$store.state.user.isLoggedIn;  // 从 Vuex 中获取 email
+    if (!isLoggedIn) {
+      this.$router.push('/login'); // 在页面加载时获取用户数据
+    }else {
+      const email = this.$store.state.user.email;  // 从 Vuex 中获取 email
+      if (email) {
+        this.$store.dispatch('fetchUserByEmail', email);  // 在页面加载时获取用户数据
+      }
+
+      // 评论
+      axios
+          .get(`/user/comments?email=${email}`)
+          .then((response) => {
+            this.reviews = response.data; // 将数据存储到 reviews
+          })
+          .catch((error) => {
+            console.error("Failed to fetch user comments:", error);
+          });
+
+      // 机器人数量
+      axios
+          .get(`/user/bots?email=${email}`)
+          .then((response) => {
+            this.Mybots = response.data; // 获取 bots 数据
+          })
+          .catch((error) => {
+            console.error("Failed to fetch bots:", error);
+          });
+      // 交互统计
+      axios.post('/user/getUsageStats', new URLSearchParams({ email }))
+          .then(response => {
+            this.usageStats = response.data; // 将返回的数据存储到 usageStats
+          })
+          .catch(error => {
+            console.error("Error fetching usage stats:", error);
+          });
+    }
+  }
+};
+</script>

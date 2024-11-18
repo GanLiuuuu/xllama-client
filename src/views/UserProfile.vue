@@ -355,7 +355,7 @@ export default {
   mounted () {
     const isLoggedIn = this.$store.state.user.isLoggedIn;  // 从 Vuex 中获取 email
     if (!isLoggedIn) {
-      this.$router.push('/Profile'); // 在页面加载时获取用户数据
+      this.$router.push('/login'); // 在页面加载时获取用户数据
     }else {
       const email = this.$store.state.user.email;  // 从 Vuex 中获取 email
       if (email) {

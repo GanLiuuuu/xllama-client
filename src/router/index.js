@@ -7,7 +7,7 @@ const router = createRouter({
 	routes: [
 		{
 			path: '/',
-			component: test
+			component: HomePage
 		},
 		{
 			path: '/market',
