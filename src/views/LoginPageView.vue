@@ -58,7 +58,7 @@ export default {
       }).then(success => {
         if (success) {
           alert("Logged in successfully");
-          this.$router.push('/UserProfile');  // 登录成功后跳转到个人主页
+          this.$router.push('/Home');  // 登录成功后跳转到个人主页
         } else {
           alert("Login failed. Please check your credentials.");
         }

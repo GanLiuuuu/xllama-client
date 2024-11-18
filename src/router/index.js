@@ -7,7 +7,7 @@ const router = createRouter({
 	routes: [
 		{
 			path: '/',
-			component: HomePage
+			component: LandingPage
 		},
 		{
 			path: '/market',
@@ -40,8 +40,11 @@ const router = createRouter({
 		{
 			path: '/UserProfile',
 			component: () => import('../views/UserProfile.vue')
+		},
+		{
+			path: '/home',
+			component: HomePage
 		}
-
 	],
 })
 

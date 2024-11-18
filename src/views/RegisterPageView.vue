@@ -44,7 +44,7 @@ export default {
   methods: {
     handleRegister() {
       axios.post('/user/add', {
-        "username": "John",
+        "username": "Tom",
         "email": this.email,
         "password": this.password
       }).then(response => {

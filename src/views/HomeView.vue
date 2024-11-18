@@ -31,7 +31,7 @@
               <a href="#" class="flex items-center gap-x-4 px-6 py-3 text-sm/6 font-semibold text-white hover:bg-gray-800">
                 <img class="size-8 rounded-full bg-gray-800" src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80" alt="" />
                 <span class="sr-only">Your profile</span>
-                <span aria-hidden="true">Tom Cook</span>
+                <span aria-hidden="true">{{ user.username }}</span>
               </a>
             </li>
           </ul>
@@ -101,7 +101,7 @@
                     <h1 class="flex gap-x-3 text-base/7">
                       <span class="font-semibold text-white">SUSTech</span>
                       <span class="text-gray-600">|</span>
-                      <span class="font-semibold text-white">name</span>
+                      <span class="font-semibold text-white">{{ user.username }}</span>
                     </h1>
                   </div>
                   <p class="mt-2 text-xs/6 text-gray-400">A student from SUSTech, enrolled 2 years ago</p>
@@ -114,23 +114,23 @@
                 <div v-for="(stat, statIdx) in stats" :key="stat.name" :class="[statIdx % 2 === 1 ? 'sm:border-l' : statIdx === 2 ? 'lg:border-l' : '', 'border-t border-white/5 px-4 py-6 sm:px-6 lg:px-8']">
                   <p class="text-sm/6 font-medium text-gray-400">{{ stat.name }}</p>
                   <p class="mt-2 flex items-baseline gap-x-2">
-                    <span class="text-4xl font-semibold tracking-tight text-white">{{ stat.value }}</span>
+                    <span class="text-4xl font-semibold tracking-tight text-white">{{ stat.name === 'Points' ? user.points : stat.name==='Tokens'? user.tokens: stat.name ==="Number of bots"? Mybots.length : stat.value }}</span>
                     <span v-if="stat.unit" class="text-sm text-gray-400">{{ stat.unit }}</span>
                   </p>
                 </div>
               </div>
             </header>
             <div v-if="currentSubNavItem == 'Overview' ">
-            <!--TODO: self-intro here-->
+            
             </div>
             <div v-if="currentSubNavItem == 'My Bots' ">
-            <!--TODO: self-intro here-->
+            <!--TODO: -->
             </div>
             <div v-if="currentSubNavItem == 'Settings' ">
-            <!--TODO: self-intro here-->
+            <!--TODO: -->
             </div>
             <div v-if="currentSubNavItem == 'Usage stats' ">
-            <!--TODO: self-intro here-->
+            <!--TODO: -->
             </div>
           </div>
 
@@ -232,7 +232,7 @@ const statuses = {
     },
   ]
   const stats = [
-  { name: 'Points', value: '0' },
+  { name: 'Points', value: ref((() => this.$store.state.user.points))},
   { name: 'Tokens', value: '0', unit: 'tokens' },
   { name: 'Number of bots', value: '0' },
   { name: 'Success rate', value: '98.5%' },
