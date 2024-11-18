@@ -89,22 +89,22 @@
               <nav class="flex overflow-x-auto border-b border-white/10 py-4">
                 <ul role="list" class="flex min-w-full flex-none gap-x-6 px-4 text-sm/6 font-semibold text-gray-400 sm:px-6 lg:px-8">
                   <li v-for="item in secondaryNavigation" :key="item.name">
-                    <a :href="item.href" :class="item.current ? 'text-indigo-400' : ''">{{ item.name }}</a>
+                    <a @click="selectSubNavItem(item)" :href="item.href" :class="item.current ? 'text-indigo-400' : ''">{{ item.name }}</a>
                   </li>
                 </ul>
               </nav>
-
+              
               <!-- Heading -->
               <div class="flex flex-col items-start justify-between gap-x-8 gap-y-4 bg-gray-700/10 px-4 py-4 sm:flex-row sm:items-center sm:px-6 lg:px-8">
                 <div>
                   <div class="flex items-center gap-x-3">
                     <h1 class="flex gap-x-3 text-base/7">
                       <span class="font-semibold text-white">SUSTech</span>
-                      <span class="text-gray-600">/</span>
+                      <span class="text-gray-600">|</span>
                       <span class="font-semibold text-white">name</span>
                     </h1>
                   </div>
-                  <p class="mt-2 text-xs/6 text-gray-400">This is a self Intro.</p>
+                  <p class="mt-2 text-xs/6 text-gray-400">A student from SUSTech, enrolled 2 years ago</p>
                 </div>
                 <div class="order-first flex-none rounded-full bg-indigo-400/10 px-2 py-1 text-xs font-medium text-indigo-400 ring-1 ring-inset ring-indigo-400/30 sm:order-none">Student</div>
               </div>
@@ -120,6 +120,18 @@
                 </div>
               </div>
             </header>
+            <div v-if="currentSubNavItem == 'Overview' ">
+            <!--TODO: self-intro here-->
+            </div>
+            <div v-if="currentSubNavItem == 'My Bots' ">
+            <!--TODO: self-intro here-->
+            </div>
+            <div v-if="currentSubNavItem == 'Settings' ">
+            <!--TODO: self-intro here-->
+            </div>
+            <div v-if="currentSubNavItem == 'Usage stats' ">
+            <!--TODO: self-intro here-->
+            </div>
           </div>
 
 
@@ -144,8 +156,8 @@ import {
 } from '@heroicons/vue/24/outline'
 
 const navigation = ref([
-  { name: 'Home', href: '#', icon: HomeIcon, current: false },
-  { name: 'Deployments', href: '#', icon: ServerIcon, current: true },
+  { name: 'Home', href: '#', icon: HomeIcon, current: true },
+  { name: 'Deployments', href: '#', icon: ServerIcon, current: false },
   { name: 'Discover', href: '#', icon: SignalIcon, current: false }
 ]);
 
@@ -155,22 +167,31 @@ const conversations = [
   { id: 3, name: 'Tailwind Labs', href: '#', current: false },
 ]
 
-const currentNavItem = ref('Deployments'); // 默认选中的导航项
+const currentNavItem = ref('Home');
+const currentSubNavItem = ref('Overview');
 
 function selectNavItem(item) {
-  currentNavItem.value = item.name; // 更新当前选中的导航项
+  currentNavItem.value = item.name; 
   item.current = true;
   navigation.value.forEach(item1 => {
     if(item1!==item){
       item1.current = false;
     }
-     // 更新每个导航项的 current 状态
   });
   conversations.forEach(item1 => {
     if(item1!==item){
       item1.current = false;
     }  });
-  
+}
+function selectSubNavItem(item) {
+  currentSubNavItem.value = item.name; 
+  item.current = true;
+  secondaryNavigation.forEach(item1 => {
+    if(item1!==item){
+      item1.current = false;
+    }
+  });
+
 }
 const statuses = {
     offline: 'text-gray-500 bg-gray-100/10',
@@ -209,20 +230,18 @@ const statuses = {
       description: 'test case file',
       environment: 'Preview',
     },
-    // More deployments...
   ]
   const stats = [
-  { name: 'Number of deploys', value: '405' },
-  { name: 'Average deploy time', value: '3.65', unit: 'mins' },
-  { name: 'Number of servers', value: '3' },
+  { name: 'Points', value: '0' },
+  { name: 'Tokens', value: '0', unit: 'tokens' },
+  { name: 'Number of bots', value: '0' },
   { name: 'Success rate', value: '98.5%' },
 ]
 const secondaryNavigation = [
   { name: 'Overview', href: '#', current: true },
-  { name: 'Activity', href: '#', current: false },
+  { name: 'My Bots', href: '#', current: false },
   { name: 'Settings', href: '#', current: false },
-  { name: 'Collaborators', href: '#', current: false },
-  { name: 'Notifications', href: '#', current: false },
+  { name: 'Usage stats', href: '#', current: false }
 ]
 </script>
 
