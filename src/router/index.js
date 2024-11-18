@@ -29,6 +29,10 @@ const router = createRouter({
 		{
 			path: '/discover',
 			component: () => import('../views/DiscoverView.vue')
+		},
+		{
+			path: '/detail',
+			component: () => import('../views/BotDetailView.vue')
 		}
 	],
 })
