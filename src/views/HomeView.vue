@@ -93,8 +93,8 @@
                   </li>
                 </ul>
               </nav>
-              
-              <!-- Heading -->
+              <div v-if="currentSubNavItem == 'Overview' ">
+                <!-- Heading -->
               <div class="flex flex-col items-start justify-between gap-x-8 gap-y-4 bg-gray-700/10 px-4 py-4 sm:flex-row sm:items-center sm:px-6 lg:px-8">
                 <div>
                   <div class="flex items-center gap-x-3">
@@ -119,15 +119,38 @@
                   </p>
                 </div>
               </div>
+              </div>
+              
             </header>
+
+            <!--self intro-->>
             <div v-if="currentSubNavItem == 'Overview' ">
-            
+              <div class="flex flex-col items-start justify-between gap-x-8 gap-y-4 bg-gray-700/10 px-4 py-4 sm:flex-row sm:items-center sm:px-6 lg:px-8">
+                <div>
+                  <div class="flex items-center gap-x-3">
+                    <h1 class="flex gap-x-3 text-base/7">
+                      <span class="font-semibold text-white">📝 Self introduction</span>
+                      <span class="text-gray-600"></span>
+                      
+                    </h1>
+                  </div>
+                  <div class="flex items-center gap-x-3">
+                    <p class="flex gap-x-3 text-base/7">
+                      <span class="font-text text-white">{{ user.bio }}</span>
+                      <span class="text-gray-600"></span>
+                      
+                    </p>
+                  </div>
+                </div>
+              </div>
             </div>
             <div v-if="currentSubNavItem == 'My Bots' ">
             <!--TODO: -->
             </div>
-            <div v-if="currentSubNavItem == 'Settings' ">
-            <!--TODO: -->
+
+            <!--setting-->
+            <div v-if="currentSubNavItem == 'Settings' " style="padding: 40px">
+              <EditForm/>
             </div>
             <div v-if="currentSubNavItem == 'Usage stats' ">
             <!--TODO: -->
@@ -147,6 +170,7 @@
 
 
 <script setup>
+import EditForm from '../components/EditForm.vue';
 import { ref } from 'vue'
 import {
   FolderIcon,
