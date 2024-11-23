@@ -64,7 +64,33 @@
         }
         this.createContent(null,'human',this.text);
         this.websocket.send(this.text)
-        this.text = "";
+        
+        const apiUrl = "https://gateway.ai.cloudflare.com/v1/a8de3330640fc629a2b07ba814e8ccad/keronelau/openai/chat/completions"; // 替换为你的 GPT 接口地址
+  const requestBody = {
+    message: this.text,
+    model: "gpt-3.5-turbo" // 替换为实际使用的模型
+  };
+
+  fetch(apiUrl, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: "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" // 替换为你的 API Key
+    },
+    body: JSON.stringify(requestBody)
+  })
+    .then(response => response.json())
+    .then(data => {
+      const gptResponse = data.reply || "抱歉，我无法处理您的请求。"; // 确保返回内容存在
+      // 显示 GPT 的回复
+      this.createContent('gpt', null, gptResponse);
+    })
+    .catch(error => {
+      console.error("Error calling GPT API:", error);
+      // 显示错误信息
+      this.createContent('gpt', null, "抱歉，请求失败，请稍后再试。");
+    });
+    this.text = "";
       },
 
       setErrorMessage () {
