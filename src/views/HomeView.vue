@@ -161,6 +161,9 @@
           <div v-if="currentNavItem == 'Discover' ">
             <Discover/>
           </div>
+          <div v-if="currentNavItem == 'Chat'">
+            <Chat/>
+          </div>
         </main>
   
 
@@ -170,6 +173,7 @@
 
 
 <script setup>
+import Chat from './Chat.vue'
 import Discover from './DiscoverView.vue'
 import EditForm from '../components/EditForm.vue';
 import { ref } from 'vue'
@@ -187,9 +191,7 @@ const navigation = ref([
 ]);
 
 const conversations = [
-  { id: 1, name: 'Planetaria', href: '#', current: false },
-  { id: 2, name: 'Protocol', href: '#', current: false },
-  { id: 3, name: 'Tailwind Labs', href: '#', current: false },
+  { id: 1, name: 'Chat', href: '#', current: false },
 ]
 
 const currentNavItem = ref('Home');

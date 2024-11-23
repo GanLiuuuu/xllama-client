@@ -937,6 +937,10 @@ select {
   margin-top: 1rem;
 }
 
+.mt-5 {
+  margin-top: 1.25rem;
+}
+
 .mt-6 {
   margin-top: 1.5rem;
 }
@@ -1437,6 +1441,11 @@ select {
   border-color: rgb(255 255 255 / 0.05);
 }
 
+.bg-black {
+  --tw-bg-opacity: 1;
+  background-color: rgb(0 0 0 / var(--tw-bg-opacity, 1));
+}
+
 .bg-black\/10 {
   background-color: rgb(0 0 0 / 0.1);
 }
@@ -1792,6 +1801,11 @@ select {
   letter-spacing: -0.025em;
 }
 
+.text-blue-700 {
+  --tw-text-opacity: 1;
+  color: rgb(29 78 216 / var(--tw-text-opacity, 1));
+}
+
 .text-gray-300 {
   --tw-text-opacity: 1;
   color: rgb(209 213 219 / var(--tw-text-opacity, 1));
@@ -1845,11 +1859,6 @@ select {
 .text-indigo-700 {
   --tw-text-opacity: 1;
   color: rgb(67 56 202 / var(--tw-text-opacity, 1));
-}
-
-.text-red-700 {
-  --tw-text-opacity: 1;
-  color: rgb(185 28 28 / var(--tw-text-opacity, 1));
 }
 
 .text-rose-400 {
@@ -1920,6 +1929,15 @@ select {
   --tw-ring-inset: inset;
 }
 
+.ring-blue-600\/10 {
+  --tw-ring-color: rgb(37 99 235 / 0.1);
+}
+
+.ring-gray-300 {
+  --tw-ring-opacity: 1;
+  --tw-ring-color: rgb(209 213 219 / var(--tw-ring-opacity, 1));
+}
+
 .ring-gray-400\/20 {
   --tw-ring-color: rgb(156 163 175 / 0.2);
 }
@@ -1942,10 +1960,6 @@ select {
 
 .ring-indigo-400\/30 {
   --tw-ring-color: rgb(129 140 248 / 0.3);
-}
-
-.ring-red-600\/10 {
-  --tw-ring-color: rgb(220 38 38 / 0.1);
 }
 
 .ring-white\/10 {
@@ -1991,6 +2005,16 @@ select {
 
 .marker\:text-gray-300::marker {
   color: rgb(209 213 219 );
+}
+
+.placeholder\:text-gray-400::-moz-placeholder {
+  --tw-text-opacity: 1;
+  color: rgb(156 163 175 / var(--tw-text-opacity, 1));
+}
+
+.placeholder\:text-gray-400::placeholder {
+  --tw-text-opacity: 1;
+  color: rgb(156 163 175 / var(--tw-text-opacity, 1));
 }
 
 .focus-within\:outline-none:focus-within {
@@ -2116,6 +2140,11 @@ select {
   --tw-ring-color: rgb(99 102 241 / var(--tw-ring-opacity, 1));
 }
 
+.focus\:ring-indigo-600:focus {
+  --tw-ring-opacity: 1;
+  --tw-ring-color: rgb(79 70 229 / var(--tw-ring-opacity, 1));
+}
+
 .focus\:ring-offset-2:focus {
   --tw-ring-offset-width: 2px;
 }
@@ -2190,6 +2219,14 @@ select {
     margin-right: auto;
   }
 
+  .sm\:ml-3 {
+    margin-left: 0.75rem;
+  }
+
+  .sm\:mt-0 {
+    margin-top: 0px;
+  }
+
   .sm\:mt-16 {
     margin-top: 4rem;
   }
@@ -2210,8 +2247,16 @@ select {
     display: block;
   }
 
+  .sm\:flex {
+    display: flex;
+  }
+
   .sm\:w-\[72\.1875rem\] {
     width: 72.1875rem;
+  }
+
+  .sm\:w-auto {
+    width: auto;
   }
 
   .sm\:w-full {
