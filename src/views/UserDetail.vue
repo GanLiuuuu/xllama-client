@@ -73,6 +73,75 @@
           </div>
         </div>
 
+        <br>
+
+        <!-- 按钮 -->
+        <button
+            class="rounded-md bg-white/10 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-white/20"
+            @click="openModal"
+        >
+          Write a comment
+        </button>
+
+        <!-- 弹窗 -->
+        <div
+            v-if="isModalOpen"
+            class="fixed inset-0 bg-black/50 flex items-center justify-center"
+        >
+          <div class="bg-white rounded-lg shadow-lg w-96 p-6">
+            <!-- 标题 -->
+            <h2 class="text-lg font-semibold mb-4 text-gray-800">
+              Write a comment
+            </h2>
+
+            <!-- 评论输入框 -->
+            <textarea
+                v-model="comment"
+                class="w-full border border-gray-300 rounded-md p-2 text-gray-800 focus:outline-none focus:ring focus:ring-indigo-200 mb-4"
+                placeholder="Enter your comment here"
+                rows="4"
+            ></textarea>
+
+            <!-- 评分星星 -->
+            <div class="flex justify-center items-center mb-4">
+          <span
+              v-for="star in 5"
+              :key="star"
+              @click="setRating(star)"
+              :class="{
+              'text-yellow-400': star <= rating,
+              'text-gray-300': star > rating,
+            }"
+              class="cursor-pointer text-2xl"
+          >
+            ★
+          </span>
+            </div>
+
+            <!-- 按钮 -->
+            <div class="flex justify-between">
+              <button
+                  @click="submitComment"
+                  class="rounded-md bg-indigo-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-700"
+              >
+                Submit
+              </button>
+              <button
+                  @click="closeModal"
+                  class="rounded-md bg-gray-200 px-4 py-2 text-sm font-semibold text-gray-700 hover:bg-gray-300"
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+
+
+
+
+
+
+
         <div class="mt-6">
           <h2 class="text-lg font-semibold text-white">📢 Reviews</h2>
           <div v-if="reviews.length" class="mt-4 space-y-4 bg-gray-800 p-4 rounded-lg shadow-lg">
@@ -114,12 +183,25 @@
 </template>
 
 <script setup>
+import { useStore } from 'vuex'
 import {ref, onMounted, computed} from 'vue';
 import EditForm2 from "../components/EditForm2.vue";
+import axios from "axios";
+import router from "../router";
+
+const isModalOpen = ref(false);
+const comment = ref('');
+const rating = ref(0);
 
 const user = ref(null); // 存储用户数据
 const currentNavItem = ref('Home');
 const currentSubNavItem = ref('Overview');
+
+const usageStats = ref([])
+const Mybots = ref([])
+const reviews = ref([])
+
+const store = useStore();
 
 function selectSubNavItem(item) {
   currentSubNavItem.value = item.name;
@@ -148,6 +230,7 @@ const props = defineProps({
   email: String, // 从父组件或动态路由中接收邮箱
 });
 
+
 // 获取用户信息
 async function fetchUser() {
   try {
@@ -167,20 +250,92 @@ onMounted(() => {
   } else {
     console.error('Email prop is missing.');
   }
+
+  axios
+      .get(`/user/comments?email=${props.email}`)
+      .then((response) => {
+        reviews.value = response.data;
+      })
+      .catch((error) => {
+        console.error("Failed to fetch user comments:", error);
+      });
+
+  // 获取机器人数据
+  axios
+      .get(`/user/bots?email=${props.email}`)
+      .then((response) => {
+        Mybots.value = response.data;
+      })
+      .catch((error) => {
+        console.error("Failed to fetch bots:", error);
+      });
+
+  // 获取交互统计数据
+  // axios
+  //     .post('/user/getUsageStats', new URLSearchParams({ props.email }))
+  //     .then((response) => {
+  //       usageStats.value = response.data;
+  //     })
+  //     .catch((error) => {
+  //       console.error("Error fetching usage stats:", error);
+  //     });
+
 });
+
+// 打开模态框
+const openModal = () => {
+  isModalOpen.value = true;
+};
+
+// 关闭模态框
+const closeModal = () => {
+  isModalOpen.value = false;
+  comment.value = '';
+  rating.value = 0;
+};
+
+// 设置评分
+const setRating = (star) => {
+  rating.value = star;
+};
+
+// 提交评论
+const submitComment = () => {
+  if (!comment.value.trim()) {
+    alert('Please enter a comment.');
+    return;
+  }
+  if (rating.value === 0) {
+    alert('Please select a rating.');
+    return;
+  }
+
+  alert(`Comment: ${comment.value}, Rating: ${rating.value}`);
+
+  // 示例：Axios 请求
+  axios.post('user/writeComments', {
+    comment: comment.value,
+    rating: rating.value,
+    email1: props.email,
+    email2: store.state.user.email
+  })
+      .then(() =>{
+        alert('Comment submitted successfully!')
+        return axios.get(`/user/comments?email=${props.email}`);
+      })
+      .then((response) => {
+        reviews.value = response.data;
+      })
+      .catch(() => alert('Failed to submit comment.'));
+
+  closeModal();
+};
 
 </script>
 
 
 <script>
-import axios from "axios";
-
 export default {
-  computed: {
-    user() {
-      return this.$store.state.user;
-    }
-  },
   methods:{
     formatDate(isoDate) {
       if (!isoDate) return "No recent interactions";
@@ -193,54 +348,7 @@ export default {
       const seconds = String(date.getSeconds()).padStart(2, "0");
       return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
     },
-  },
-  data() {
-    return {
-      usageStats:[], //使用记录
-      Mybots: [], // 存储从后端获取的 bots 数据
-      reviews: [], //评论
-    };
-  },
-  mounted () {
-    const isLoggedIn = this.$store.state.user.isLoggedIn;  // 从 Vuex 中获取 email
-    if (!isLoggedIn) {
-      this.$router.push('/login'); // 在页面加载时获取用户数据
-    }else {
-      const email = this.$store.state.user.email;  // 从 Vuex 中获取 email
-      if (email) {
-        this.$store.dispatch('fetchUserByEmail', email);  // 在页面加载时获取用户数据
-      }
-
-      // 评论
-      axios
-          .get(`/user/comments?email=${email}`)
-          .then((response) => {
-            this.reviews = response.data; // 将数据存储到 reviews
-          })
-          .catch((error) => {
-            console.error("Failed to fetch user comments:", error);
-          });
-
-      // 机器人数量
-      axios
-          .get(`/user/bots?email=${email}`)
-          .then((response) => {
-            this.Mybots = response.data; // 获取 bots 数据
-          })
-          .catch((error) => {
-            console.error("Failed to fetch bots:", error);
-          });
-
-      // 交互统计
-      axios.post('/user/getUsageStats', new URLSearchParams({ email }))
-          .then(response => {
-            this.usageStats = response.data; // 将返回的数据存储到 usageStats
-          })
-          .catch(error => {
-            console.error("Error fetching usage stats:", error);
-          });
-    }
-  }
+   },
 };
 </script>
 

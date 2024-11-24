@@ -239,6 +239,8 @@ async function saveForm() {
   } catch (error) {
     console.error('Save failed:', error);
     alert('Save failed. Please try again.');
+  } finally {
+    window.location.reload();
   }
 }
 
