@@ -37,11 +37,12 @@ const router = createRouter({
 			component: () => import('../views/BotDetailView.vue')
 		},
 		{
-			path: '/user/:encodedEmail',
-			name: 'user',
+			path: '/user/:email',
 			component: UserDetail,
-			props: (route) => ({ email: decodeURIComponent(route.params.encodedEmail) }), // 解码邮箱
-		},
+			props: route => ({
+			  email: decodeURIComponent(route.params.email), // 解码邮箱传入组件
+			}),
+		  },
 	],
 })
 
