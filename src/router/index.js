@@ -7,7 +7,7 @@ const router = createRouter({
 	routes: [
 		{
 			path: '/',
-			component: HomePage
+			component: Admin
 		},
 		{
 			path: '/chat',

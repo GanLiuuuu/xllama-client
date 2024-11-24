@@ -8,7 +8,6 @@
             <img :src="product.imageSrc" :alt="product.imageAlt" class="aspect-[4/3] w-full rounded-lg bg-gray-100 object-cover" />
           </div>
   
-          <!-- Product details -->
           <div class="mx-auto mt-14 max-w-2xl sm:mt-16 lg:col-span-3 lg:row-span-2 lg:row-end-2 lg:mt-0 lg:max-w-none">
             <div class="flex flex-col-reverse">
               <div class="mt-4">

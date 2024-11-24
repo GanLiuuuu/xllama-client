@@ -25,11 +25,23 @@
           </nav>
         </div>
       </div>
-  
       <div class="xl:pl-72">
         <main class="lg:pr-px">
-          <div>
+          <div style="padding: 20px">
+            <div style="margin-bottom: 20px" class="border-b border-gray-200 pb-5 sm:flex sm:items-center sm:justify-between">
+              <p class="text-base font-semibold text-indigo-100">To Excel</p>
+              <div class="mt-3 sm:ml-4 sm:mt-0">
+                <button type="button" class="inline-flex items-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">Get Excel</button>
+              </div>
+            </div>
+            <div style="" class="border-b border-gray-200 pb-5 sm:flex sm:items-center sm:justify-between">
+              <p class="text-base font-semibold text-indigo-100">Edit</p>
+              <div class="mt-3 sm:ml-4 sm:mt-0">
+                <button type="button" class="inline-flex items-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">Upload</button>
+              </div>
+            </div>
             <Search />
+            
           </div>
         </main>
       </div>
