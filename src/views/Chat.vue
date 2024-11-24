@@ -9,7 +9,8 @@
   </template>
   
   <script>
-  export default {
+import {  OpenAI } from "openai";
+export default {
     data() {
       return {
         suggestions: [
@@ -21,10 +22,15 @@
         content: '',
         text: "",
         websocket: null,
+        openai: new OpenAI({
+        apiKey: "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", 
+        basePath: "https://gateway.ai.cloudflare.com/v1/a8de3330640fc629a2b07ba814e8ccad/keronelau/openai" ,
+        dangerouslyAllowBrowser: true,
+
+        }),
       };
     },
     mounted() {
-      // WebSocket
       if ('WebSocket' in window) {
         this.websocket = new WebSocket(`ws://localhost:8081/chat`)
         this.initWebSocket()
@@ -58,40 +64,32 @@
           this.createContent('gpt',null,serverMessage);//把bot回复的内容显示在网页上
         };
       },
-      sendTextMessage(){
+      async sendTextMessage(){
         if(!this.text){
           return;
         }
         this.createContent(null,'human',this.text);
         this.websocket.send(this.text)
-        
-        const apiUrl = "https://gateway.ai.cloudflare.com/v1/a8de3330640fc629a2b07ba814e8ccad/keronelau/openai/chat/completions"; // 替换为你的 GPT 接口地址
-  const requestBody = {
-    message: this.text,
-    model: "gpt-3.5-turbo" // 替换为实际使用的模型
-  };
+        try {
+        // 调用 OpenAI API
+        const response = await this.openai.chat.completions.create({
+          model: "gpt-3.5-turbo", // 或其他模型
+          prompt: this.text,
+          max_tokens: 150,
+          temperature: 0.7
+        });
 
-  fetch(apiUrl, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: "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" // 替换为你的 API Key
-    },
-    body: JSON.stringify(requestBody)
-  })
-    .then(response => response.json())
-    .then(data => {
-      const gptResponse = data.reply || "抱歉，我无法处理您的请求。"; // 确保返回内容存在
-      // 显示 GPT 的回复
-      this.createContent('gpt', null, gptResponse);
-    })
-    .catch(error => {
-      console.error("Error calling GPT API:", error);
-      // 显示错误信息
-      this.createContent('gpt', null, "抱歉，请求失败，请稍后再试。");
-    });
-    this.text = "";
+        const botReply = response.data.choices[0].text.trim();
+        this.createContent('gpt', null, botReply);
+      } catch (error) {
+        console.error("Error with OpenAI API:", error);
+        this.createContent('gpt', null, "Sorry, I couldn't process that request.");
+      }
+
+      // 清空输入框
+      this.text = "";
       },
+      
 
       setErrorMessage () {
         console.log('WebSocket连接发生错误   状态码：' + this.websocket.readyState)
