@@ -29,7 +29,7 @@
             </li>
             <li class="-mx-6 mt-auto">
               <a href="#" class="flex items-center gap-x-4 px-6 py-3 text-sm/6 font-semibold text-white hover:bg-gray-800">
-                <img class="size-8 rounded-full bg-gray-800" src=user.avatarUrl alt="用户头像" />
+                <img class="size-8 rounded-full bg-gray-800" :src=user.avatarUrl alt="用户头像" />
                 <span class="sr-only">Your profile</span>
                 <span aria-hidden="true">{{ user.username }}</span>
               </a>
@@ -40,17 +40,17 @@
     </div>
 
     <div class="xl:pl-72">
-        <main class="lg:pr-px">
-          <div v-if="currentNavItem == 'Deployments' ">
+      <main class="lg:pr-px">
+        <div v-if="currentNavItem == 'Deployments' ">
           <!-- Deployments -->
           <header class="flex items-center justify-between border-b border-white/5 px-4 py-4 sm:px-6 sm:py-6 lg:px-8">
             <h1 class="text-base/7 font-semibold text-white">Deployments</h1>
-              <Menu as="div" class="relative">
+            <Menu as="div" class="relative">
               <MenuButton class="flex items-center gap-x-1 text-sm/6 font-medium text-white">
                 Upload
                 <PlusIcon class="size-5 text-gray-500" aria-hidden="true" />
               </MenuButton>
-              
+
             </Menu>
           </header>
           <ul role="list" class="divide-y divide-white/5">
@@ -62,7 +62,7 @@
                   </div>
                   <h2 class="min-w-0 text-sm/6 font-semibold text-white">
                     <a :href="deployment.href" class="flex gap-x-2">
-                      
+
                       <span class="whitespace-nowrap">{{ deployment.projectName }}</span>
                       <span class="absolute inset-0" />
                     </a>
@@ -80,21 +80,21 @@
               <ChevronRightIcon class="size-5 flex-none text-gray-400" aria-hidden="true" />
             </li>
           </ul>
-          </div>
+        </div>
 
-          <!--Home Page-->
-          <div v-if="currentNavItem == 'Home' ">
-            <header>
-              <!-- Secondary navigation -->
-              <nav class="flex overflow-x-auto border-b border-white/10 py-4">
-                <ul role="list" class="flex min-w-full flex-none gap-x-6 px-4 text-sm/6 font-semibold text-gray-400 sm:px-6 lg:px-8">
-                  <li v-for="item in secondaryNavigation" :key="item.name">
-                    <a @click="selectSubNavItem(item)" :href="item.href" :class="item.current ? 'text-indigo-400' : ''">{{ item.name }}</a>
-                  </li>
-                </ul>
-              </nav>
-              <div v-if="currentSubNavItem == 'Overview' ">
-                <!-- Heading -->
+        <!--Home Page-->
+        <div v-if="currentNavItem == 'Home' ">
+          <header>
+            <!-- Secondary navigation -->
+            <nav class="flex overflow-x-auto border-b border-white/10 py-4">
+              <ul role="list" class="flex min-w-full flex-none gap-x-6 px-4 text-sm/6 font-semibold text-gray-400 sm:px-6 lg:px-8">
+                <li v-for="item in secondaryNavigation" :key="item.name">
+                  <a @click="selectSubNavItem(item)" :href="item.href" :class="item.current ? 'text-indigo-400' : ''">{{ item.name }}</a>
+                </li>
+              </ul>
+            </nav>
+            <div v-if="currentSubNavItem == 'Overview' ">
+              <!-- Heading -->
               <div class="flex flex-col items-start justify-between gap-x-8 gap-y-4 bg-gray-700/10 px-4 py-4 sm:flex-row sm:items-center sm:px-6 lg:px-8">
                 <div>
                   <div class="flex items-center gap-x-3">
@@ -119,67 +119,59 @@
                   </p>
                 </div>
               </div>
-              </div>
-              
-            </header>
+            </div>
 
-            <!--self intro-->>
-            <div v-if="currentSubNavItem == 'Overview' ">
-              <div class="flex flex-col items-start justify-between gap-x-8 gap-y-4 bg-gray-700/10 px-4 py-4 sm:flex-row sm:items-center sm:px-6 lg:px-8">
-                <div>
-                  <div class="flex items-center gap-x-3">
-                    <h1 class="flex gap-x-3 text-base/7">
-                      <span class="font-semibold text-white">📝 Self introduction</span>
-                      <span class="text-gray-600"></span>
-                      
-                    </h1>
-                  </div>
-                  <div class="flex items-center gap-x-3">
-                    <p class="flex gap-x-3 text-base/7">
-                      <span class="font-text text-white">{{ user.bio }}</span>
-                      <span class="text-gray-600"></span>
-                      
-                    </p>
-                  </div>
+          </header>
+
+          <!--self intro-->>
+          <div v-if="currentSubNavItem == 'Overview' ">
+            <div class="flex flex-col items-start justify-between gap-x-8 gap-y-4 bg-gray-700/10 px-4 py-4 sm:flex-row sm:items-center sm:px-6 lg:px-8">
+              <div>
+                <div class="flex items-center gap-x-3">
+                  <h1 class="flex gap-x-3 text-base/7">
+                    <span class="font-semibold text-white">📝 Self introduction</span>
+                    <span class="text-gray-600"></span>
+
+                  </h1>
+                </div>
+                <div class="flex items-center gap-x-3">
+                  <p class="flex gap-x-3 text-base/7">
+                    <span class="font-text text-white">{{ user.bio }}</span>
+                    <span class="text-gray-600"></span>
+
+                  </p>
                 </div>
               </div>
             </div>
-            <div v-if="currentSubNavItem == 'My Bots' ">
+          </div>
+          <div v-if="currentSubNavItem == 'My Bots' ">
             <!--TODO: -->
-            </div>
+          </div>
 
-            <!--setting-->
-            <div v-if="currentSubNavItem == 'Settings' " style="padding: 40px">
-              <EditForm/>
-            </div>
-            <div v-if="currentSubNavItem == 'Usage stats' ">
+          <!--setting-->
+          <div v-if="currentSubNavItem == 'Settings' " style="padding: 40px">
+            <EditForm/>
+          </div>
+          <div v-if="currentSubNavItem == 'Usage stats' ">
             <!--TODO: -->
-            </div>
           </div>
-          
+        </div>
 
-          <div v-if="currentNavItem == 'Discover' ">
-            <Discover/>
-          </div>
-          <div v-if="currentNavItem == 'Search' ">
-            <Search/>
-          </div>
-          <div v-if="currentNavItem == 'Chat'">
-            <Chat/>
-          </div>
-        </main>
-  
 
-      </div>
+        <div v-if="currentNavItem == 'Discover' ">
+          <Discover/>
+        </div>
+      </main>
+
+
+    </div>
   </div>
 </template>
 
 
 <script setup>
-import Chat from './Chat.vue'
 import Discover from './DiscoverView.vue'
 import EditForm from '../components/EditForm.vue';
-import Search from './SearchView.vue'
 import { ref } from 'vue'
 import {
   FolderIcon,
@@ -191,19 +183,20 @@ import {
 const navigation = ref([
   { name: 'Home', href: '#', icon: HomeIcon, current: true },
   { name: 'Deployments', href: '#', icon: ServerIcon, current: false },
-  { name: 'Discover', href: '#', icon: SignalIcon, current: false },
-  {name: 'Search', href: '#', icon: MagnifyingGlassCircleIcon, current: false},
+  { name: 'Discover', href: '#', icon: SignalIcon, current: false }
 ]);
 
 const conversations = [
-  { id: 1, name: 'Chat', href: '#', current: false },
+  { id: 1, name: 'Planetaria', href: '#', current: false },
+  { id: 2, name: 'Protocol', href: '#', current: false },
+  { id: 3, name: 'Tailwind Labs', href: '#', current: false },
 ]
 
 const currentNavItem = ref('Home');
 const currentSubNavItem = ref('Overview');
 
 function selectNavItem(item) {
-  currentNavItem.value = item.name; 
+  currentNavItem.value = item.name;
   item.current = true;
   navigation.value.forEach(item1 => {
     if(item1!==item){
@@ -216,7 +209,7 @@ function selectNavItem(item) {
     }  });
 }
 function selectSubNavItem(item) {
-  currentSubNavItem.value = item.name; 
+  currentSubNavItem.value = item.name;
   item.current = true;
   secondaryNavigation.forEach(item1 => {
     if(item1!==item){
@@ -226,44 +219,44 @@ function selectSubNavItem(item) {
 
 }
 const statuses = {
-    offline: 'text-gray-500 bg-gray-100/10',
-    online: 'text-green-400 bg-green-400/10',
-    error: 'text-rose-400 bg-rose-400/10',
-  }
-  const environments = {
-    Preview: 'text-gray-400 bg-gray-400/10 ring-gray-400/20',
-    Launch: 'text-indigo-400 bg-indigo-400/10 ring-indigo-400/30',
-  }
-  const deployments = [
-    {
-      id: 1,
-      href: '#',
-      projectName: 'XBot_11',
-      status: 'online',
-      statusText: 'Initiated 1m 30s ago',
-      description: 'test case file',
-      environment: 'Launch',
-    },
-    {
-      id: 2,
-      href: '#',
-      projectName: 'untitledBot',
-      status: 'offline',
-      statusText: 'Initiated 1m 32s ago',
-      description: 'test case file',
-      environment: 'Preview',
-    },
-    {
-      id: 2,
-      href: '#',
-      projectName: 'XBot_007',
-      status: 'error',
-      statusText: 'Initiated 30m 32s ago',
-      description: 'test case file',
-      environment: 'Preview',
-    },
-  ]
-  const stats = [
+  offline: 'text-gray-500 bg-gray-100/10',
+  online: 'text-green-400 bg-green-400/10',
+  error: 'text-rose-400 bg-rose-400/10',
+}
+const environments = {
+  Preview: 'text-gray-400 bg-gray-400/10 ring-gray-400/20',
+  Launch: 'text-indigo-400 bg-indigo-400/10 ring-indigo-400/30',
+}
+const deployments = [
+  {
+    id: 1,
+    href: '#',
+    projectName: 'XBot_11',
+    status: 'online',
+    statusText: 'Initiated 1m 30s ago',
+    description: 'test case file',
+    environment: 'Launch',
+  },
+  {
+    id: 2,
+    href: '#',
+    projectName: 'untitledBot',
+    status: 'offline',
+    statusText: 'Initiated 1m 32s ago',
+    description: 'test case file',
+    environment: 'Preview',
+  },
+  {
+    id: 2,
+    href: '#',
+    projectName: 'XBot_007',
+    status: 'error',
+    statusText: 'Initiated 30m 32s ago',
+    description: 'test case file',
+    environment: 'Preview',
+  },
+]
+const stats = [
   { name: 'Points', value: ref((() => this.$store.state.user.points))},
   { name: 'Tokens', value: '0', unit: 'tokens' },
   { name: 'Number of bots', value: '0' },
@@ -280,7 +273,6 @@ const secondaryNavigation = [
 
 <script>
 import axios from "axios";
-import { MagnifyingGlassCircleIcon } from '@heroicons/vue/20/solid';
 
 export default {
   computed: {
@@ -364,7 +356,7 @@ export default {
         }).catch(error => {
           console.log("An error occurred during EditAvatars:", error);
         });
-       this.showEditAvatars = false;
+        this.showEditAvatars = false;
       }else {
         alert("please upload a picture");
       }
