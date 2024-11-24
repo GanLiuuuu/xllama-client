@@ -1,5 +1,5 @@
 <template>
-  <div class="chat-area">
+  <div class="chat-area" style="padding: 40px">
     <div style="overflow: auto;height: 550px;" v-html="content"></div>
     <div class="bg-gray-50 sm:rounded-lg" style="text-align: left;">
       <div class="px-4 py-5 sm:p-6">
@@ -63,7 +63,6 @@ export default {
       window.onbeforeunload = this.onbeforeunload;
     },
     async sendMsg() {
-      this.uploadedImageUrl = 'https://s2.loli.net/2024/11/24/Qp8Uw4vsnP7aB3q.jpg';
     if (!this.text && !this.uploadedImageUrl) {
       return;
     }
@@ -74,7 +73,6 @@ export default {
     if (this.text) {
       promptContent = this.text;
     }
-
     if (this.uploadedImageUrl) {
       alert('ur photo is uploaded');
       imageContent = {
@@ -84,36 +82,36 @@ export default {
         }
       };
     }
-
-    const messageContent = imageContent ? [
-      imageContent, 
-      { "type": "text", "text": promptContent }
-    ] : [{ "type": "text", "text": promptContent }];
+    
     const messages_test= [
         {
-          role: 'user', // 角色
-          content: [ // 数组
+          role: 'user', 
+          content: [ 
             {
               type: 'text',
-              'text': '请描述以下图片的内容'
+              'text': promptContent
             },
             {
               type: 'image_url',
               "image_url": {
-                "url": 'https://s2.loli.net/2024/11/24/Qp8Uw4vsnP7aB3q.jpg'
+                "url": this.uploadedImageUrl
               }
             }
           ]
         }
       ];
-    // Send to WebSocket
-    this.createContent('human', null, messageContent);
+      let msg='';
+      if(!imageContent){
+        msg = [{role: 'user', content:[{"type": "text", "text": promptContent }] }];
+      }else{
+        msg = messages_test
+      }
+    this.createContent(null, 'human', this.text);
     this.websocket.send(JSON.stringify({
       text: promptContent,
       imageUrl: this.uploadedImageUrl
     }));
 
-    // Send to OpenAI API
     try {
       console.error(messages_test);
       const response = await fetch('https://api.openai-proxy.org/v1/chat/completions', {
@@ -124,7 +122,7 @@ export default {
         },
         body: JSON.stringify({
           model: "gpt-4o", // or "gpt-4" if needed
-          messages: messages_test
+          messages: msg
         })
       });
       console.error(response)
@@ -135,7 +133,6 @@ export default {
       console.error("Error with OpenAI API:", error);
       this.createContent('gpt', null, "Sorry, I couldn't process that request.");
     }
-
     // Reset input fields
     this.text = "";
     this.uploadedImageUrl = "";
