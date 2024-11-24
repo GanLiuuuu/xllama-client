@@ -10,7 +10,8 @@
             <li>
               <ul role="list" class="-mx-2 space-y-1">
                 <li v-for="item in navigation" :key="item.name">
-                  <a @click="selectNavItem(item)" :class="[item.current ? 'bg-gray-800 text-white' : 'text-gray-400 hover:bg-gray-800 hover:text-white', 'group flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold']">
+                  <a @click="selectNavItem(item)"
+                    :class="[item.current ? 'bg-gray-800 text-white' : 'text-gray-400 hover:bg-gray-800 hover:text-white', 'group flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold']">
                     <component :is="item.icon" class="size-6 shrink-0" aria-hidden="true" />
                     {{ item.name }}
                   </a>
@@ -21,14 +22,16 @@
               <div class="text-xs/6 font-semibold text-gray-400">Your conversations</div>
               <ul role="list" class="-mx-2 mt-2 space-y-1">
                 <li v-for="conversation in conversations" :key="conversation.name">
-                  <a @click="selectNavItem(conversation)" :href="conversation.href" :class="[conversation.current ? 'bg-gray-800 text-white' : 'text-gray-400 hover:bg-gray-800 hover:text-white', 'group flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold']">
+                  <a @click="selectNavItem(conversation)" :href="conversation.href"
+                    :class="[conversation.current ? 'bg-gray-800 text-white' : 'text-gray-400 hover:bg-gray-800 hover:text-white', 'group flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold']">
                     <span class="truncate">{{ conversation.name }}</span>
                   </a>
                 </li>
               </ul>
             </li>
             <li class="-mx-6 mt-auto">
-              <a href="#" class="flex items-center gap-x-4 px-6 py-3 text-sm/6 font-semibold text-white hover:bg-gray-800">
+              <a href="#"
+                class="flex items-center gap-x-4 px-6 py-3 text-sm/6 font-semibold text-white hover:bg-gray-800">
                 <img class="size-8 rounded-full bg-gray-800" src=user.avatarUrl alt="用户头像" />
                 <span class="sr-only">Your profile</span>
                 <span aria-hidden="true">{{ user.username }}</span>
@@ -40,21 +43,23 @@
     </div>
 
     <div class="xl:pl-72">
-        <main class="lg:pr-px">
-          <div v-if="currentNavItem == 'Deployments' ">
+      <main class="lg:pr-px">
+        <div v-if="currentNavItem == 'Deployments'">
           <!-- Deployments -->
           <header class="flex items-center justify-between border-b border-white/5 px-4 py-4 sm:px-6 sm:py-6 lg:px-8">
             <h1 class="text-base/7 font-semibold text-white">Deployments</h1>
-              <Menu as="div" class="relative">
-              <MenuButton class="flex items-center gap-x-1 text-sm/6 font-medium text-white">
+            <Menu as="div" class="relative">
+              <MenuButton class="flex items-center gap-x-1 text-sm/6 font-medium text-white cursor-pointer"
+                @click="navigateToUpload">
                 Upload
                 <PlusIcon class="size-5 text-gray-500" aria-hidden="true" />
               </MenuButton>
-              
+
             </Menu>
           </header>
           <ul role="list" class="divide-y divide-white/5">
-            <li v-for="deployment in deployments" :key="deployment.id" class="relative flex items-center space-x-4 px-4 py-4 sm:px-6 lg:px-8">
+            <li v-for="deployment in deployments" :key="deployment.id"
+              class="relative flex items-center space-x-4 px-4 py-4 sm:px-6 lg:px-8">
               <div class="min-w-0 flex-auto">
                 <div class="flex items-center gap-x-3">
                   <div :class="[statuses[deployment.status], 'flex-none rounded-full p-1']">
@@ -62,7 +67,7 @@
                   </div>
                   <h2 class="min-w-0 text-sm/6 font-semibold text-white">
                     <a :href="deployment.href" class="flex gap-x-2">
-                      
+
                       <span class="whitespace-nowrap">{{ deployment.projectName }}</span>
                       <span class="absolute inset-0" />
                     </a>
@@ -76,26 +81,31 @@
                   <p class="whitespace-nowrap">{{ deployment.statusText }}</p>
                 </div>
               </div>
-              <div :class="[environments[deployment.environment], 'flex-none rounded-full px-2 py-1 text-xs font-medium ring-1 ring-inset']">{{ deployment.environment }}</div>
+              <div
+                :class="[environments[deployment.environment], 'flex-none rounded-full px-2 py-1 text-xs font-medium ring-1 ring-inset']">
+                {{ deployment.environment }}</div>
               <ChevronRightIcon class="size-5 flex-none text-gray-400" aria-hidden="true" />
             </li>
           </ul>
-          </div>
+        </div>
 
-          <!--Home Page-->
-          <div v-if="currentNavItem == 'Home' ">
-            <header>
-              <!-- Secondary navigation -->
-              <nav class="flex overflow-x-auto border-b border-white/10 py-4">
-                <ul role="list" class="flex min-w-full flex-none gap-x-6 px-4 text-sm/6 font-semibold text-gray-400 sm:px-6 lg:px-8">
-                  <li v-for="item in secondaryNavigation" :key="item.name">
-                    <a @click="selectSubNavItem(item)" :href="item.href" :class="item.current ? 'text-indigo-400' : ''">{{ item.name }}</a>
-                  </li>
-                </ul>
-              </nav>
-              <div v-if="currentSubNavItem == 'Overview' ">
-                <!-- Heading -->
-              <div class="flex flex-col items-start justify-between gap-x-8 gap-y-4 bg-gray-700/10 px-4 py-4 sm:flex-row sm:items-center sm:px-6 lg:px-8">
+        <!--Home Page-->
+        <div v-if="currentNavItem == 'Home'">
+          <header>
+            <!-- Secondary navigation -->
+            <nav class="flex overflow-x-auto border-b border-white/10 py-4">
+              <ul role="list"
+                class="flex min-w-full flex-none gap-x-6 px-4 text-sm/6 font-semibold text-gray-400 sm:px-6 lg:px-8">
+                <li v-for="item in secondaryNavigation" :key="item.name">
+                  <a @click="selectSubNavItem(item)" :href="item.href" :class="item.current ? 'text-indigo-400' : ''">{{
+                    item.name }}</a>
+                </li>
+              </ul>
+            </nav>
+            <div v-if="currentSubNavItem == 'Overview'">
+              <!-- Heading -->
+              <div
+                class="flex flex-col items-start justify-between gap-x-8 gap-y-4 bg-gray-700/10 px-4 py-4 sm:flex-row sm:items-center sm:px-6 lg:px-8">
                 <div>
                   <div class="flex items-center gap-x-3">
                     <h1 class="flex gap-x-3 text-base/7">
@@ -106,68 +116,75 @@
                   </div>
                   <p class="mt-2 text-xs/6 text-gray-400">A student from SUSTech, enrolled 2 years ago</p>
                 </div>
-                <div class="order-first flex-none rounded-full bg-indigo-400/10 px-2 py-1 text-xs font-medium text-indigo-400 ring-1 ring-inset ring-indigo-400/30 sm:order-none">Student</div>
+                <div
+                  class="order-first flex-none rounded-full bg-indigo-400/10 px-2 py-1 text-xs font-medium text-indigo-400 ring-1 ring-inset ring-indigo-400/30 sm:order-none">
+                  Student</div>
               </div>
 
               <!-- Stats -->
               <div class="grid grid-cols-1 bg-gray-700/10 sm:grid-cols-2 lg:grid-cols-4">
-                <div v-for="(stat, statIdx) in stats" :key="stat.name" :class="[statIdx % 2 === 1 ? 'sm:border-l' : statIdx === 2 ? 'lg:border-l' : '', 'border-t border-white/5 px-4 py-6 sm:px-6 lg:px-8']">
+                <div v-for="(stat, statIdx) in stats" :key="stat.name"
+                  :class="[statIdx % 2 === 1 ? 'sm:border-l' : statIdx === 2 ? 'lg:border-l' : '', 'border-t border-white/5 px-4 py-6 sm:px-6 lg:px-8']">
                   <p class="text-sm/6 font-medium text-gray-400">{{ stat.name }}</p>
                   <p class="mt-2 flex items-baseline gap-x-2">
-                    <span class="text-4xl font-semibold tracking-tight text-white">{{ stat.name === 'Points' ? user.points : stat.name==='Tokens'? user.tokens: stat.name ==="Number of bots"? Mybots.length : stat.value }}</span>
+                    <span class="text-4xl font-semibold tracking-tight text-white">{{ stat.name === 'Points' ?
+                      user.points : stat.name === 'Tokens' ? user.tokens : stat.name === "Number of bots" ?
+                        Mybots.length :
+                        stat.value }}</span>
                     <span v-if="stat.unit" class="text-sm text-gray-400">{{ stat.unit }}</span>
                   </p>
                 </div>
               </div>
-              </div>
-              
-            </header>
+            </div>
 
-            <!--self intro-->>
-            <div v-if="currentSubNavItem == 'Overview' ">
-              <div class="flex flex-col items-start justify-between gap-x-8 gap-y-4 bg-gray-700/10 px-4 py-4 sm:flex-row sm:items-center sm:px-6 lg:px-8">
-                <div>
-                  <div class="flex items-center gap-x-3">
-                    <h1 class="flex gap-x-3 text-base/7">
-                      <span class="font-semibold text-white">📝 Self introduction</span>
-                      <span class="text-gray-600"></span>
-                      
-                    </h1>
-                  </div>
-                  <div class="flex items-center gap-x-3">
-                    <p class="flex gap-x-3 text-base/7">
-                      <span class="font-text text-white">{{ user.bio }}</span>
-                      <span class="text-gray-600"></span>
-                      
-                    </p>
-                  </div>
+          </header>
+
+          <!--self intro-->>
+          <div v-if="currentSubNavItem == 'Overview'">
+            <div
+              class="flex flex-col items-start justify-between gap-x-8 gap-y-4 bg-gray-700/10 px-4 py-4 sm:flex-row sm:items-center sm:px-6 lg:px-8">
+              <div>
+                <div class="flex items-center gap-x-3">
+                  <h1 class="flex gap-x-3 text-base/7">
+                    <span class="font-semibold text-white">📝 Self introduction</span>
+                    <span class="text-gray-600"></span>
+
+                  </h1>
+                </div>
+                <div class="flex items-center gap-x-3">
+                  <p class="flex gap-x-3 text-base/7">
+                    <span class="font-text text-white">{{ user.bio }}</span>
+                    <span class="text-gray-600"></span>
+
+                  </p>
                 </div>
               </div>
             </div>
-            <div v-if="currentSubNavItem == 'My Bots' ">
+          </div>
+          <div v-if="currentSubNavItem == 'My Bots'">
             <!--TODO: -->
-            </div>
+          </div>
 
-            <!--setting-->
-            <div v-if="currentSubNavItem == 'Settings' " style="padding: 40px">
-              <EditForm/>
-            </div>
-            <div v-if="currentSubNavItem == 'Usage stats' ">
+          <!--setting-->
+          <div v-if="currentSubNavItem == 'Settings'" style="padding: 40px">
+            <EditForm />
+          </div>
+          <div v-if="currentSubNavItem == 'Usage stats'">
             <!--TODO: -->
-            </div>
           </div>
-          
+        </div>
 
-          <div v-if="currentNavItem == 'Discover' ">
-            <Discover/>
-          </div>
-          <div v-if="currentNavItem == 'Chat'">
-            <Chat/>
-          </div>
-        </main>
-  
 
-      </div>
+        <div v-if="currentNavItem == 'Discover'">
+          <Discover />
+        </div>
+        <div v-if="currentNavItem == 'Chat'">
+          <Chat />
+        </div>
+      </main>
+
+
+    </div>
   </div>
 </template>
 
@@ -198,68 +215,69 @@ const currentNavItem = ref('Home');
 const currentSubNavItem = ref('Overview');
 
 function selectNavItem(item) {
-  currentNavItem.value = item.name; 
+  currentNavItem.value = item.name;
   item.current = true;
   navigation.value.forEach(item1 => {
-    if(item1!==item){
+    if (item1 !== item) {
       item1.current = false;
     }
   });
   conversations.forEach(item1 => {
-    if(item1!==item){
+    if (item1 !== item) {
       item1.current = false;
-    }  });
+    }
+  });
 }
 function selectSubNavItem(item) {
-  currentSubNavItem.value = item.name; 
+  currentSubNavItem.value = item.name;
   item.current = true;
   secondaryNavigation.forEach(item1 => {
-    if(item1!==item){
+    if (item1 !== item) {
       item1.current = false;
     }
   });
 
 }
 const statuses = {
-    offline: 'text-gray-500 bg-gray-100/10',
-    online: 'text-green-400 bg-green-400/10',
-    error: 'text-rose-400 bg-rose-400/10',
-  }
-  const environments = {
-    Preview: 'text-gray-400 bg-gray-400/10 ring-gray-400/20',
-    Launch: 'text-indigo-400 bg-indigo-400/10 ring-indigo-400/30',
-  }
-  const deployments = [
-    {
-      id: 1,
-      href: '#',
-      projectName: 'XBot_11',
-      status: 'online',
-      statusText: 'Initiated 1m 30s ago',
-      description: 'test case file',
-      environment: 'Launch',
-    },
-    {
-      id: 2,
-      href: '#',
-      projectName: 'untitledBot',
-      status: 'offline',
-      statusText: 'Initiated 1m 32s ago',
-      description: 'test case file',
-      environment: 'Preview',
-    },
-    {
-      id: 2,
-      href: '#',
-      projectName: 'XBot_007',
-      status: 'error',
-      statusText: 'Initiated 30m 32s ago',
-      description: 'test case file',
-      environment: 'Preview',
-    },
-  ]
-  const stats = [
-  { name: 'Points', value: ref((() => this.$store.state.user.points))},
+  offline: 'text-gray-500 bg-gray-100/10',
+  online: 'text-green-400 bg-green-400/10',
+  error: 'text-rose-400 bg-rose-400/10',
+}
+const environments = {
+  Preview: 'text-gray-400 bg-gray-400/10 ring-gray-400/20',
+  Launch: 'text-indigo-400 bg-indigo-400/10 ring-indigo-400/30',
+}
+const deployments = [
+  {
+    id: 1,
+    href: '#',
+    projectName: 'XBot_11',
+    status: 'online',
+    statusText: 'Initiated 1m 30s ago',
+    description: 'test case file',
+    environment: 'Launch',
+  },
+  {
+    id: 2,
+    href: '#',
+    projectName: 'untitledBot',
+    status: 'offline',
+    statusText: 'Initiated 1m 32s ago',
+    description: 'test case file',
+    environment: 'Preview',
+  },
+  {
+    id: 2,
+    href: '#',
+    projectName: 'XBot_007',
+    status: 'error',
+    statusText: 'Initiated 30m 32s ago',
+    description: 'test case file',
+    environment: 'Preview',
+  },
+]
+const stats = [
+  { name: 'Points', value: ref((() => this.$store.state.user.points)) },
   { name: 'Tokens', value: '0', unit: 'tokens' },
   { name: 'Number of bots', value: '0' },
   { name: 'Success rate', value: '98.5%' },
@@ -284,7 +302,7 @@ export default {
   },
   data() {
     return {
-      usageStats:[],
+      usageStats: [],
       Mybots: [], // 存储从后端获取的 bots 数据
       reviews: [],
       editForm: {
@@ -300,7 +318,7 @@ export default {
       rechargeAmount: '',
       convertPoints: '',
       selectedOption: 0,
-      options: ['News', 'My custom bot','usage stats'],
+      options: ['News', 'My custom bot', 'usage stats'],
     };
   },
   methods: {
@@ -358,13 +376,13 @@ export default {
         }).catch(error => {
           console.log("An error occurred during EditAvatars:", error);
         });
-       this.showEditAvatars = false;
-      }else {
+        this.showEditAvatars = false;
+      } else {
         alert("please upload a picture");
       }
 
     },
-    showAvatarsPopup(){
+    showAvatarsPopup() {
       this.showEditAvatars = true;
     },
     showRenamePopup() {
@@ -425,12 +443,15 @@ export default {
     selectOption(index) {
       this.selectedOption = index;
     },
+    navigateToUpload() {
+      this.$router.push('/upload');
+    }
   },
-  mounted () {
+  mounted() {
     const isLoggedIn = this.$store.state.user.isLoggedIn;  // 从 Vuex 中获取 email
     if (!isLoggedIn) {
       this.$router.push('/login'); // 在页面加载时获取用户数据
-    }else {
+    } else {
       const email = this.$store.state.user.email;  // 从 Vuex 中获取 email
       if (email) {
         this.$store.dispatch('fetchUserByEmail', email);  // 在页面加载时获取用户数据
@@ -438,31 +459,31 @@ export default {
 
       // 评论
       axios
-          .get(`/user/comments?email=${email}`)
-          .then((response) => {
-            this.reviews = response.data; // 将数据存储到 reviews
-          })
-          .catch((error) => {
-            console.error("Failed to fetch user comments:", error);
-          });
+        .get(`/user/comments?email=${email}`)
+        .then((response) => {
+          this.reviews = response.data; // 将数据存储到 reviews
+        })
+        .catch((error) => {
+          console.error("Failed to fetch user comments:", error);
+        });
 
       // 机器人数量
       axios
-          .get(`/user/bots?email=${email}`)
-          .then((response) => {
-            this.Mybots = response.data; // 获取 bots 数据
-          })
-          .catch((error) => {
-            console.error("Failed to fetch bots:", error);
-          });
+        .get(`/user/bots?email=${email}`)
+        .then((response) => {
+          this.Mybots = response.data; // 获取 bots 数据
+        })
+        .catch((error) => {
+          console.error("Failed to fetch bots:", error);
+        });
       // 交互统计
       axios.post('/user/getUsageStats', new URLSearchParams({ email }))
-          .then(response => {
-            this.usageStats = response.data; // 将返回的数据存储到 usageStats
-          })
-          .catch(error => {
-            console.error("Error fetching usage stats:", error);
-          });
+        .then(response => {
+          this.usageStats = response.data; // 将返回的数据存储到 usageStats
+        })
+        .catch(error => {
+          console.error("Error fetching usage stats:", error);
+        });
     }
   }
 };

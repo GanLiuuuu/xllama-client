@@ -31,8 +31,12 @@ const router = createRouter({
 			component: () => import('../views/DiscoverView.vue')
 		},
 		{
-			path: '/detail',
+			path: '/detail/:botName',
 			component: () => import('../views/BotDetailView.vue')
+		},
+		{
+			path: '/upload',
+			component: () => import('../views/UploadView.vue')
 		}
 	],
 })
