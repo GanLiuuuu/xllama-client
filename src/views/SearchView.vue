@@ -3,8 +3,8 @@
         <div>
             <label for="search" class="block text-sm/6 font-medium text-gray-900">Quick search</label>
             <div class="relative mt-2 flex items-center">
-                <input type="text" name="search" id="search" class="block w-full rounded-md border-0 py-1.5 pr-14 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm/6" />
-                <button @click="" class="mt-3 inline-flex w-full items-center justify-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 sm:ml-3 sm:mt-0 sm:w-auto">Search</button>
+                <input v-model="searchQuery" type="text" name="search" id="search" class="block w-full rounded-md border-0 py-1.5 pr-14 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm/6" />
+                <button @click="searchUsers" class="mt-3 inline-flex w-full items-center justify-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 sm:ml-3 sm:mt-0 sm:w-auto">Search</button>
             </div>
         </div>
 
@@ -20,9 +20,16 @@
         <!-- Conditional Rendering for Users -->
         <div v-if="currentN === 'User'" class="mt-4">
             <ul class="space-y-2">
-                <li v-for="user in users" :key="user.name" class="text-gray-900">
-                    <a :href="user.href" class="block px-4 bg-indigo-200 py-2 text-sm hover:bg-indigo-100 rounded-md">{{ user.name }}</a>
-                </li>
+              <li v-for="user in users" :key="user.name" class="text-gray-900">
+                <a :href="user.href" class="block px-4 bg-indigo-200 py-2 text-sm hover:bg-indigo-100 rounded-md">
+                  <div>
+                    <img class="size-8 rounded-full bg-gray-800" :src=user.avatar_url alt="用户头像" />
+                    <p><strong>{{ user.username }}</strong></p>
+                    <p>Email: {{ user.email }}</p>
+                    <p>{{ user.bio }}</p>
+                  </div>
+                </a>
+              </li>
             </ul>
         </div>
     </header>
@@ -30,12 +37,15 @@
 
 <script setup>
 import { ref } from 'vue'
+import axios from 'axios'
 
 const currentN = ref('User');
 const secondary = [
   { name: 'User', href: '#', current: true },
   { name: 'Bot', href: '#', current: false }
 ]
+
+const searchQuery = ref(''); // 搜索框的输入值
 
 function select(item) {
     secondary.forEach(item1 => {
@@ -50,8 +60,27 @@ function select(item) {
     });
 }
 
-const users = [
-    { name: 'Username1', href: '#' },
-    { name: 'Username2', href: '#' }
+async function searchUsers() {
+  if (!searchQuery.value.trim()) {
+    console.error("Search query cannot be empty");
+    return;
+  }
+
+  try {
+    const response = await axios.get('/user/searchUsers', {
+      params: { username: searchQuery.value.trim() }
+    });
+    users.value = response.data; // 更新搜索结果
+  } catch (error) {
+    console.error('Error fetching users:', error);
+    users.value = []; // 如果发生错误，清空用户列表
+  }
+}
+
+const users = ref([]);
+
+users.value = [
+    { username: 'Username1', href: '#', email: "12212@qq.com", avatar_url:"http://localhost:8081/avatars/12345678@qq.com.JPG", bio: "Hello!"},
+    { username: 'Username2', href: '#', email: "", avatar_url:"http://localhost:8081/avatars/12345678@qq.com.JPG", bio: "Hai, nice to meet you"},
 ]
 </script>

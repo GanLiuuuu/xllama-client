@@ -149,12 +149,12 @@
   <script setup>
   import { StarIcon } from '@heroicons/vue/20/solid'
   import { Tab, TabGroup, TabList, TabPanel, TabPanels } from '@headlessui/vue'
-  export default {
-  props: ['email'], // 接收 email 参数
-  mounted() {
-    console.log("用户邮箱：", this.email);
-    },
-};
+//   export default {
+//   props: ['email'], // 接收 email 参数
+//   mounted() {
+//     console.log("用户邮箱：", this.email);
+//     },
+// };
   const product = {
     name: 'Application UI Icon Pack',
     version: { name: '1.0', date: 'June 5, 2021', datetime: '2021-06-05' },

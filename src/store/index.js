@@ -11,10 +11,15 @@ const store = createStore({
                 username: '',
                 bio: 'Welcome to my personal page',
                 avatarUrl: '',
+                coverPhoto: '',
                 userType: '',
                 points: 0,
                 tokens: 0,
                 bots: 2,
+                firstname: '',
+                lastname: '',
+                country: '',
+                about: ""
             }
         };
     },
