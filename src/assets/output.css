@@ -897,6 +897,10 @@ select {
   margin-bottom: -1px;
 }
 
+.mb-4 {
+  margin-bottom: 1rem;
+}
+
 .ml-auto {
   margin-left: auto;
 }

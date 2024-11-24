@@ -26,7 +26,7 @@
               class="block px-4 bg-indigo-200 py-2 text-sm hover:bg-indigo-100 rounded-md"
             >
               <div>
-                <img class="size-8 rounded-full bg-gray-800" :src="user.avatar_url" alt="用户头像" />
+                <img class="size-8 rounded-full bg-gray-800" :src="user.avatarUrl" alt="用户头像" />
                 <p><strong>{{ user.username }}</strong></p>
                 <p>Email: {{ user.email }}</p>
                 <p>{{ user.bio }}</p>
@@ -78,8 +78,8 @@
   const users = ref([]);
   
   users.value = [
-    { username: 'Username1', email: "user1@example.com", avatar_url: "http://localhost:8081/avatars/user1.jpg", bio: "Hello!" },
-    { username: 'Username2', email: "user2@example.com", avatar_url: "http://localhost:8081/avatars/user2.jpg", bio: "Nice to meet you" },
+    { username: 'Username1', email: "user1@example.com", avatarUrl: "http://localhost:8081/avatars/user1.jpg", bio: "Hello!" },
+    { username: 'Username2', email: "user2@example.com", avatarUrl: "http://localhost:8081/avatars/user2.jpg", bio: "Nice to meet you" },
   ];
   </script>
   

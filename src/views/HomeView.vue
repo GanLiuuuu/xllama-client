@@ -29,7 +29,7 @@
             </li>
             <li class="-mx-6 mt-auto">
               <a href="#" class="flex items-center gap-x-4 px-6 py-3 text-sm/6 font-semibold text-white hover:bg-gray-800">
-                <img class="size-8 rounded-full bg-gray-800" src=user.avatarUrl alt="用户头像" />
+                <img class="size-8 rounded-full bg-gray-800" :src="user.avatarUrl" alt="用户头像" />
                 <span class="sr-only">Your profile</span>
                 <span aria-hidden="true">{{ user.username }}</span>
               </a>
@@ -93,6 +93,10 @@
                   </li>
                 </ul>
               </nav>
+
+
+
+
               <div v-if="currentSubNavItem == 'Overview' ">
                 <!-- Heading -->
               <div class="flex flex-col items-start justify-between gap-x-8 gap-y-4 bg-gray-700/10 px-4 py-4 sm:flex-row sm:items-center sm:px-6 lg:px-8">
@@ -119,7 +123,15 @@
                   </p>
                 </div>
               </div>
+
+
+
               </div>
+
+
+
+
+
               
             </header>
 
@@ -143,7 +155,38 @@
                   </div>
                 </div>
               </div>
+
+
+
+              <div class="mt-6">
+                <h2 class="text-lg font-semibold text-white">📢 Reviews</h2>
+                <div v-if="reviews.length" class="mt-4 space-y-4 bg-gray-800 p-4 rounded-lg shadow-lg">
+                  <!-- 单条评论卡片 -->
+                  <div v-for="review in reviews" :key="review.reviewDate" class="review-card border-b border-gray-700 pb-4">
+                    <!-- 评论者信息 -->
+                    <div class="review-header flex items-center justify-between">
+                      <p class="text-sm font-bold text-indigo-400">{{ review.reviewerName }}</p>
+                      <p class="text-xs text-gray-500">{{ formatDate(review.reviewDate) }}</p>
+                    </div>
+
+                    <!-- 评论内容 -->
+                    <p class="mt-2 text-gray-300">{{ review.reviewText }}</p>
+
+                    <!-- 星星评分 -->
+                    <div class="review-rating mt-2 flex items-center">
+                      <span class="text-sm font-medium text-gray-400">Rating:</span>
+                      <span class="rating-stars ml-2 text-yellow-400 text-lg">
+                        <span v-for="n in review.rating" :key="n">🌟</span>
+                      </span>
+                    </div>
+                  </div>
+                </div>
+                <p v-else class="text-gray-500">No reviews available.</p>
+              </div>
+
+
             </div>
+
             <div v-if="currentSubNavItem == 'My Bots' ">
             <!--TODO: -->
             </div>
@@ -181,12 +224,16 @@ import Discover from './DiscoverView.vue'
 import EditForm from '../components/EditForm.vue';
 import Search from './SearchView.vue'
 import { ref } from 'vue'
+import { onMounted } from 'vue';
 import {
   FolderIcon,
   HomeIcon,
   ServerIcon,
   SignalIcon,
 } from '@heroicons/vue/24/outline'
+import axios from "axios";
+
+
 
 const navigation = ref([
   { name: 'Home', href: '#', icon: HomeIcon, current: true },
@@ -279,8 +326,9 @@ const secondaryNavigation = [
 </script>
 
 <script>
-import axios from "axios";
+
 import { MagnifyingGlassCircleIcon } from '@heroicons/vue/20/solid';
+
 
 export default {
   computed: {
@@ -369,18 +417,6 @@ export default {
         alert("please upload a picture");
       }
 
-    },
-    showAvatarsPopup(){
-      this.showEditAvatars = true;
-    },
-    showRenamePopup() {
-      this.showRename = true;
-    },
-    showRechargePopup() {
-      this.showRecharge = true;
-    },
-    showConvertPopup() {
-      this.showConvert = true;
     },
     confirmRecharge() {
       if (this.rechargeAmount !== '') {
