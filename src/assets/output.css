@@ -1700,6 +1700,10 @@ select {
   padding-left: 1.25rem;
 }
 
+.pr-14 {
+  padding-right: 3.5rem;
+}
+
 .pt-10 {
   padding-top: 2.5rem;
 }

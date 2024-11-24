@@ -161,6 +161,9 @@
           <div v-if="currentNavItem == 'Discover' ">
             <Discover/>
           </div>
+          <div v-if="currentNavItem == 'Search' ">
+            <Search/>
+          </div>
           <div v-if="currentNavItem == 'Chat'">
             <Chat/>
           </div>
@@ -176,6 +179,7 @@
 import Chat from './Chat.vue'
 import Discover from './DiscoverView.vue'
 import EditForm from '../components/EditForm.vue';
+import Search from './SearchView.vue'
 import { ref } from 'vue'
 import {
   FolderIcon,
@@ -187,7 +191,8 @@ import {
 const navigation = ref([
   { name: 'Home', href: '#', icon: HomeIcon, current: true },
   { name: 'Deployments', href: '#', icon: ServerIcon, current: false },
-  { name: 'Discover', href: '#', icon: SignalIcon, current: false }
+  { name: 'Discover', href: '#', icon: SignalIcon, current: false },
+  {name: 'Search', href: '#', icon: MagnifyingGlassCircleIcon, current: false},
 ]);
 
 const conversations = [
@@ -275,6 +280,7 @@ const secondaryNavigation = [
 
 <script>
 import axios from "axios";
+import { MagnifyingGlassCircleIcon } from '@heroicons/vue/20/solid';
 
 export default {
   computed: {
