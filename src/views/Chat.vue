@@ -23,8 +23,8 @@ export default {
         text: "",
         websocket: null,
         openai: new OpenAI({
-        apiKey: "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", 
-        basePath: "https://gateway.ai.cloudflare.com/v1/a8de3330640fc629a2b07ba814e8ccad/keronelau/openai" ,
+        apiKey: "sk-WToNIH9kKqUod68vVm7RtIM5c2Boiyi1FBS8gHDAVD7yi0Za", 
+        basePath: "https://api.openai-proxy.org/v1" ,
         dangerouslyAllowBrowser: true,
 
         }),
@@ -71,15 +71,24 @@ export default {
         this.createContent(null,'human',this.text);
         this.websocket.send(this.text)
         try {
-        // 调用 OpenAI API
-        const response = await this.openai.chat.completions.create({
-          model: "gpt-3.5-turbo", // 或其他模型
-          prompt: this.text,
-          max_tokens: 150,
-          temperature: 0.7
+        // 使用curl通过fetch发起POST请求调用OpenAI API
+        const response = await fetch('https://api.openai-proxy.org/v1/chat/completions', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer sk-WToNIH9kKqUod68vVm7RtIM5c2Boiyi1FBS8gHDAVD7yi0Za'
+          },
+          body: JSON.stringify({
+            model: "gpt-3.5-turbo",
+            messages: [
+              { role: "system", content: "You are a helpful assistant." },
+              { role: "user", content: this.text }
+            ]
+          })
         });
 
-        const botReply = response.data.choices[0].text.trim();
+        const data = await response.json();
+        const botReply = data.choices[0].message.content.trim();
         this.createContent('gpt', null, botReply);
       } catch (error) {
         console.error("Error with OpenAI API:", error);
@@ -88,7 +97,7 @@ export default {
 
       // 清空输入框
       this.text = "";
-      },
+    },
       
 
       setErrorMessage () {
