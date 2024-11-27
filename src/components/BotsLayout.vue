@@ -34,7 +34,7 @@
           <div class="flex justify-between gap-x-4 py-3">
             <dt class="text-gray-500">Last Update</dt>
             <dd class="text-white">
-              {{getFormattedDate(bot.created_at)}}
+              {{getFormattedDate(bot.createdAt)}}
             </dd>
           </div>
           <div class="flex justify-between gap-x-4 py-3">
@@ -46,9 +46,9 @@
           <div class="flex justify-between gap-x-4 py-3">
             <dt class="text-gray-500">Amount</dt>
             <dd class="flex items-start gap-x-2">
-              <div class="font-medium text-white">${{ bot.price }}</div>
-              <div :class="[statuses[bot.status], 'rounded-md px-2 py-1 text-xs font-medium ring-1 ring-inset']">{{
-                bot.status }}</div>
+              <div class="font-medium text-white">{{ bot.price }} tokens/question</div>
+              <div :class="[statuses[bot.state], 'rounded-md px-2 py-1 text-xs font-medium ring-1 ring-inset']">{{
+                bot.state }}</div>
             </dd>
           </div>
         </dl>
@@ -74,115 +74,115 @@ const bots = ref([
     name: 'Xbot_007',
     version: '1.0',
     views: '123',
-    created_at: '2022-12-13',
+    createdAt: '2022-12-13',
     price: '2,000.00',
-    status: 'NotYet',
+    state: 'Online',
   },
   {
     id: 2,
     name: 'Chat_GPT4',
     version: '1.0',
     views: '456',
-    created_at: '2023-01-22',
+    createdAt: '2023-01-22',
     price: '14,000.00', 
-    status: 'Paid',
+    state: 'Offline',
   },
   {
     id: 3,
     name: 'Llama',
     version: '1.0',
     views: '789',
-    created_at:'2023-01-23',
+    createdAt:'2023-01-23',
     price: '7,600.00', 
-    status: 'Paid',
+    state: 'Online',
   },
   {
     id: 5,
     name: 'Llama',
     version: '1.0',
     views: '789',
-    created_at:'2023-01-23',
+    createdAt:'2023-01-23',
     price: '7,600.00', 
-    status: 'Paid',
+    state: 'Online',
   },
   {
     id: 6,
     name: 'Llama',
     version: '1.0',
     views: '789',
-    created_at:'2023-01-23',
+    createdAt:'2023-01-23',
     price: '7,600.00', 
-    status: 'Paid',
+    state: 'Online',
   },
   {
     id: 7,
     name: 'Llama',
     version: '1.0',
     views: '789',
-    created_at:'2023-01-23',
+    createdAt:'2023-01-23',
     price: '7,600.00', 
-    status: 'Paid',
+    state: 'Online',
   },
   {
     id: 8,
     name: 'Llama',
     version: '1.0',
     views: '789',
-    created_at:'2023-01-23',
+    createdAt:'2023-01-23',
     price: '7,600.00', 
-    status: 'Paid',
+    state: 'Online',
   },
   {
     id: 9,
     name: 'Llama',
     version: '1.0',
     views: '789',
-    created_at:'2023-01-23',
+    createdAt:'2023-01-23',
     price: '7,600.00', 
-    status: 'Paid',
+    state: 'Online',
   },
   {
     id: 10,
     name: 'Llama',
     version: '1.0',
     views: '789',
-    created_at:'2023-01-23',
+    createdAt:'2023-01-23',
     price: '7,600.00', 
-    status: 'Paid',
+    state: 'Online',
   },
   {
     id: 11,
     name: 'Llama',
     version: '1.0',
     views: '789',
-    created_at:'2023-01-23',
+    createdAt:'2023-01-23',
     price: '7,600.00', 
-    status: 'Paid',
+    state: 'Online',
   },
   {
     id: 12,
     name: 'Llama',
     version: '1.0',
     views: '789',
-    created_at:'2023-01-23',
+    createdAt:'2023-01-23',
     price: '7,600.00', 
-    status: 'Paid',
+    state: 'Online',
   },
   {
     id: 13,
     name: 'Llama',
     version: '1.0',
     views: '789',
-    created_at:'2023-01-23',
+    createdAt:'2023-01-23',
     price: '7,600.00', 
-    status: 'Paid',
+    state: 'Online',
   },
 ])
 
 const statuses = {
-  Paid: 'text-green-700 bg-green-50 ring-green-600/20',
-  Withdraw: 'text-gray-600 bg-gray-50 ring-gray-500/10',
-  NotYet: 'text-blue-700 bg-red-50 ring-blue-600/10',
+  Online: 'text-green-700 bg-green-300 ring-green-600/20',
+  Offline: 'text-gray-600 bg-gray-50 ring-gray-500/10',
+  error: 'text-red-700 bg-red-50 ring-red-600/10',
 }
 
 function getFormattedDate(date, format = "MMMM D, YYYY") {
@@ -201,7 +201,15 @@ async function fetchBots(){
 
 onMounted(async () => {
   try {
-    bots = await fetchBots();
+    bots.value = await fetchBots();
+    console.log(bots.value[0].id);
+    console.log(bots.value[0].name);
+    console.log(bots.value[0].version);
+    console.log(bots.value[0].views);
+    console.log(bots.value[0].createdAt);
+    console.log(bots.value[0].price);
+    console.log(bots.value[0].state);
+    
     return ;
   } catch (error) {
     errorMessage.value = error.message; // 捕获错误

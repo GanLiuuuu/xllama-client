@@ -5,7 +5,7 @@ imgSrc<template>
       <div class="lg:grid lg:grid-cols-7 lg:grid-rows-1 lg:gap-x-8 lg:gap-y-10 xl:gap-x-16">
         <!-- Product image -->
         <div class="lg:col-span-4 lg:row-end-1">
-          <img :src="product.imgSrc" alt="Sample of 30 icons with friendly and fun details in outline, filled, and brand color styles."
+          <img :src="product.imgSrc" alt="error"
             class="aspect-[4/3] w-full rounded-lg bg-gray-100 object-cover" />
         </div>
 
@@ -17,7 +17,7 @@ imgSrc<template>
 
               <h2 id="information-heading" class="sr-only">Product information</h2>
               <p class="mt-2 text-sm text-gray-500">
-                Version {{ product.version }} (Updated {{ getFormattedDate(product.created_at) }})
+                Version {{ product.version }} (Updated {{ getFormattedDate(product.createdAt) }})
               </p>
               <p class="mt-2 text-sm text-gray-500">
                 <span class="font-bold text-gray-900">{{ product.views }}</span> views
@@ -48,7 +48,7 @@ imgSrc<template>
             <h3 class="text-sm font-medium text-gray-900">Highlights</h3>
             <div class="mt-4">
               <ul role="list" class="list-disc space-y-1 pl-5 text-sm/6 text-gray-500 marker:text-gray-300">
-                <li v-for="highlight in product.highlights" :key="highlight" class="pl-2">{{ highlight }}</li>
+                <li v-for="highlight in product.highlight" :key="highlight" class="pl-2">{{ highlight }}</li>
               </ul>
             </div>
           </div>
@@ -117,12 +117,12 @@ imgSrc<template>
                 <div v-for="(review, reviewIdx) in reviews" :key="review.id"
                   class="flex space-x-4 text-sm text-gray-500">
                   <div class="flex-none py-10">
-                    <img :src="review.avatarSrc" alt="" class="size-10 rounded-full bg-gray-100" />
+                    <img :src="review.avatarUrl" alt="" class="size-10 rounded-full bg-gray-100" />
                   </div>
                   <div :class="[reviewIdx === 0 ? '' : 'border-t border-gray-200', 'py-10']">
                     <h3 class="font-medium text-gray-900">{{ review.user }}</h3>
                     <p>
-                      {{ getFormattedDate(review.created_at) }}
+                      {{ getFormattedDate(review.createdAt) }}
                     </p>
 
                     <div class="mt-4 flex items-center">
@@ -176,12 +176,12 @@ const errorMessage = ref(null); // 错误消息
 const product = ref({
   name: 'Application UI Icon Pack',
   version: '1.0',
-  created_at: '2024-05-06',
+  createdAt: '2024-05-06',
   price: '220',
   views: '1,200',
   description:
     'The Application UI Icon Pack comes with over 200 icons in 3 styles: outline, filled, and branded. This playful icon pack is tailored for complex application user interfaces with a friendly and legible look.',
-  highlights: [
+  highlight: [
     '200+ SVG icons in 3 unique styles',
     'Compatible with Figma, Sketch, and Adobe XD',
     'Drawn on 24 x 24 pixel grid',
@@ -195,9 +195,9 @@ const reviews = ref([
       content: `
           <p>This icon pack is just what I need for my latest project. There's an icon for just about anything I could ever need. Love the playful look!</p>
         `,
-      created_at: '2021-07-16',
+      createdAt: '2021-07-16',
       user: 'Emily Selman',
-      avatarSrc:
+      avatarUrl:
         'https://images.unsplash.com/photo-1502685104226-ee32379fefbe?ixlib=rb-=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=8&w=256&h=256&q=80',
     },
     {
@@ -206,9 +206,9 @@ const reviews = ref([
       content: `
           <p>Blown away by how polished this icon pack is. Everything looks so consistent and each SVG is optimized out of the box so I can use it directly with confidence. It would take me several hours to create a single icon this good, so it's a steal at this price.</p>
         `,
-      created_at: '2021-07-12',
+      createdAt: '2021-07-12',
       user: 'Hector Gibbons',
-      avatarSrc:
+      avatarUrl:
         'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?ixlib=rb-=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=8&w=256&h=256&q=80',
     },
   ]
@@ -232,6 +232,7 @@ async function fetchBotDetail(id) {
       params: { id }
     }
     ); // 发送 GET 请求
+    response.data.highlight = response.data.highlight.split(';'); 
     return response.data; // 返回数据
   } catch (error) {
     throw new Error(error.response?.data?.message || 'Failed to fetch bot details');
@@ -272,13 +273,14 @@ async function fetchFAQs(id) {
 }
 
 onMounted(async () => {
-  const name = route.params.name; // 获取路由中的动态参数
-  const i = name.query.id; // 获取查询参数id;
+  const name = route.params.botName; // 获取路由中的动态参数
+  const id = route.query.id; // 获取查询参数id;
   try {
     product.value = await fetchBotDetail(id); // 加载数据
     if (!product.value) {
       throw new Error('Bot not found'); // 如果 id 无效，抛出错误
     }
+    console.log(product.value.highlight);
     reviews.value = await fetchBotReviews(id); // 加载 reviews 数据
     average.value = await fetchAverageRating(id); // 加载 reviews 数据
     faqs.value = await fetchFAQs(id); // 加载 reviews 数据

@@ -1552,6 +1552,37 @@ select {
   background-color: rgb(255 255 255 / 0.05);
 }
 
+.bg-green-400 {
+  --tw-bg-opacity: 1;
+  background-color: rgb(74 222 128 / var(--tw-bg-opacity, 1));
+}
+
+.bg-green-200 {
+  --tw-bg-opacity: 1;
+  background-color: rgb(187 247 208 / var(--tw-bg-opacity, 1));
+}
+
+.bg-green-300 {
+  --tw-bg-opacity: 1;
+  background-color: rgb(134 239 172 / var(--tw-bg-opacity, 1));
+}
+
+.bg-green-200\/90 {
+  background-color: rgb(187 247 208 / 0.9);
+}
+
+.bg-green-500\/10 {
+  background-color: rgb(34 197 94 / 0.1);
+}
+
+.bg-green-200\/10 {
+  background-color: rgb(187 247 208 / 0.1);
+}
+
+.bg-green-400\/90 {
+  background-color: rgb(74 222 128 / 0.9);
+}
+
 .bg-gradient-to-r {
   background-image: linear-gradient(to right, var(--tw-gradient-stops));
 }
@@ -1809,11 +1840,6 @@ select {
   letter-spacing: -0.025em;
 }
 
-.text-blue-700 {
-  --tw-text-opacity: 1;
-  color: rgb(29 78 216 / var(--tw-text-opacity, 1));
-}
-
 .text-gray-300 {
   --tw-text-opacity: 1;
   color: rgb(209 213 219 / var(--tw-text-opacity, 1));
@@ -1872,6 +1898,11 @@ select {
 .text-red-400 {
   --tw-text-opacity: 1;
   color: rgb(248 113 113 / var(--tw-text-opacity, 1));
+}
+
+.text-red-700 {
+  --tw-text-opacity: 1;
+  color: rgb(185 28 28 / var(--tw-text-opacity, 1));
 }
 
 .text-rose-400 {
@@ -1942,10 +1973,6 @@ select {
   --tw-ring-inset: inset;
 }
 
-.ring-blue-600\/10 {
-  --tw-ring-color: rgb(37 99 235 / 0.1);
-}
-
 .ring-gray-300 {
   --tw-ring-opacity: 1;
   --tw-ring-color: rgb(209 213 219 / var(--tw-ring-opacity, 1));
@@ -1983,12 +2010,32 @@ select {
   --tw-ring-color: rgb(248 113 113 / 0.3);
 }
 
+.ring-red-600\/10 {
+  --tw-ring-color: rgb(220 38 38 / 0.1);
+}
+
 .ring-white\/10 {
   --tw-ring-color: rgb(255 255 255 / 0.1);
 }
 
 .ring-white\/5 {
   --tw-ring-color: rgb(255 255 255 / 0.05);
+}
+
+.ring-green-400\/10 {
+  --tw-ring-color: rgb(74 222 128 / 0.1);
+}
+
+.ring-green-500\/10 {
+  --tw-ring-color: rgb(34 197 94 / 0.1);
+}
+
+.ring-green-600\/10 {
+  --tw-ring-color: rgb(22 163 74 / 0.1);
+}
+
+.ring-green-600\/90 {
+  --tw-ring-color: rgb(22 163 74 / 0.9);
 }
 
 .blur-3xl {

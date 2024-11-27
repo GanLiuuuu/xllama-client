@@ -40,28 +40,28 @@ const RecentlyUseList = ref(
         {
         id: 1,
         projectName: 'Bot 1',
-        status: 'online',
+        status: 'Online',
         last_use_time: '2024-11-27 14:13:10',
         href: '#',
         },
         {
         id: 2,
         projectName: 'Bot 2',
-        status: 'online',
+        status: 'Online',
         last_use_time: '2024-11-27 13:00:00',
         href: '#',
         },
         {
         id: 3,
         projectName: 'Bot 3',
-        status: 'online',
+        status: 'Online',
         last_use_time: '2024-11-26 12:00:00',
         href: '#',
         },
         {
         id: 4,
         projectName: 'Bot 4',
-        status: 'offline',
+        status: 'Offline',
         last_use_time: '2024-11-20 12:00:00',
         href: '#',
         },
@@ -75,13 +75,13 @@ const RecentlyUseList = ref(
     ]
 )
 const statuses = {
-    offline: 'text-gray-500 bg-gray-100/10',
-    online: 'text-green-400 bg-green-400/10',
+    Offline: 'text-gray-500 bg-gray-100/10',
+    Online: 'text-green-400 bg-green-400/10',
     error: 'text-rose-400 bg-rose-400/10',
 }
 const statuses_tags = {
-    offline: 'text-gray-400 bg-gray-400/10 ring-gray-400/20',
-    online: 'text-green-400 bg-green-400/10 ring-green-400/30',
+    Offline: 'text-gray-400 bg-gray-400/10 ring-gray-400/20',
+    Online: 'text-green-400 bg-green-400/10 ring-green-400/30',
     error: 'text-red-400 bg-red-400/10 ring-red-400/30',
 }
 
@@ -107,6 +107,7 @@ function getLastUseTime(bot) {
 
 async function fetchRecentUseBots(userEmail) {
   try {
+    console.log(userEmail);
     const response = await axios.get(`/bots/getRecentUseBots`, {
       params: { userEmail }
     }
@@ -119,7 +120,7 @@ async function fetchRecentUseBots(userEmail) {
 
 onMounted(async () => {
   try {
-    RecentlyUseList = await fetchRecentUseBots(store.state.user.email); // 加载数据
+    RecentlyUseList.value = await fetchRecentUseBots(store.state.user.email); // 加载数据
     return true; // 成功加载
   } catch (error) {
     errorMessage.value = error.message; // 捕获错误
