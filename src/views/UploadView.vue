@@ -29,16 +29,6 @@
                     </div>
                 </div>
 
-                <!-- Price -->
-                <div>
-                    <label for="price" class="block text-sm/6 font-bold text-white">Price ($)</label>
-                    <div class="mt-2">
-                        <input id="price" v-model="product.price" name="price" type="number" min="0" step="0.01"
-                            autocomplete="off" required
-                            class="block w-full rounded-md border-0 bg-white/5 py-1.5 text-white shadow-sm ring-1 ring-inset ring-white/10 focus:ring-2 focus:ring-inset focus:ring-indigo-500 sm:text-sm/6" />
-                    </div>
-                </div>
-
                 <!-- Description -->
                 <div>
                     <label for="description" class="block text-sm/6 font-bold text-white">Description</label>
@@ -113,7 +103,6 @@ export default {
                 name: '',
                 version: '',
                 releaseDate: '',
-                price: '',
                 highlights: '',
                 description: '',
             },
@@ -150,12 +139,6 @@ export default {
             const versionPattern = /^\d+\.\d+$/; // 匹配 x.x 格式
             if (!versionPattern.test(this.product.version)) {
                 alert('Version must be in the format x.x (e.g., 1.0)');
-                return;
-            }
-
-            // 校验 Price
-            if (!this.product.price || parseFloat(this.product.price) <= 0) {
-                alert('Price must be a positive number.');
                 return;
             }
 
@@ -225,7 +208,6 @@ export default {
                 name: this.product.name,
                 version: this.product.version,
                 releaseDate: this.product.releaseDate,
-                price: parseFloat(this.product.price),
                 highlights: this.product.highlights,
                 description: this.product.description
             };

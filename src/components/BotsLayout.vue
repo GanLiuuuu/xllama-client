@@ -1,7 +1,7 @@
 <template>
-  <div class="bg-black" style="padding: 40px;">
+  <div class="bg-transparent" style="padding: 40px;">
     <ul role="list" class="grid grid-cols-1 gap-x-6 gap-y-8 lg:grid-cols-3 xl:gap-x-8">
-      <li v-for="bot in bots" :key="bot.id" class="overflow-hidden rounded-xl border border-gray-200">
+      <li v-for="bot in bots" :key="bot.id" class="overflow-hidden rounded-xl border border-gray-200 bg-black">
         <div class="flex items-center gap-x-4 border-b border-gray-900/5 bg-gray-50 p-6">
           <div class="text-sm/6 font-medium text-gray-900">{{ bot.name }}</div>
           <Menu as="div" class="relative ml-auto">
@@ -96,6 +96,87 @@ const bots = ref([
     price: '7,600.00', 
     status: 'Paid',
   },
+  {
+    id: 5,
+    name: 'Llama',
+    version: '1.0',
+    views: '789',
+    created_at:'2023-01-23',
+    price: '7,600.00', 
+    status: 'Paid',
+  },
+  {
+    id: 6,
+    name: 'Llama',
+    version: '1.0',
+    views: '789',
+    created_at:'2023-01-23',
+    price: '7,600.00', 
+    status: 'Paid',
+  },
+  {
+    id: 7,
+    name: 'Llama',
+    version: '1.0',
+    views: '789',
+    created_at:'2023-01-23',
+    price: '7,600.00', 
+    status: 'Paid',
+  },
+  {
+    id: 8,
+    name: 'Llama',
+    version: '1.0',
+    views: '789',
+    created_at:'2023-01-23',
+    price: '7,600.00', 
+    status: 'Paid',
+  },
+  {
+    id: 9,
+    name: 'Llama',
+    version: '1.0',
+    views: '789',
+    created_at:'2023-01-23',
+    price: '7,600.00', 
+    status: 'Paid',
+  },
+  {
+    id: 10,
+    name: 'Llama',
+    version: '1.0',
+    views: '789',
+    created_at:'2023-01-23',
+    price: '7,600.00', 
+    status: 'Paid',
+  },
+  {
+    id: 11,
+    name: 'Llama',
+    version: '1.0',
+    views: '789',
+    created_at:'2023-01-23',
+    price: '7,600.00', 
+    status: 'Paid',
+  },
+  {
+    id: 12,
+    name: 'Llama',
+    version: '1.0',
+    views: '789',
+    created_at:'2023-01-23',
+    price: '7,600.00', 
+    status: 'Paid',
+  },
+  {
+    id: 13,
+    name: 'Llama',
+    version: '1.0',
+    views: '789',
+    created_at:'2023-01-23',
+    price: '7,600.00', 
+    status: 'Paid',
+  },
 ])
 
 const statuses = {
@@ -114,18 +195,18 @@ async function fetchBots(){
     const response = await axios.get('/bots/showall');
     return response.data;
   } catch (error) {
-    throw new Error(error.response?.data?.message || 'Failed to fetch bot reviews');
+    throw new Error(error.response?.data?.message || 'Failed to fetch bot lists');
   }
 }
 
 onMounted(async () => {
   try {
     bots = await fetchBots();
-    return response.data;
+    return ;
   } catch (error) {
     errorMessage.value = error.message; // 捕获错误
   } finally {
-    loading.value = false;
+    isLoading.value = false; // 完成加载
   }
 })  
 

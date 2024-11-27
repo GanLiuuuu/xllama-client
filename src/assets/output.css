@@ -897,6 +897,10 @@ select {
   margin-bottom: -1px;
 }
 
+.mb-2 {
+  margin-bottom: 0.5rem;
+}
+
 .ml-auto {
   margin-left: auto;
 }
@@ -1518,6 +1522,10 @@ select {
   background-color: rgb(79 70 229 / var(--tw-bg-opacity, 1));
 }
 
+.bg-red-400\/10 {
+  background-color: rgb(248 113 113 / 0.1);
+}
+
 .bg-red-50 {
   --tw-bg-opacity: 1;
   background-color: rgb(254 242 242 / var(--tw-bg-opacity, 1));
@@ -1861,6 +1869,11 @@ select {
   color: rgb(67 56 202 / var(--tw-text-opacity, 1));
 }
 
+.text-red-400 {
+  --tw-text-opacity: 1;
+  color: rgb(248 113 113 / var(--tw-text-opacity, 1));
+}
+
 .text-rose-400 {
   --tw-text-opacity: 1;
   color: rgb(251 113 133 / var(--tw-text-opacity, 1));
@@ -1954,12 +1967,20 @@ select {
   --tw-ring-color: rgb(17 24 39 / 0.05);
 }
 
+.ring-green-400\/30 {
+  --tw-ring-color: rgb(74 222 128 / 0.3);
+}
+
 .ring-green-600\/20 {
   --tw-ring-color: rgb(22 163 74 / 0.2);
 }
 
 .ring-indigo-400\/30 {
   --tw-ring-color: rgb(129 140 248 / 0.3);
+}
+
+.ring-red-400\/30 {
+  --tw-ring-color: rgb(248 113 113 / 0.3);
 }
 
 .ring-white\/10 {
@@ -1972,6 +1993,10 @@ select {
 
 .blur-3xl {
   --tw-blur: blur(64px);
+  filter: var(--tw-blur) var(--tw-brightness) var(--tw-contrast) var(--tw-grayscale) var(--tw-hue-rotate) var(--tw-invert) var(--tw-saturate) var(--tw-sepia) var(--tw-drop-shadow);
+}
+
+.filter {
   filter: var(--tw-blur) var(--tw-brightness) var(--tw-contrast) var(--tw-grayscale) var(--tw-hue-rotate) var(--tw-invert) var(--tw-saturate) var(--tw-sepia) var(--tw-drop-shadow);
 }
 
@@ -2261,6 +2286,10 @@ select {
 
   .sm\:w-full {
     width: 100%;
+  }
+
+  .sm\:max-w-lg {
+    max-width: 32rem;
   }
 
   .sm\:max-w-sm {
@@ -2610,67 +2639,7 @@ select {
   }
 }
 
-.\[\&\>\:first-child\]\:mt-0>:first-child {
-  margin-top: 0px;
-}
-
 .\[\&_\*\]\:text-black * {
   --tw-text-opacity: 1;
   color: rgb(0 0 0 / var(--tw-text-opacity, 1));
-}
-
-.\[\&_h4\]\:mt-5 h4 {
-  margin-top: 1.25rem;
-}
-
-.\[\&_h4\]\:font-medium h4 {
-  font-weight: 500;
-}
-
-.\[\&_h4\]\:text-gray-900 h4 {
-  --tw-text-opacity: 1;
-  color: rgb(17 24 39 / var(--tw-text-opacity, 1));
-}
-
-.\[\&_li\:\:marker\]\:text-gray-300 li::marker {
-  --tw-text-opacity: 1;
-  color: rgb(209 213 219 / var(--tw-text-opacity, 1));
-}
-
-.\[\&_li\]\:pl-2 li {
-  padding-left: 0.5rem;
-}
-
-.\[\&_p\]\:my-2 p {
-  margin-top: 0.5rem;
-  margin-bottom: 0.5rem;
-}
-
-.\[\&_p\]\:text-sm\/6 p {
-  font-size: 0.875rem;
-  line-height: 1.5rem;
-}
-
-.\[\&_ul\]\:my-4 ul {
-  margin-top: 1rem;
-  margin-bottom: 1rem;
-}
-
-.\[\&_ul\]\:list-disc ul {
-  list-style-type: disc;
-}
-
-.\[\&_ul\]\:space-y-1 ul > :not([hidden]) ~ :not([hidden]) {
-  --tw-space-y-reverse: 0;
-  margin-top: calc(0.25rem * calc(1 - var(--tw-space-y-reverse)));
-  margin-bottom: calc(0.25rem * var(--tw-space-y-reverse));
-}
-
-.\[\&_ul\]\:pl-5 ul {
-  padding-left: 1.25rem;
-}
-
-.\[\&_ul\]\:text-sm\/6 ul {
-  font-size: 0.875rem;
-  line-height: 1.5rem;
 }

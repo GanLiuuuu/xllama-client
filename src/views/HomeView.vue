@@ -32,7 +32,7 @@
             <li class="-mx-6 mt-auto">
               <a href="#"
                 class="flex items-center gap-x-4 px-6 py-3 text-sm/6 font-semibold text-white hover:bg-gray-800">
-                <img class="size-8 rounded-full bg-gray-800" src=user.avatarUrl alt="用户头像" />
+                <img class="size-8 rounded-full bg-gray-800" :src="user.avatarUrl" alt="用户头像" />
                 <span class="sr-only">Your profile</span>
                 <span aria-hidden="true">{{ user.username }}</span>
               </a>
@@ -178,6 +178,10 @@
         <div v-if="currentNavItem == 'Discover'">
           <Discover />
         </div>
+        <div v-if="currentNavItem == 'Recently'">
+          <!-- Recently -->
+          <Recently />
+        </div>
         <div v-if="currentNavItem == 'Chat'">
           <Chat />
         </div>
@@ -192,6 +196,7 @@
 <script setup>
 import Chat from './Chat.vue'
 import Discover from './DiscoverView.vue'
+import Recently from './RecentlyView.vue'
 import EditForm from '../components/EditForm.vue';
 import { ref } from 'vue'
 import {
@@ -199,12 +204,14 @@ import {
   HomeIcon,
   ServerIcon,
   SignalIcon,
+  ClockIcon
 } from '@heroicons/vue/24/outline'
 
 const navigation = ref([
   { name: 'Home', href: '#', icon: HomeIcon, current: true },
   { name: 'Deployments', href: '#', icon: ServerIcon, current: false },
-  { name: 'Discover', href: '#', icon: SignalIcon, current: false }
+  { name: 'Discover', href: '#', icon: SignalIcon, current: false },
+  { name: 'Recently', href: '#', icon: ClockIcon, current: false },
 ]);
 
 const conversations = [

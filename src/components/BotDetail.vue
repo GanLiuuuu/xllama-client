@@ -256,7 +256,7 @@ async function fetchAverageRating(id) {
     }); // 请求 bot 的 reviews 信息
     return response.data;
   } catch (error) {
-    throw new Error(error.response?.data?.message || 'Failed to fetch bot reviews');
+    throw new Error(error.response?.data?.message || 'Failed to fetch bot average rating');
   }
 }
 
@@ -267,7 +267,7 @@ async function fetchFAQs(id) {
     }); // 请求 bot 的 reviews 信息
     return response.data;
   } catch (error) {
-    throw new Error(error.response?.data?.message || 'Failed to fetch bot reviews');
+    throw new Error(error.response?.data?.message || 'Failed to fetch bot FAQs');
   }
 }
 
@@ -276,7 +276,7 @@ onMounted(async () => {
   const i = name.query.id; // 获取查询参数id;
   try {
     product.value = await fetchBotDetail(id); // 加载数据
-    if (!botDetail.value) {
+    if (!product.value) {
       throw new Error('Bot not found'); // 如果 id 无效，抛出错误
     }
     reviews.value = await fetchBotReviews(id); // 加载 reviews 数据
