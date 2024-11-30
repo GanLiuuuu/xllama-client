@@ -329,7 +329,7 @@ export default {
       if (this.comment && this.rating) {
         try {
           await axios.post(`/bots/addReview`, {
-            user: this.user.name,
+            user: this.user.email,
             rating: this.rating,
             content: this.comment,
           });
