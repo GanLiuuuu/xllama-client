@@ -42,7 +42,10 @@ const router = createRouter({
 			props: route => ({
 			  email: decodeURIComponent(route.params.email), // 解码邮箱传入组件
 			}),
-		  },
+		  },{
+			path: '/upload',
+			component: () => import('../views/UploadView.vue')
+		}
 	],
 })
 
