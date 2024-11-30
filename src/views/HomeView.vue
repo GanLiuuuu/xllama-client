@@ -151,56 +151,55 @@
           <div v-if="currentSubNavItem == 'Overview'">
             <div
               class="flex flex-col items-start justify-between gap-x-8 gap-y-4 bg-gray-700/10 px-4 py-4 sm:flex-row sm:items-center sm:px-6 lg:px-8">
-              <div>
+              <div class="rounded-lg bg-gray-800/50 p-4 w-full">
+
                 <div class="flex items-center gap-x-3">
                   <h1 class="flex gap-x-3 text-base/7">
-                    <span class="font-semibold text-white">📝 Self introduction</span>
+                    <span class="font-semibold text-white">Self introduction</span>
                     <span class="text-gray-600"></span>
 
                   </h1>
                 </div>
+
                 <div class="flex items-center gap-x-3">
                   <p class="flex gap-x-3 text-base/7">
-                    <span class="font-text text-white">{{ user.bio }}</span>
+                    <span class="font-text text-white">{{ user.about }}</span>
                     <span class="text-gray-600"></span>
-
                   </p>
                 </div>
+
               </div>
 
+              <br>
+          </div>
 
+            <div class="mt-6">
+              <h2 class="text-lg font-semibold text-white">📢 Reviews</h2>
+              <div v-if="reviews.length" class="mt-4 space-y-4 bg-gray-800 p-4 rounded-lg shadow-lg">
+                <!-- 单条评论卡片 -->
+                <div v-for="review in reviews" :key="review.reviewDate" class="review-card border-b border-gray-700 pb-4">
+                  <!-- 评论者信息 -->
+                  <div class="review-header flex items-center justify-between">
+                    <p class="text-sm font-bold text-indigo-400">{{ review.reviewerName }}</p>
+                    <p class="text-xs text-gray-500">{{getFormattedDate(review.reviewDate)}}</p>
+                  </div>
 
-              <div class="mt-6">
-                <h2 class="text-lg font-semibold text-white">📢 Reviews</h2>
-                <div v-if="reviews.length" class="mt-4 space-y-4 bg-gray-800 p-4 rounded-lg shadow-lg">
-                  <!-- 单条评论卡片 -->
-                  <div v-for="review in reviews" :key="review.reviewDate" class="review-card border-b border-gray-700 pb-4">
-                    <!-- 评论者信息 -->
-                    <div class="review-header flex items-center justify-between">
-                      <p class="text-sm font-bold text-indigo-400">{{ review.reviewerName }}</p>
-                      <p class="text-xs text-gray-500">{{ formatDate(review.reviewDate) }}</p>
-                    </div>
+                  <!-- 评论内容 -->
+                  <p class="mt-2 text-gray-300">{{ review.reviewText }}</p>
 
-                    <!-- 评论内容 -->
-                    <p class="mt-2 text-gray-300">{{ review.reviewText }}</p>
-
-                    <!-- 星星评分 -->
-                    <div class="review-rating mt-2 flex items-center">
-                      <span class="text-sm font-medium text-gray-400">Rating:</span>
-                      <span class="rating-stars ml-2 text-yellow-400 text-lg">
+                  <!-- 星星评分 -->
+                  <div class="review-rating mt-2 flex items-center">
+                    <span class="text-sm font-medium text-gray-400">Ratixng:</span>
+                    <span class="rating-stars ml-2 text-yellow-400 text-lg">
                         <span v-for="n in review.rating" :key="n">🌟</span>
                       </span>
-                    </div>
                   </div>
                 </div>
-                <p v-else class="text-gray-500">No reviews available.</p>
               </div>
-
-
+              <p v-else class="text-gray-500">No reviews available.</p>
             </div>
-          </div>
-          <div v-if="currentSubNavItem == 'My Bots'">
-            <!--TODO: -->
+
+
           </div>
 
           <!--setting-->
@@ -232,6 +231,7 @@
 
 
 <script setup>
+import dayjs from 'dayjs';
 import Chat from './Chat.vue'
 import Discover from './DiscoverView.vue'
 import Recently from './RecentlyView.vue'
@@ -249,6 +249,9 @@ import {
 import axios from "axios";
 
 
+function getFormattedDate(date, format = "YYYY-MM-DD HH:mm:ss") {
+  return date ? dayjs(date).format(format) : null;
+}
 
 const navigation = ref([
   { name: 'Home', href: '#', icon: HomeIcon, current: true },
@@ -334,7 +337,6 @@ const stats = [
 ]
 const secondaryNavigation = [
   { name: 'Overview', href: '#', current: true },
-  { name: 'My Bots', href: '#', current: false },
   { name: 'Settings', href: '#', current: false },
   { name: 'Usage stats', href: '#', current: false }
 ]
@@ -494,6 +496,7 @@ export default {
     } else {
       const email = this.$store.state.user.email;  // 从 Vuex 中获取 email
       if (email) {
+        this.$store.commit('updateEmail', email);
         this.$store.dispatch('fetchUserByEmail', email);  // 在页面加载时获取用户数据
       }
 
