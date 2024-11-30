@@ -150,7 +150,7 @@
               <!-- 评论者信息 -->
               <div class="review-header flex items-center justify-between">
                 <p class="text-sm font-bold text-indigo-400">{{ review.reviewerName }}</p>
-                <p class="text-xs text-gray-500">{{ formatDate(review.reviewDate) }}</p>
+                <p class="text-xs text-gray-500">{{ review.reviewDate.slice(0,10)+" "+review.reviewDate.slice(11,19) }}</p>
               </div>
 
               <!-- 评论内容 -->
