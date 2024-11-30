@@ -55,17 +55,17 @@
       <!--self intro-->>
       <div v-if="currentSubNavItem == 'Overview' ">
         <div class="flex flex-col items-start justify-between gap-x-8 gap-y-4 bg-gray-700/10 px-4 py-4 sm:flex-row sm:items-center sm:px-6 lg:px-8">
-          <div>
+          <div class="rounded-lg bg-gray-1000/50 p-4 w-full">
             <div class="flex items-center gap-x-3">
               <h1 class="flex gap-x-3 text-base/7">
-                <span class="font-semibold text-white">📝 Self introduction</span>
+                <span class="font-semibold text-white">Self introduction</span>
                 <span class="text-gray-600"></span>
 
               </h1>
             </div>
             <div class="flex items-center gap-x-3">
               <p class="flex gap-x-3 text-base/7">
-                <span class="font-text text-white">{{ user.bio }}</span>
+                <span class="font-text text-white">{{ user.about }}</span>
                 <span class="text-gray-600"></span>
 
               </p>
@@ -175,7 +175,7 @@
 
       <!--setting-->
       <div v-if="currentSubNavItem == 'Settings' " style="padding: 40px">
-        <EditForm2/>
+        <EditForm2 :email="email" />
       </div>
 
     </div>
@@ -222,7 +222,6 @@ const stats = [
 ]
 const secondaryNavigation = [
   { name: 'Overview', href: '#', current: true },
-  { name: 'My Bots', href: '#', current: false },
   { name: 'Settings', href: '#', current: false },
 ]
 
