@@ -330,6 +330,7 @@ export default {
         try {
           await axios.post(`/bots/addReview`, {
             user: this.user.email,
+            bot: props.botId,
             rating: this.rating,
             content: this.comment,
           });
