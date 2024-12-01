@@ -23,7 +23,6 @@
             </div>
 
             <div>
-              <h3 class="sr-only">Reviews</h3>
               <div class="flex items-center">
                 <StarIcon v-for="rating in [0, 1, 2, 3, 4]" :key="rating"
                   :class="[average > rating ? 'text-yellow-400' : 'text-gray-300', 'size-5 shrink-0']"
@@ -122,10 +121,10 @@
                   <div class="flex-none py-10">
                     <img :src="review.avatarUrl" alt="" class="size-10 rounded-full bg-gray-100" />
                   </div>
-                  <div :class="[reviewIdx === 0 ? '' : 'border-t border-gray-200', 'py-10']">
+                  <div :class="[reviewIdx === 0 ? '' : 'border-t border-gray-200 w-full', 'py-10']">
                     <h3 class="font-medium text-gray-900">{{ review.user }}</h3>
                     <p>
-                      {{ getFormattedDate(review.createdAt) }}
+                      {{ getFormattedDate(review.date) }}
                     </p>
 
                     <div class="mt-4 flex items-center">
@@ -139,8 +138,9 @@
               </TabPanel>
 
               <TabPanel class="text-sm text-gray-500">
-                <h3 class="sr-only">Frequently Asked Questions</h3>
-
+                <div class="flex items-start space-x-4 -mb-10">
+                  
+                </div>
                 <dl>
                   <template v-for="faq in faqs" :key="faq.question">
                     <dt class="mt-10 font-medium text-gray-900">{{ faq.question }}</dt>
@@ -197,7 +197,7 @@ const reviews = ref([
       content: `
           <p>This icon pack is just what I need for my latest project. There's an icon for just about anything I could ever need. Love the playful look!</p>
         `,
-      createdAt: '2021-07-16',
+      date: '2021-07-16',
       user: 'Emily Selman',
       avatarUrl:
         'https://images.unsplash.com/photo-1502685104226-ee32379fefbe?ixlib=rb-=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=8&w=256&h=256&q=80',
@@ -208,7 +208,7 @@ const reviews = ref([
       content: `
           <p>Blown away by how polished this icon pack is. Everything looks so consistent and each SVG is optimized out of the box so I can use it directly with confidence. It would take me several hours to create a single icon this good, so it's a steal at this price.</p>
         `,
-      createdAt: '2021-07-12',
+      date: '2021-07-12',
       user: 'Hector Gibbons',
       avatarUrl:
         'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?ixlib=rb-=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=8&w=256&h=256&q=80',
@@ -312,6 +312,8 @@ function handleBlur() {
 </script>
 
 <script>
+import Swal from 'sweetalert2';
+
 export default {
   data() {
     return {
@@ -328,14 +330,50 @@ export default {
     async postComment() {
       if (this.comment && this.rating) {
         try {
-          await axios.post(`/bots/addReview`, {
-            user: this.user.email,
-            bot: props.botId,
-            rating: this.rating,
-            content: this.comment,
+          const formData = new FormData();
+          formData.append('user', this.user.email);
+          formData.append('bot', this.props.botId);
+          formData.append('rating', this.rating);
+          formData.append('content', this.comment);
+
+          await axios.post(`/bots/addReview`, formData, {
+            headers: {
+              'Content-Type': 'multipart/form-data'
+            }
+          }).then(() => {
+            this.comment = '';
+            this.rating = 0;
+            this.isFocused = false;
+            Swal.fire({
+              title: 'Success!',
+              html: `<p style="font-family: poppins;">Comment posted successfully!</p>`,
+              icon: 'success',
+              confirmButtonText: 'OK',
+              allowOutsideClick: false,  
+              allowEscapeKey: false
+            });
+          }).catch((error) => {
+            console.log(error.response.data);
           });
+          
+          const newReviews = await axios.get(`/bots/botReviews`, {
+            params: { id:this.props.botId },
+          }); // 重加载 reviews 数据
+          this.reviews = newReviews.data;
+          const newAverage = await axios.get(`/bots/avg`, {
+            params: { id:this.props.botId },
+          }); // 重加载 average 数据
+          this.average = newAverage.data; // 重加载 average 数据
         }
         catch (error) {
+          Swal.fire({
+            title: 'Oops!',
+            html: `<p style="font-family: poppins;">Thers's some thing wrong!</p>`,
+            icon: 'error',
+            confirmButtonText: 'OK',
+            allowOutsideClick: false,  
+            allowEscapeKey: false
+          });
           throw new Error(error.response?.data?.message || 'Failed to post comment');
         }
       }
