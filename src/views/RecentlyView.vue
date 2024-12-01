@@ -10,10 +10,10 @@
                         <div class="size-2 rounded-full bg-current" />
                     </div>
                     <h2 class="min-w-0 text-sm/6 font-semibold text-white">
-                        <a :href="bot.href" class="flex gap-x-2">
+                        <div class="flex gap-x-2">
                             <span class="whitespace-nowrap">{{ bot.projectName }}</span>
                             <span class="absolute inset-0" />
-                        </a>
+                        </div>
                     </h2>
                 </div>
                 <div class="mt-3 flex items-center gap-x-2.5 text-xs/5 text-gray-400">
@@ -42,35 +42,30 @@ const RecentlyUseList = ref(
         projectName: 'Bot 1',
         status: 'Online',
         last_use_time: '2024-11-27 14:13:10',
-        href: '#',
         },
         {
         id: 2,
         projectName: 'Bot 2',
         status: 'Online',
         last_use_time: '2024-11-27 13:00:00',
-        href: '#',
         },
         {
         id: 3,
         projectName: 'Bot 3',
         status: 'Online',
         last_use_time: '2024-11-26 12:00:00',
-        href: '#',
         },
         {
         id: 4,
         projectName: 'Bot 4',
         status: 'Offline',
         last_use_time: '2024-11-20 12:00:00',
-        href: '#',
         },
         {
         id: 5,
         projectName: 'Bot 5',
         status: 'error',
         last_use_time: '2023-11-27 12:00:00',
-        href: '#',
         },
     ]
 )
