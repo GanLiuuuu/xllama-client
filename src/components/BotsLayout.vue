@@ -49,9 +49,6 @@
             <span class="hidden md:inline-block md:h-screen md:align-middle" aria-hidden="true">&#8203;</span>
             <TransitionChild as="template" enter="ease-out duration-300" enter-from="opacity-0 translate-y-4 md:translate-y-0 md:scale-95" enter-to="opacity-100 translate-y-0 md:scale-100" leave="ease-in duration-200" leave-from="opacity-100 translate-y-0 md:scale-100" leave-to="opacity-0 translate-y-4 md:translate-y-0 md:scale-95">
               <DialogPanel class="w-full transform text-left text-base transition md:my-8 md:max-w-2xl md:px-4 lg:max-w-2xl">
-                <button type="button" class="absolute right-4 top-4 text-gray-400 hover:text-gray-500 sm:right-6 sm:top-8 md:right-6 md:top-6 lg:right-8 lg:top-8 focus:outline-none" @click="isShowBotModal = false">
-                  <XMarkIcon class="size-6" aria-hidden="true" />
-                </button>
                 <BotDetail :botId = "showBot.id"/>
               </DialogPanel>
             </TransitionChild>
@@ -66,7 +63,6 @@
 <script setup>
 import { ref, onMounted } from 'vue';
 import { Dialog, DialogPanel, TransitionChild, TransitionRoot } from '@headlessui/vue'
-import { XMarkIcon } from '@heroicons/vue/20/solid'
 import BotDetail from './BotDetail.vue';
 import axios from 'axios'
 import dayjs from 'dayjs';
@@ -205,7 +201,7 @@ const statuses = {
 }
 
 function getFormattedDate(date, format = "MMMM D, YYYY") {
-  return date ? dayjs(date).format(format) : null;
+  return date ? dayjs(date.slice(0,19)).format(format) : null;
 }
 
 

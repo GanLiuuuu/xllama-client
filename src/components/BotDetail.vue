@@ -168,7 +168,7 @@ const average = ref(4); //初始average为0
 
 
 function getFormattedDate(date, format = "MMMM D, YYYY") {
-  return date ? dayjs(date).format(format) : null;
+  return date ? dayjs(date.slice(0, 19)).format(format) : null;
 }
 
 const product = ref({

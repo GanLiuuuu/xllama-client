@@ -57,35 +57,37 @@
             </Menu>
           </header>
           <ul role="list" class="divide-y divide-white/5">
-            <li v-for="deployment in deployments" :key="deployment.id"
+            <li v-for="bot in bots" :key="bot.id"
               class="relative flex items-center space-x-4 px-4 py-4 sm:px-6 lg:px-8">
               <div class="min-w-0 flex-auto">
                 <div class="flex items-center gap-x-3">
-                  <div :class="[statuses[deployment.status], 'flex-none rounded-full p-1']">
+                  <div :class="[statuses[bot.state], 'flex-none rounded-full p-1']">
                     <div class="size-2 rounded-full bg-current" />
                   </div>
                   <h2 class="min-w-0 text-sm/6 font-semibold text-white">
-                    <a :href="deployment.href" class="flex gap-x-2">
-
-                      <span class="whitespace-nowrap">{{ deployment.projectName }}</span>
-                      <span class="absolute inset-0" />
-                    </a>
+                    <div class="flex gap-x-2">
+                      <span class="whitespace-nowrap">{{ bot.name }}</span>
+                    </div>
                   </h2>
                 </div>
                 <div class="mt-3 flex items-center gap-x-2.5 text-xs/5 text-gray-400">
-                  <p class="truncate">{{ deployment.description }}</p>
+                  <p class="truncate">{{ bot.description }}</p>
                   <svg viewBox="0 0 2 2" class="size-0.5 flex-none fill-gray-300">
                     <circle cx="1" cy="1" r="1" />
                   </svg>
-                  <p class="whitespace-nowrap">{{ deployment.statusText }}</p>
+                  <p class="whitespace-nowrap">{{ bot.statusText }}</p>
                 </div>
               </div>
+              <div>
+                <button @click="openEditingFAQ(bot)" class="mt-3 inline-flex w-full items-center justify-center rounded-3xl bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 sm:ml-3 sm:mt-0 sm:w-auto">Add FAQ</button>
+              </div>
               <div
-                :class="[environments[deployment.environment], 'flex-none rounded-full px-2 py-1 text-xs font-medium ring-1 ring-inset']">
-                {{ deployment.environment }}</div>
+                :class="[statuses_tags[bot.state], 'flex-none rounded-full px-2 py-1 text-xs font-medium ring-1 ring-inset']">
+                {{ bot.state }}</div>
               <ChevronRightIcon class="size-5 flex-none text-gray-400" aria-hidden="true" />
             </li>
           </ul>
+        
         </div>
 
           <!--Home Page-->
@@ -214,6 +216,30 @@
           <div v-if="currentNavItem == 'Discover' ">
             <Discover/>
           </div>
+
+          <div v-if="currentNavItem == 'Recommendation'">
+            <nav class="flex overflow-x-auto border-b border-white/10 py-4">
+              <ul role="list" class="flex min-w-full flex-none gap-x-6 px-4 text-sm/6 font-semibold text-gray-400 sm:px-6 lg:px-8 justify-center">
+                <li v-for="item in secondaryNavigationRecommendation" :key="item.name">
+                  <a @click="selectRecommendationSubNavItem(item)" :href="item.href"
+                    :class="item.current ? 'text-indigo-400' : ''">{{ item.name }}</a>
+                </li>
+              </ul>
+            </nav>
+            <div v-if="currentRecommendationSubNavItem == 'Latest'">
+              <RecommendBotList :constraint="currentRecommendationSubNavItem" />
+            </div>
+            <div v-if="currentRecommendationSubNavItem == 'Top-rated'">
+              <RecommendBotList :constraint="currentRecommendationSubNavItem" />
+            </div>
+            <div v-if="currentRecommendationSubNavItem == 'Most-visited'">
+              <RecommendBotList :constraint="currentRecommendationSubNavItem" />
+            </div>
+            <div v-if="currentRecommendationSubNavItem == 'You may like'">
+              <RecommendBotList :constraint="currentRecommendationSubNavItem" />
+            </div>
+          </div>            
+          
           <div v-if="currentNavItem == 'Search' ">
             <Search/>
           </div>
@@ -237,6 +263,7 @@ import Discover from './DiscoverView.vue'
 import Recently from './RecentlyView.vue'
 import EditForm from '../components/EditForm.vue';
 import Search from './SearchView.vue'
+import RecommendBotList from '../components/RecommendBotList.vue'
 import { ref } from 'vue'
 import { onMounted } from 'vue';
 import {
@@ -244,20 +271,29 @@ import {
   HomeIcon,
   ServerIcon,
   SignalIcon,
-  ClockIcon
+  ClockIcon,
+  HandThumbUpIcon
 } from '@heroicons/vue/24/outline'
 import axios from "axios";
 
+const editBotFAQ = ref(null)
+const isEditingFAQ = ref(false)
 
 function getFormattedDate(date, format = "YYYY-MM-DD HH:mm:ss") {
-  return date ? dayjs(date).format(format) : null;
+  return date ? dayjs(date.slice(0, 19)).format(format) : null;
+}
+
+const openEditingFAQ = (bot) => {
+  editBotFAQ.value = bot
+  isEditingFAQ.value = true
 }
 
 const navigation = ref([
   { name: 'Home', href: '#', icon: HomeIcon, current: true },
   { name: 'Deployments', href: '#', icon: ServerIcon, current: false },
   { name: 'Discover', href: '#', icon: SignalIcon, current: false },
-  {name: 'Search', href: '#', icon: MagnifyingGlassCircleIcon, current: false},
+  { name: 'Recommendation', href: '#', icon: HandThumbUpIcon, current: false },
+  { name: 'Search', href: '#', icon: MagnifyingGlassCircleIcon, current: false},
 ]);
 
 const conversations = [
@@ -266,6 +302,7 @@ const conversations = [
 
 const currentNavItem = ref('Home');
 const currentSubNavItem = ref('Overview');
+const currentRecommendationSubNavItem = ref('Latest');
 
 function selectNavItem(item) {
   currentNavItem.value = item.name;
@@ -281,6 +318,7 @@ function selectNavItem(item) {
     }
   });
 }
+
 function selectSubNavItem(item) {
   currentSubNavItem.value = item.name;
   item.current = true;
@@ -289,44 +327,54 @@ function selectSubNavItem(item) {
       item1.current = false;
     }
   });
-
 }
+
+function selectRecommendationSubNavItem(item) {
+  currentRecommendationSubNavItem.value = item.name;
+  item.current = true;
+  secondaryNavigationRecommendation.forEach(item1 => {
+    if (item1 !== item) {
+      item1.current = false;
+    }
+  });
+}
+
 const statuses = {
-  offline: 'text-gray-500 bg-gray-100/10',
-  online: 'text-green-400 bg-green-400/10',
-  error: 'text-rose-400 bg-rose-400/10',
+  Offline: 'text-gray-500 bg-gray-100/10',
+  Online: 'text-green-400 bg-green-400/10',
+  Error: 'text-rose-400 bg-rose-400/10',
+}
+
+const statuses_tags = {
+  Offline: 'text-gray-400 bg-gray-400/10 ring-gray-400/20',
+  Online: 'text-green-400 bg-green-400/10 ring-green-400/30',
+  Error: 'text-red-400 bg-red-400/10 ring-red-400/30',
 }
 const environments = {
   Preview: 'text-gray-400 bg-gray-400/10 ring-gray-400/20',
   Launch: 'text-indigo-400 bg-indigo-400/10 ring-indigo-400/30',
 }
-const deployments = [
+const bots = [
   {
     id: 1,
-    href: '#',
-    projectName: 'XBot_11',
-    status: 'online',
+    name: 'XBot_11',
+    state: 'Online',
     statusText: 'Initiated 1m 30s ago',
     description: 'test case file',
-    environment: 'Launch',
   },
   {
     id: 2,
-    href: '#',
-    projectName: 'untitledBot',
-    status: 'offline',
+    name: 'untitledBot',
+    state: 'Offline',
     statusText: 'Initiated 1m 32s ago',
     description: 'test case file',
-    environment: 'Preview',
   },
   {
-    id: 2,
-    href: '#',
-    projectName: 'XBot_007',
-    status: 'error',
+    id: 3,
+    name: 'XBot_007',
+    state: 'Error',
     statusText: 'Initiated 30m 32s ago',
     description: 'test case file',
-    environment: 'Preview',
   },
 ]
 const stats = [
@@ -340,6 +388,14 @@ const secondaryNavigation = [
   { name: 'Settings', href: '#', current: false },
   { name: 'Usage stats', href: '#', current: false }
 ]
+const secondaryNavigationRecommendation = [
+  { name: 'Latest', href: '#', current: true },
+  { name: 'Top-rated', href: '#', current: false },
+  { name: 'Most-visited', href: '#', current: false },
+  { name: 'You may like', href: '#', current: false }
+]
+
+
 
 </script>
 
@@ -487,7 +543,7 @@ export default {
     },
     navigateToUpload() {
       this.$router.push('/upload');
-    }
+    },
   },
   mounted() {
     const isLoggedIn = this.$store.state.user.isLoggedIn;  // 从 Vuex 中获取 email
@@ -527,6 +583,14 @@ export default {
         .catch(error => {
           console.error("Error fetching usage stats:", error);
         });
+      // 获取用户创建的bots
+      axios.get('/bots/userBots', {
+        params: { id: this.$store.state.user.email },
+      }).then(response => {
+        this.bots = response.data;
+      }).catch(error => {
+        console.error("Failed to fetch user bots:", error);
+      });
     }
   }
 };
