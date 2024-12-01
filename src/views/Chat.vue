@@ -51,18 +51,18 @@ import { Listbox, ListboxButton, ListboxLabel, ListboxOption, ListboxOptions } f
 import { CheckIcon, ChevronUpDownIcon } from '@heroicons/vue/20/solid'
 
 const people = [
-  { id: 2, name: 'GPT35' },
-  { id: 3, name: 'GPT4' },
-  
+  { id: 0, name: 'GPT35' },
+  { id: 1, name: 'GPT4' },
 ]
-
 const selected = ref(people[1])
 </script>
 
 <script>
 import { Listbox, ListboxButton, ListboxLabel, ListboxOption, ListboxOptions } from '@headlessui/vue'
 import { OpenAI } from "openai";
-import { ref } from 'vue'
+import { ref } from 'vue';
+import { botConfig } from './botConfig.js';
+import { ChatService } from './chatService.js';
 
 export default {
   data() {
@@ -76,14 +76,7 @@ export default {
       content: '',
       text: "",
       websocket: null,
-      uploadedImageUrl: "", // 用来存储图片URL
-      openai: new OpenAI({
-        apiKey: "your-api-key", 
-        basePath: "https://api.openai-proxy.org/v1",
-        dangerouslyAllowBrowser: true,
-      }),
-      
-     
+      uploadedImageUrl: "", 
       
     };
   },
@@ -136,35 +129,33 @@ export default {
       return;
     }
     const messages = this.formatMessages(this.text, this.uploadedImageUrl);
-
-
-    
     this.createContent(null, 'human', this.text);
     this.websocket.send(JSON.stringify({
       messages: messages
     }));
-
     try {
-      const response = await fetch('https://api.openai-proxy.org/v1/chat/completions', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer sk-WToNIH9kKqUod68vVm7RtIM5c2Boiyi1FBS8gHDAVD7yi0Za',
-        },
-        body: JSON.stringify({
-          model: "gpt-4o", // or "gpt-4" if needed
-          messages: messages
-        })
-      });
-      console.error(response)
-      const data = await response.json();
-      const botReply = data.choices[0].message.content.trim();
+      alert(this.selected);
+      const chatService = new ChatService(this.selected.name);
+      const botReply = await chatService.sendMessage(messages);
+      // const response = await fetch('https://api.openai-proxy.org/v1/chat/completions', {
+      //   method: 'POST',
+      //   headers: {
+      //     'Content-Type': 'application/json',
+      //     'Authorization': 'Bearer sk-WToNIH9kKqUod68vVm7RtIM5c2Boiyi1FBS8gHDAVD7yi0Za',
+      //   },
+      //   body: JSON.stringify({
+      //     model: "gpt-4o", 
+      //     messages: messages
+      //   })
+      // });
+      // console.error(response)
+      // const data = await response.json();
+      // const botReply = data.choices[0].message.content.trim();
       this.createContent('gpt', null, botReply);
     } catch (error) {
       console.error("Error with OpenAI API:", error);
       this.createContent('gpt', null, "Sorry, I couldn't process that request.");
     }
-    // Reset input fields
     this.text = "";
     this.uploadedImageUrl = "";
   },

@@ -5,7 +5,7 @@ export const botConfig = {
       apiEndpoint: 'https://api.openai-proxy.org/v1/chat/completions',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': 'Bearer your-openai-key'
+        'Authorization': 'Bearer sk-WToNIH9kKqUod68vVm7RtIM5c2Boiyi1FBS8gHDAVD7yi0Za'
       },
       formatRequest: (messages) => ({
         model: 'gpt-3.5-turbo',
@@ -18,10 +18,10 @@ export const botConfig = {
       apiEndpoint: 'https://api.openai-proxy.org/v1/chat/completions',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': 'Bearer your-openai-key'
+        'Authorization': 'Bearer sk-WToNIH9kKqUod68vVm7RtIM5c2Boiyi1FBS8gHDAVD7yi0Za'
       },
       formatRequest: (messages) => ({
-        model: 'gpt-4',
+        model: 'gpt-4o',
         messages: messages
       })
     },
