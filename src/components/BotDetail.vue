@@ -138,9 +138,6 @@
               </TabPanel>
 
               <TabPanel class="text-sm text-gray-500">
-                <div class="flex items-start space-x-4 -mb-10">
-                  
-                </div>
                 <dl>
                   <template v-for="faq in faqs" :key="faq.question">
                     <dt class="mt-10 font-medium text-gray-900">{{ faq.question }}</dt>
