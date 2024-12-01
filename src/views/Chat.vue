@@ -184,36 +184,7 @@ export default {
     this.text = "";
     this.uploadedImageUrl = "";
   },
-    async sendTextMessage() {
-      if (!this.text) {
-        return;
-      }
-      this.createContent(null, 'human', this.text);
-      this.websocket.send(this.text);
-      try {
-        const response = await fetch('https://api.openai-proxy.org/v1/chat/completions', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': 'Bearer your-api-key',
-          },
-          body: JSON.stringify({
-            model: "gpt-3.5-turbo",
-            messages: [
-              { role: "system", content: "You are a helpful assistant." },
-              { role: "user", content: this.text }
-            ]
-          })
-        });
-        const data = await response.json();
-        const botReply = data.choices[0].message.content.trim();
-        this.createContent('gpt', null, botReply);
-      } catch (error) {
-        console.error("Error with OpenAI API:", error);
-        this.createContent('gpt', null, "Sorry, I couldn't process that request.");
-      }
-      this.text = "";
-    },
+    
     async handleFileUpload(event) {
       const file = event.target.files[0];
       if (!file) return;
