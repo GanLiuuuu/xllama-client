@@ -51,14 +51,12 @@ import { Listbox, ListboxButton, ListboxLabel, ListboxOption, ListboxOptions } f
 import { CheckIcon, ChevronUpDownIcon } from '@heroicons/vue/20/solid'
 
 const people = [
-  { id: 1, name: 'Claude' },
-  { id: 2, name: 'GPT3.5' },
+  { id: 2, name: 'GPT35' },
   { id: 3, name: 'GPT4' },
-  { id: 4, name: 'Gemini' }
   
 ]
 
-const selected = ref(people[3])
+const selected = ref(people[1])
 </script>
 
 <script>
@@ -109,58 +107,44 @@ export default {
 
       window.onbeforeunload = this.onbeforeunload;
     },
+    formatMessages(text, imageUrl) {
+      let content = [];
+      
+      if (text) {
+        content.push({
+          type: 'text',
+          text: text
+        });
+      }
+
+      if (imageUrl) {
+        content.push({
+          type: 'image_url',
+          image_url: {
+            url: imageUrl
+          }
+        });
+      }
+
+      return [{
+        role: 'user',
+        content: content
+      }];
+    },
     async sendMsg() {
-    if (!this.text && !this.uploadedImageUrl) {
+    if ((!this.text && !this.uploadedImageUrl) || !this.text) {
       return;
     }
+    const messages = this.formatMessages(this.text, this.uploadedImageUrl);
 
-    let promptContent = '';
-    let imageContent = null;
 
-    if (this.text) {
-      promptContent = this.text;
-    }
-    if (this.uploadedImageUrl) {
-      alert('ur photo is uploaded');
-      imageContent = {
-        "type": "image_url",
-        "image_url": {
-          "url": this.uploadedImageUrl
-        }
-      };
-    }
     
-    const messages_test= [
-        {
-          role: 'user', 
-          content: [ 
-            {
-              type: 'text',
-              'text': promptContent
-            },
-            {
-              type: 'image_url',
-              "image_url": {
-                "url": this.uploadedImageUrl
-              }
-            }
-          ]
-        }
-      ];
-      let msg='';
-      if(!imageContent){
-        msg = [{role: 'user', content:[{"type": "text", "text": promptContent }] }];
-      }else{
-        msg = messages_test
-      }
     this.createContent(null, 'human', this.text);
     this.websocket.send(JSON.stringify({
-      text: promptContent,
-      imageUrl: this.uploadedImageUrl
+      messages: messages
     }));
 
     try {
-      console.error(messages_test);
       const response = await fetch('https://api.openai-proxy.org/v1/chat/completions', {
         method: 'POST',
         headers: {
@@ -169,7 +153,7 @@ export default {
         },
         body: JSON.stringify({
           model: "gpt-4o", // or "gpt-4" if needed
-          messages: msg
+          messages: messages
         })
       });
       console.error(response)
@@ -185,7 +169,7 @@ export default {
     this.uploadedImageUrl = "";
   },
     
-    async handleFileUpload(event) {
+  async handleFileUpload(event) {
       const file = event.target.files[0];
       if (!file) return;
       const formData = new FormData();
