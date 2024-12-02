@@ -288,7 +288,6 @@
 
 <script setup>
 import dayjs from 'dayjs';
-import { useStore } from 'vuex'
 import Chat from './Chat.vue'
 import Discover from './DiscoverView.vue'
 import Recently from './RecentlyView.vue'
@@ -306,7 +305,6 @@ import {
 import axios from "axios";
 import { PlusIcon } from '@heroicons/vue/20/solid'
 import { useStore } from 'vuex';
-const store = useStore();
 
 function getFormattedDate(date, format = "YYYY-MM-DD HH:mm:ss") {
   return date ? dayjs(date).format(format) : null;
@@ -614,6 +612,9 @@ export default {
       if (email) {
         this.$store.commit('updateEmail', email);
         this.$store.dispatch('fetchUserByEmail', email);  // 在页面加载时获取用户数据
+        if (this.$store.state.user.userType === 'admin') {
+          this.$router.push('/Admin');
+        }
       }
 
       // 评论
