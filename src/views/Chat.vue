@@ -101,14 +101,12 @@ const models = [
 ]
 const selected = ref(models[1])
 
-// Chat state
 const text = ref('')
 const uploadedImageUrl = ref('')
 const messageHistory = ref([])
 const chatContainer = ref(null)
 const fileInput = ref(null)
 
-// Scroll to bottom of chat
 const scrollToBottom = async () => {
   await nextTick()
   if (chatContainer.value) {
@@ -116,7 +114,6 @@ const scrollToBottom = async () => {
   }
 }
 
-// Format messages for API
 const formatMessages = (text, imageUrl) => {
   let content = []
   
@@ -153,7 +150,6 @@ const addMessage = (type, content, isStreaming = false) => {
   scrollToBottom()
 }
 
-// Update last bot message
 const updateLastBotMessage = (content, isStreaming) => {
   const lastBotMessage = messageHistory.value
     .filter(m => m.type === 'bot')
@@ -172,10 +168,8 @@ const sendMsg = async () => {
     return
   }
 
-  // Add user message to history
   addMessage('human', text.value)
   
-  // Add initial bot message
   addMessage('bot', '', true)
   
   let currentContent = ''
@@ -189,6 +183,7 @@ const sendMsg = async () => {
       updateLastBotMessage(currentContent, true)
     })) {
       // Process each chunk
+      continue;
     }
     
     // Finalize message
