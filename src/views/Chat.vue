@@ -325,8 +325,7 @@ const getLastBotMessage = computed(() => {
 
 const handleSuggestionClick = (suggestion) => {
   text.value = suggestion
-  // Optionally, you can auto-send the suggestion:
-  // sendMsg()
+  
 }
 const formatMessages = (text, imageUrl) => {
   let messages = []
@@ -366,15 +365,12 @@ const formatMessages = (text, imageUrl) => {
 
   return messages
 }
-// Add clearChatHistory function
 const clearChatHistory = async () => {
   if (!store.state.currentSessionId) return;
   
   try {
-    // Call backend API to delete chat history
     await axios.delete(`/api/chat/${store.state.currentSessionId}/history`)
     
-    // Clear local message history
     messageHistory.value = []
     
   } catch (error) {
@@ -423,7 +419,6 @@ const sendMsg = async () => {
     // 特殊处理图像生成模型
     if (selected.value.type === 'image') {
       for await (const imageUrl of chatService.streamMessage(messages)) {
-        // 移除可能的 @ 前缀
         currentContent = imageUrl.startsWith('@') ? imageUrl.substring(1) : imageUrl
         updateLastBotMessage(currentContent, false)
       }
@@ -436,12 +431,10 @@ const sendMsg = async () => {
         continue;
       }
     }
-    
     await saveChatInteraction({
       request: userMessage,
       response: currentContent
     })
-    
     updateLastBotMessage(currentContent, false)
   } catch (error) {
     console.error('Error with API:', error)

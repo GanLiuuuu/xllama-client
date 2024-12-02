@@ -10,7 +10,7 @@ export const botConfig = {
     description: 'General purpose chat model with broad knowledge',
     headers: {
       'Content-Type': 'application/json',
-      'Authorization': 'Bearer sk-WToNIH9kKqUod68vVm7RtIM5c2Boiyi1FBS8gHDAVD7yi0Za'
+      'Authorization': 'Bearer sk-6Y7nQnrQPav7gv6h0Dhl6QLPdeTUvxjyDrrKhfYbb590sGl5'
     },
     formatRequest: (messages) => ({
       model: 'gpt-3.5-turbo',
@@ -35,7 +35,7 @@ export const botConfig = {
     description: 'Most capable GPT-4 model for general tasks',
     headers: {
       'Content-Type': 'application/json',
-      'Authorization': 'Bearer sk-WToNIH9kKqUod68vVm7RtIM5c2Boiyi1FBS8gHDAVD7yi0Za'
+      'Authorization': 'Bearer sk-6Y7nQnrQPav7gv6h0Dhl6QLPdeTUvxjyDrrKhfYbb590sGl5'
     },
     formatRequest: (messages) => ({
       model: 'gpt-4-turbo-preview',
@@ -60,7 +60,7 @@ export const botConfig = {
     description: 'Smaller, faster version of GPT-4',
     headers: {
       'Content-Type': 'application/json',
-      'Authorization': 'Bearer sk-WToNIH9kKqUod68vVm7RtIM5c2Boiyi1FBS8gHDAVD7yi0Za'
+      'Authorization': 'Bearer sk-6Y7nQnrQPav7gv6h0Dhl6QLPdeTUvxjyDrrKhfYbb590sGl5'
     },
     formatRequest: (messages) => ({
       model: 'gpt-4',
@@ -84,7 +84,7 @@ export const botConfig = {
     description: 'Advanced image generation model',
     headers: {
       'Content-Type': 'application/json',
-      'Authorization': 'Bearer sk-WToNIH9kKqUod68vVm7RtIM5c2Boiyi1FBS8gHDAVD7yi0Za'
+      'Authorization': 'Bearer sk-6Y7nQnrQPav7gv6h0Dhl6QLPdeTUvxjyDrrKhfYbb590sGl5'
     },
     formatRequest: (prompt) => ({
       model: "dall-e-3",
@@ -108,6 +108,10 @@ export const botConfig = {
     model: 'gpt-3.5-turbo',
     description: 'Specialized in language translation',
     systemPrompt: "You are a professional translator. Translate the input text while maintaining its original meaning and style.",
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer sk-6Y7nQnrQPav7gv6h0Dhl6QLPdeTUvxjyDrrKhfYbb590sGl5'
+    },
     formatRequest: (messages) => ({
       model: 'gpt-3.5-turbo',
       messages: [
@@ -130,6 +134,10 @@ export const botConfig = {
     model: 'gpt-4',
     description: 'Specialized in solving mathematical problems',
     systemPrompt: "You are a mathematics expert. Solve problems step by step and explain your reasoning clearly.",
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer sk-6Y7nQnrQPav7gv6h0Dhl6QLPdeTUvxjyDrrKhfYbb590sGl5'
+    },
     formatRequest: (messages) => ({
       model: 'gpt-4',
       messages: [
