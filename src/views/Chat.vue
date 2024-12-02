@@ -1,10 +1,16 @@
 <template>
 
   <div class="chat-area" style="padding: 40px">
+    <div class="flex justify-end mb-4">
+      <button 
+        @click="clearChatHistory" 
+        class="inline-flex items-center rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-600"
+      >
+        Clear Chat History
+      </button>
+    </div>
     <div style="overflow: auto; height: 550px;" ref="chatContainer">
-      <!-- Render message history -->
       <div v-for="message in messageHistory" :key="message.id" class="chat-row" :style="getRowStyle()">
-        <!-- Human message -->
         <template v-if="message.type === 'human'">
           <div class="chat-message" style="flex: 1; text-align: right; padding-right: 10px;">
             <div class="tip left" style="background-color: #f0f0f0; padding: 10px; border-radius: 8px; display: inline-block; max-width: 70%;">
@@ -148,7 +154,6 @@ const getCurrentUserId = async () => {
 onMounted(async () => {
   currentUserId.value = await getCurrentUserId()
 })
-
 // 监听 currentSessionId 的变化
 watch(
   () => store.state.currentSessionId,
@@ -233,7 +238,21 @@ const formatMessages = (text, imageUrl) => {
     content: content
   }]
 }
-
+// Add clearChatHistory function
+const clearChatHistory = async () => {
+  if (!store.state.currentSessionId) return;
+  
+  try {
+    // Call backend API to delete chat history
+    await axios.delete(`/api/chat/${store.state.currentSessionId}/history`)
+    
+    // Clear local message history
+    messageHistory.value = []
+    
+  } catch (error) {
+    console.error('Error clearing chat history:', error.response?.data || error.message)
+  }
+}
 // Add new message to history
 const addMessage = (type, content, isStreaming = false) => {
   messageHistory.value.push({
@@ -328,7 +347,6 @@ const triggerFileInput = () => {
   fileInput.value?.click()
 }
 
-// Row style computation
 const getRowStyle = () => {
   return {
     display: 'flex',
@@ -337,7 +355,6 @@ const getRowStyle = () => {
   }
 }
 
-// 修改 saveChatInteraction
 const saveChatInteraction = async (interaction) => {
   try {
     await axios.post('/api/chat/interaction', {
