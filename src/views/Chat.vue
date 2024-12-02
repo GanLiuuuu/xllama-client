@@ -110,6 +110,27 @@
         </button>
       </div>
     </div>
+
+    <div class="mt-4">
+      <div class="flex items-center">
+        <button 
+          @click="toggleChatMode" 
+          class="relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:ring-offset-2"
+          :class="[isMultiTurn ? 'bg-indigo-600' : 'bg-gray-200']"
+        >
+          <span 
+            class="pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out"
+            :class="[isMultiTurn ? 'translate-x-5' : 'translate-x-0']"
+          />
+        </button>
+        <span class="ml-3 text-sm font-medium text-gray-900">
+          {{ isMultiTurn ? 'Multi-turn Chat' : 'Single-turn QA' }}
+        </span>
+      </div>
+      <p class="mt-1 text-sm text-gray-500">
+        {{ isMultiTurn ? 'Bot will remember conversation context' : 'Each question is independent' }}
+      </p>
+    </div>
   </div>
 </template>
 
@@ -224,8 +245,20 @@ const handleSuggestionClick = (suggestion) => {
   // sendMsg()
 }
 const formatMessages = (text, imageUrl) => {
-  let content = []
+  let messages = []
   
+  // If multi-turn mode is enabled, include chat history
+  if (isMultiTurn.value) {
+    // Get last few messages for context (limiting to last 4 turns to keep context manageable)
+    const contextMessages = messageHistory.value.slice(-8).map(msg => ({
+      role: msg.type === 'human' ? 'user' : 'assistant',
+      content: msg.content
+    }))
+    messages.push(...contextMessages)
+  }
+  
+  // Add current message
+  let content = []
   if (text) {
     content.push({
       type: 'text',
@@ -242,10 +275,12 @@ const formatMessages = (text, imageUrl) => {
     })
   }
 
-  return [{
+  messages.push({
     role: 'user',
     content: content
-  }]
+  })
+
+  return messages
 }
 // Add clearChatHistory function
 const clearChatHistory = async () => {
@@ -419,5 +454,10 @@ watch(text, (newValue) => {
 const handleRefinedPrompt = (refinedPrompt) => {
   text.value = refinedPrompt
   refinedPrompts.value = []
+}
+
+const isMultiTurn = ref(true)
+const toggleChatMode = () => {
+  isMultiTurn.value = !isMultiTurn.value
 }
 </script>

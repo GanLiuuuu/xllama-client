@@ -19,6 +19,15 @@ export class ChatService {
       }
     async *streamMessage(messages, onProgress) {
       try {
+        const systemMessage = messages[0]?.role === 'system' ? [] : [{
+          role: 'system',
+          content: messages.length > 1 
+            ? 'You are a helpful assistant. Maintain conversation context and provide relevant responses based on the chat history.'
+            : 'You are a helpful assistant. Provide direct answers to questions.'
+        }]
+
+        const fullMessages = [...systemMessage, ...messages]
+
         const response = await fetch(this.config.apiEndpoint, {
           method: 'POST',
           headers: {
@@ -26,8 +35,9 @@ export class ChatService {
             'Accept': 'text/event-stream',
           },
           body: JSON.stringify({
-            ...this.config.formatRequest(messages),
-            stream: true
+            ...this.config.formatRequest(fullMessages),
+            stream: true,
+            temperature: messages.length > 1 ? 0.7 : 0.3
           })
         });
   

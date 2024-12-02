@@ -16,7 +16,11 @@ export const botConfig = {
           role: "system",
           content: "You are a helpful assistant that improves user prompts. For each user prompt, suggest 2-3 refined versions that are more specific, clearer, and likely to get better responses. Keep refined prompts concise and focused."
         }
-      ]
+      ],
+      systemMessages: {
+        singleTurn: "You are a helpful assistant. Provide direct and concise answers to questions without maintaining context from previous interactions.",
+        multiTurn: "You are a helpful assistant. Maintain conversation context and provide relevant responses based on the chat history. Feel free to reference previous messages when appropriate."
+      }
     },
     GPT4: {
       id: 3,
@@ -35,7 +39,11 @@ export const botConfig = {
           role: "system",
           content: "You are a helpful assistant that improves user prompts. For each user prompt, suggest 2-3 refined versions that are more specific, clearer, and likely to get better responses. Keep refined prompts concise and focused."
         }
-      ]
+      ],
+      systemMessages: {
+        singleTurn: "You are a helpful assistant. Provide direct and concise answers to questions without maintaining context from previous interactions.",
+        multiTurn: "You are a helpful assistant. Maintain conversation context and provide relevant responses based on the chat history. Feel free to reference previous messages when appropriate."
+      }
     },
     
   }
