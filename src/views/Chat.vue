@@ -70,30 +70,40 @@
       </div>
     </div>
 
-    <div class="mt-5 sm:flex sm:items-center">
-      <input 
-        type="text" 
-        @keyup.enter="sendMsg" 
-        v-model="text" 
-        class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm/6" 
-        placeholder="Message Assistant" 
-      />
-      <button 
-        @click="sendMsg" 
-        class="mt-3 inline-flex w-full items-center justify-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 sm:ml-3 sm:mt-0 sm:w-auto"
-      >
-        Send
-      </button>
+    <div class="mt-5">
+      <div class="mb-4">
+        <PromptSuggestions 
+          v-if="getLastBotMessage"
+          :lastBotMessage="getLastBotMessage"
+          @suggestionClick="handleSuggestionClick"
+        />
+      </div>
+       <!-- 输入框和发送按钮 -->
+       <div class="flex items-center gap-3">
+        <input 
+          type="text" 
+          @keyup.enter="sendMsg" 
+          v-model="text" 
+          class="flex-1 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm/6" 
+          placeholder="Message Assistant" 
+        />
+        <button 
+          @click="sendMsg" 
+          class="inline-flex items-center justify-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+        >
+          Send
+        </button>
+      </div>
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted, onBeforeUnmount, nextTick } from 'vue'
+import { ref, onMounted, onBeforeUnmount, nextTick, computed } from 'vue'
 import { Listbox, ListboxButton, ListboxLabel, ListboxOption, ListboxOptions } from '@headlessui/vue'
 import { CheckIcon, ChevronUpDownIcon } from '@heroicons/vue/20/solid'
 import { ChatService } from './chatService.js'
-
+import PromptSuggestions from '../components/PromptSuggestions.vue'
 // Model options
 const models = [
   { id: 0, name: 'GPT35' },
@@ -113,7 +123,17 @@ const scrollToBottom = async () => {
     chatContainer.value.scrollTop = chatContainer.value.scrollHeight
   }
 }
+// Add to your script setup section
+const getLastBotMessage = computed(() => {
+  const botMessages = messageHistory.value.filter(m => m.type === 'bot')
+  return botMessages.length > 0 ? botMessages[botMessages.length - 1].content : ''
+})
 
+const handleSuggestionClick = (suggestion) => {
+  text.value = suggestion
+  // Optionally, you can auto-send the suggestion:
+  // sendMsg()
+}
 const formatMessages = (text, imageUrl) => {
   let content = []
   
