@@ -86,4 +86,14 @@ const stats = [
   { name: 'Success rate', value: '98.5%' },
 ]
 </script>
+
+<script>
+export default {
+  mounted() {
+    if (this.$store.state.user.userType === 'regular') {
+      this.$router.push('/Home');
+    }
+  }
+}
+</script>
   

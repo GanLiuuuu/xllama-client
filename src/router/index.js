@@ -43,6 +43,10 @@ const router = createRouter({
 			  email: decodeURIComponent(route.params.email), // 解码邮箱传入组件
 			}),
 		  },{
+			path: '/admin',
+			component: () => import('../views/AdminView.vue')
+		},
+		{
 			path: '/upload',
 			component: () => import('../views/UploadView.vue')
 		}

@@ -64,7 +64,13 @@ export default {
       }).then(success => {
         if (success) {
           alert("Logged in successfully");
-          this.$router.push('/Home');  // 登录成功后跳转到个人主页
+          console.log(this.$store.state.user);
+          if (this.$store.state.user.userType === 'regular') {
+            this.$router.push('/Home');  // 登录成功后跳转到个人主页
+          }else if (this.$store.state.user.userType === 'admin') {
+            this.$router.push('/Admin');
+          }
+
         } else {
           alert("Login failed. Please check your credentials.");
         }
