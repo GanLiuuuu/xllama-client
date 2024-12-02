@@ -10,14 +10,17 @@
                         <div class="size-2 rounded-full bg-current" />
                     </div>
                     <h2 class="min-w-0 text-sm/6 font-semibold text-white">
-                        <a :href="bot.href" class="flex gap-x-2">
+                        <div class="flex gap-x-2">
                             <span class="whitespace-nowrap">{{ bot.projectName }}</span>
                             <span class="absolute inset-0" />
-                        </a>
+                        </div>
                     </h2>
                 </div>
                 <div class="mt-3 flex items-center gap-x-2.5 text-xs/5 text-gray-400">
-                    <p class="whitespace-nowrap">{{ getLastUseTime(bot) }}</p>
+                    <p class="whitespace-nowrap">Last use time:  {{ getLastUseTime(bot) }}</p>
+                </div>
+                <div class="mt-3 flex items-center gap-x-2.5 text-xs/5 text-gray-400">
+                    <p class="whitespace-nowrap">Interaction count:  {{ bot.interactionCount }} times</p>
                 </div>
             </div>
             <div :class="[statuses_tags[bot.status], 'flex-none rounded-full px-2 py-1 text-xs font-medium ring-1 ring-inset']">
@@ -31,6 +34,7 @@
 <script setup>
 import { ref, onMounted} from 'vue'
 import { useStore } from 'vuex'
+import axios from "axios";
 const store = useStore();
 const isLoading = ref(true); // 加载状态
 const errorMessage = ref(null); // 错误消息
@@ -38,39 +42,39 @@ const errorMessage = ref(null); // 错误消息
 const RecentlyUseList = ref(
     [
         {
-        id: 1,
-        projectName: 'Bot 1',
-        status: 'Online',
-        last_use_time: '2024-11-27 14:13:10',
-        href: '#',
+          id: 1,
+          projectName: 'Bot 1',
+          status: 'Online',
+          last_use_time: '2024-11-27 14:13:10',
+          interactionCount: 3,
         },
         {
-        id: 2,
-        projectName: 'Bot 2',
-        status: 'Online',
-        last_use_time: '2024-11-27 13:00:00',
-        href: '#',
+          id: 2,
+          projectName: 'Bot 2',
+          status: 'Online',
+          last_use_time: '2024-11-27 13:00:00',
+          interactionCount: 3,
         },
         {
-        id: 3,
-        projectName: 'Bot 3',
-        status: 'Online',
-        last_use_time: '2024-11-26 12:00:00',
-        href: '#',
+          id: 3,
+          projectName: 'Bot 3',
+          status: 'Online',
+          last_use_time: '2024-11-26 12:00:00',
+          interactionCount: 3,
         },
         {
-        id: 4,
-        projectName: 'Bot 4',
-        status: 'Offline',
-        last_use_time: '2024-11-20 12:00:00',
-        href: '#',
+          id: 4,
+          projectName: 'Bot 4',
+          status: 'Offline',
+          last_use_time: '2024-11-20 12:00:00',
+          interactionCount: 3,
         },
         {
-        id: 5,
-        projectName: 'Bot 5',
-        status: 'error',
-        last_use_time: '2023-11-27 12:00:00',
-        href: '#',
+          id: 5,
+          projectName: 'Bot 5',
+          status: 'error',
+          last_use_time: '2023-11-27 12:00:00',
+          interactionCount: 3,
         },
     ]
 )
@@ -87,7 +91,7 @@ const statuses_tags = {
 
 function getLastUseTime(bot) {
     const now = new Date();
-    const lastUseTime = new Date(bot.last_use_time);
+    const lastUseTime = new Date(bot.last_use_time.slice(0,19));
     const diff = now - lastUseTime;
     const diffSeconds = diff / 1000;
     if (diffSeconds < 60) {
@@ -108,10 +112,9 @@ function getLastUseTime(bot) {
 async function fetchRecentUseBots(userEmail) {
   try {
     console.log(userEmail);
-    const response = await axios.get(`/bots/getRecentUseBots`, {
-      params: { userEmail }
-    }
-    ); // 发送 GET 请求
+    const response = await axios.get(`/user/getRecentUseBots`, {
+      params: { email: userEmail }
+    }); // 发送 GET 请求
     return response.data; // 返回数据
   } catch (error) {
     throw new Error(error.response?.data?.message || 'Failed to fetch recently used bot details');

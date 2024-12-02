@@ -107,49 +107,40 @@
                 </ul>
               </nav>
 
-
-
-
               <div v-if="currentSubNavItem == 'Overview' ">
                 <!-- Heading -->
-              <div class="flex flex-col items-start justify-between gap-x-8 gap-y-4 bg-gray-700/10 px-4 py-4 sm:flex-row sm:items-center sm:px-6 lg:px-8">
-                <div>
-                  <div class="flex items-center gap-x-3">
-                    <h1 class="flex gap-x-3 text-base/7">
-                      <span class="font-semibold text-white">SUSTech</span>
-                      <span class="text-gray-600">|</span>
-                      <span class="font-semibold text-white">{{ user.username }}</span>
-                    </h1>
+                <div class="flex flex-col items-start justify-between gap-x-8 gap-y-4 bg-gray-700/10 px-4 py-4 sm:flex-row sm:items-center sm:px-6 lg:px-8">
+                  <div>
+                    <div class="flex items-center gap-x-3">
+                      <h1 class="flex gap-x-3 text-base/7">
+                        <span class="font-semibold text-white">SUSTech</span>
+                        <span class="text-gray-600">|</span>
+                        <span class="font-semibold text-white">{{ user.username }}</span>
+                      </h1>
+                    </div>
+                    <p class="mt-2 text-xs/6 text-gray-400">A student from SUSTech, enrolled 2 years ago</p>
                   </div>
-                  <p class="mt-2 text-xs/6 text-gray-400">A student from SUSTech, enrolled 2 years ago</p>
+
+                  <div
+                    class="order-first flex-none rounded-full bg-indigo-400/10 px-2 py-1 text-xs font-medium text-indigo-400 ring-1 ring-inset ring-indigo-400/30 sm:order-none">
+                    Student</div>
                 </div>
-                <div
-                  class="order-first flex-none rounded-full bg-indigo-400/10 px-2 py-1 text-xs font-medium text-indigo-400 ring-1 ring-inset ring-indigo-400/30 sm:order-none">
-                  Student</div>
-              </div>
 
-              <!-- Stats -->
-              <div class="grid grid-cols-1 bg-gray-700/10 sm:grid-cols-2 lg:grid-cols-4">
-                <div v-for="(stat, statIdx) in stats" :key="stat.name"
-                  :class="[statIdx % 2 === 1 ? 'sm:border-l' : statIdx === 2 ? 'lg:border-l' : '', 'border-t border-white/5 px-4 py-6 sm:px-6 lg:px-8']">
-                  <p class="text-sm/6 font-medium text-gray-400">{{ stat.name }}</p>
-                  <p class="mt-2 flex items-baseline gap-x-2">
-                    <span class="text-4xl font-semibold tracking-tight text-white">{{ stat.name === 'Points' ?
-                      user.points : stat.name === 'Tokens' ? user.tokens : stat.name === "Number of bots" ?
-                        Mybots.length :
-                        stat.value }}</span>
-                    <span v-if="stat.unit" class="text-sm text-gray-400">{{ stat.unit }}</span>
-                  </p>
+                <!-- Stats -->
+                <div class="grid grid-cols-1 bg-gray-700/10 sm:grid-cols-2 lg:grid-cols-4">
+                  <div v-for="(stat, statIdx) in stats" :key="stat.name"
+                    :class="[statIdx % 2 === 1 ? 'sm:border-l' : statIdx === 2 ? 'lg:border-l' : '', 'border-t border-white/5 px-4 py-6 sm:px-6 lg:px-8']">
+                    <p class="text-sm/6 font-medium text-gray-400">{{ stat.name }}</p>
+                    <p class="mt-2 flex items-baseline gap-x-2">
+                      <span class="text-4xl font-semibold tracking-tight text-white">{{ stat.name === 'Points' ?
+                        user.points : stat.name === 'Tokens' ? user.tokens : stat.name === "Number of bots" ?
+                          Mybots.length :
+                          stat.value }}</span>
+                      <span v-if="stat.unit" class="text-sm text-gray-400">{{ stat.unit }}</span>
+                    </p>
+                  </div>
                 </div>
               </div>
-
-
-
-              </div>
-
-
-
-
 
               
             </header>
@@ -174,9 +165,9 @@
                     <span class="text-gray-600"></span>
                   </p>
                 </div>
-
               </div>
-
+              <button type="button" @click="showChargeModal = true" class="rounded-md bg-white/10 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-white/20">Charge</button>
+              <button type="button" @click="showRedeemModal = true" class="rounded-md bg-white/10 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-white/20">Redeem</button>
               <br>
           </div>
 
@@ -190,10 +181,8 @@
                     <p class="text-sm font-bold text-indigo-400">{{ review.reviewerName }}</p>
                     <p class="text-xs text-gray-500">{{review.reviewDate.slice(0,10)+" "+review.reviewDate.slice(11,19)}}</p>
                   </div>
-
                   <!-- 评论内容 -->
                   <p class="mt-2 text-gray-300">{{ review.reviewText }}</p>
-
                   <!-- 星星评分 -->
                   <div class="review-rating mt-2 flex items-center">
                     <span class="text-sm font-medium text-gray-400">Ratixng:</span>
@@ -227,18 +216,79 @@
           <div v-if="currentNavItem == 'Chat'">
             <Chat/>
           </div>
+          <div v-if="currentNavItem == 'Recently'">
+          <!-- Recently -->
+          <Recently />
+        </div>
       </main>
-
-
-
-
     </div>
   </div>
+
+
+  <div>
+    <!-- Charge Modal -->
+    <div v-if="showChargeModal" class="fixed inset-0 flex items-center justify-center bg-black/50 z-50">
+      <div class="bg-gray-800 rounded-lg shadow-lg p-6 w-96">
+        <h2 class="text-lg font-semibold text-white mb-4">Charge Points</h2>
+        <p class="text-sm text-gray-400 mb-4">Enter the amount of points you want to add:</p>
+        <input
+            type="number"
+            v-model="chargeAmount"
+            class="w-full rounded-md border border-gray-700 bg-gray-900 text-gray-300 px-3 py-2 mb-4 focus:ring-indigo-400"
+            placeholder="Enter points"
+        />
+        <div class="flex justify-end gap-4">
+          <button
+              @click="showChargeModal = false"
+              class="rounded-md bg-white/10 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-white/20">
+            Cancel
+          </button>
+          <button
+              @click="confirmRecharge"
+              class="rounded-md bg-indigo-400 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500"
+          >
+            Confirm
+          </button>
+        </div>
+      </div>
+    </div>
+
+
+    <!-- Redeem Modal -->
+    <div v-if="showRedeemModal" class="fixed inset-0 flex items-center justify-center bg-black/50 z-50">
+      <div class="bg-gray-800 rounded-lg shadow-lg p-6 w-96">
+        <h2 class="text-lg font-semibold text-white mb-4">Redeem Tokens</h2>
+        <p class="text-sm text-gray-400 mb-4">Enter the number of points to redeem tokens <br>(1 point = 100 tokens):</p>
+        <input
+            type="number"
+            v-model="redeemAmount"
+            class="w-full rounded-md border border-gray-700 bg-gray-900 text-gray-300 px-3 py-2 mb-4 focus:ring-indigo-400"
+            placeholder="Enter points"
+        />
+        <div class="flex justify-end gap-4">
+          <button
+              @click="showRedeemModal = false"
+              class="rounded-md bg-white/10 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-white/20"
+          >
+            Cancel
+          </button>
+          <button
+              @click="convertPointsToTokens"
+              class="rounded-md bg-indigo-400 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500"
+          >
+            Confirm
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
 </template>
 
 
 <script setup>
 import dayjs from 'dayjs';
+import { useStore } from 'vuex'
 import Chat from './Chat.vue'
 import Discover from './DiscoverView.vue'
 import Recently from './RecentlyView.vue'
@@ -266,13 +316,19 @@ const navigation = ref([
   { name: 'Home', href: '#', icon: HomeIcon, current: true },
   { name: 'Deployments', href: '#', icon: ServerIcon, current: false },
   { name: 'Discover', href: '#', icon: SignalIcon, current: false },
-  {name: 'Search', href: '#', icon: MagnifyingGlassCircleIcon, current: false},
+  { name: 'Search', href: '#', icon: MagnifyingGlassCircleIcon, current: false},
+  { name: 'Recently', href: '#', icon: ClockIcon, current: false },
 ]);
 
 const conversations = ref([])
 
+const store = useStore();
 const currentNavItem = ref('Home');
 const currentSubNavItem = ref('Overview');
+const chargeAmount = ref('');
+const redeemAmount = ref('');
+const showChargeModal = ref(false);
+const showRedeemModal = ref(false);
 
 function selectNavItem(item) {
   currentNavItem.value = item.name;
@@ -296,8 +352,50 @@ function selectSubNavItem(item) {
       item1.current = false;
     }
   });
-
 }
+
+function confirmRecharge() {
+  if (chargeAmount.value !== '') {
+    store.dispatch('recharge', chargeAmount.value).then(success => {
+      if (success) {
+        alert(`Recharged successfully! Current points: ${store.state.user.points}`);
+      } else {
+        alert("Recharge failed.");
+      }
+    }).catch(error => {
+      console.log("An error occurred during recharge:", error);
+    });
+    showChargeModal.value = false;
+  } else {
+    alert('Please enter points to recharge');
+  }
+}
+
+function convertPointsToTokens() {
+  if (redeemAmount.value !== '') {
+    const pointsToConvert = parseInt(redeemAmount.value);
+    if (pointsToConvert <= store.state.user.points) {
+      store.dispatch('redeem', pointsToConvert).then(success => {
+        if (success) {
+          alert(`redeem successfully! Current points: ${store.state.user.points}`);
+          showRedeemModal.value = false;
+        } else {
+          alert("redeem failed.");
+        }
+
+      }).catch(error => {
+        console.log("An error occurred during recharge:", error);
+      });
+      this.closeConvertPopup();
+
+    } else {
+      alert('Insufficient points');
+    }
+  } else {
+    alert("Enter points to redeem");
+  }
+}
+
 const statuses = {
   offline: 'text-gray-500 bg-gray-100/10',
   online: 'text-green-400 bg-green-400/10',
@@ -473,26 +571,6 @@ export default {
         alert("please upload a picture");
       }
 
-    },
-    confirmRecharge() {
-      if (this.rechargeAmount !== '') {
-        this.$store.dispatch('recharge', this.rechargeAmount).then(success => {
-          if (success) {
-            alert(`Recharged successfully! Current points: ${this.user.points}`);
-          } else {
-            alert("Recharge failed.");
-          }
-        }).catch(error => {
-          console.log("An error occurred during recharge:", error);
-        });
-
-        this.closePopup();
-      } else {
-        alert('Please enter points to recharge');
-      }
-    },
-    closePopup() {
-      this.showRecharge = false;
     },
     convertPointsToTokens() {
       if (this.convertPoints !== '') {
