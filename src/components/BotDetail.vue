@@ -52,10 +52,14 @@
           </div>
 
           <div class="mt-10 grid grid-cols-1 gap-x-6 gap-y-4 sm:grid-cols-2">
-            <button type="button"
-              class="flex w-full items-center justify-center rounded-md border border-transparent bg-indigo-600 px-8 py-3 text-base font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-gray-50 col-span-2"
-              >
-              Add to My Bot List</button>
+            <button v-if="!ifSubscribed" type="button"
+              class="flex w-full items-center justify-center rounded-md border border-transparent bg-indigo-600 px-8 py-3 text-base font-medium text-white hover:bg-indigo-700 focus:outline-none col-span-2"
+              @click = subscribeBot(props.botId)>
+              Subscribe</button>
+            <button v-if="ifSubscribed" type="button"
+              class="flex w-full items-center justify-center rounded-md border border-transparent bg-gray-500 px-8 py-3 text-base font-medium text-white hover:bg-gray-600 focus:outline-none col-span-2"
+              @click = deSubscribe(props.botId)>
+              Subscribed</button>
           </div>
         </div>
 
@@ -158,14 +162,20 @@
 <script setup>
 import { StarIcon } from '@heroicons/vue/20/solid'
 import { Tab, TabGroup, TabList, TabPanel, TabPanels } from '@headlessui/vue'
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, reactive } from 'vue';
 import axios from 'axios';
 import dayjs from 'dayjs';
+import { useStore } from 'vuex';
 const isFocused = ref(false);
 const isLoading = ref(true);
 const errorMessage = ref(null);
 const average = ref(4); //初始average为0
 
+const store = useStore();
+const user = reactive( {
+  email : store.state.user.email,
+  avatarUrl: store.state.user.avatarUrl
+} );
 
 function getFormattedDate(date, format = "MMMM D, YYYY") {
   return date ? dayjs(date.slice(0, 19)).format(format) : null;
@@ -225,6 +235,8 @@ const faqs = ref([{
   }]
 ); //初始faq为空
 
+const ifSubscribed = ref(false);
+
 const props = defineProps({
   botId:{
     type: Number,
@@ -278,6 +290,18 @@ async function fetchFAQs(id) {
   }
 }
 
+async function ifSubscribedBot(email, botId) {
+  try {
+    const response = await axios.get(`/bots/ifSubscribe`, {
+      params: { email, botId },
+    }); // 请求 bot 的 reviews 信息
+    console.log(Boolean(response.data));
+    return response.data;
+  } catch (error) {
+    throw new Error(error.response?.data?.message || 'Failed to fetch subscribed info');
+  }
+}
+
 onMounted(async () => {
   try{
     product.value = await fetchBotDetail(props.botId); // 加载数据
@@ -287,6 +311,7 @@ onMounted(async () => {
     reviews.value = await fetchBotReviews(props.botId); // 加载 reviews 数据
     average.value = await fetchAverageRating(props.botId); // 加载 reviews 数据
     faqs.value = await fetchFAQs(props.botId); // 加载 reviews 数据
+    ifSubscribed.value = await ifSubscribedBot(user.email, props.botId); // 加载 subscribe 数据
   } catch (error) {
     errorMessage.value = error.message; // 捕获错误
   } finally {
@@ -304,6 +329,72 @@ function handleBlur() {
     isFocused.value = false; 
   }
 }
+
+const fetchUserBots = async () => {
+  try {
+    const email = user.email; //获取用户邮箱，此处只是一个例子，不一定可行
+    const response = await axios.get(`/bots/${email}`);
+    userBots.value = response.data;
+    console.log(userBots.value);
+  } catch (err) {
+
+  }
+};
+//购买（订阅）bot 
+const subscribeBot = async (botId) => {
+  try {
+    const email = user.email;
+    await axios.post(`/bots/${email}/${botId}`);
+    console.log("subscribe:"+botId);
+    await fetchUserBots(); // 刷新列表
+    ifSubscribed.value = await ifSubscribedBot(user.email, props.botId);
+    Swal.fire({
+      title: 'Success!',
+      html: `<p style="font-family: poppins;">This bot has been added to your list.</p>`,
+      icon: 'success',
+      confirmButtonText: 'OK',
+      allowOutsideClick: false,  
+      allowEscapeKey: false
+    })
+  } catch (err) {
+    console.log("Subscribe failed")
+  }
+};
+
+const deSubscribe = async (botId) => {
+  Swal.fire({
+    title: 'Check?',
+    html: `<p style="font-family: poppins;">Confirm unsubscription?</p>`,
+    icon: 'warning',
+    confirmButtonText: 'Yes',
+    showCancelButton: 'Cancel',
+    cancelButtonText: 'Cancel',
+    showCancelButton: true,
+    allowOutsideClick: false,  
+    allowEscapeKey: false
+  }).then(async (result) =>{
+    if(result.isConfirmed){
+      try {
+        const email = user.email;
+        await axios.delete(`/bots/${email}/${botId}`);
+        console.log("deSubscribe:"+botId);
+        await fetchUserBots(); // 刷新列表
+        ifSubscribed.value = await ifSubscribedBot(user.email, props.botId);
+        Swal.fire({
+          title: 'Success!',
+          html: `<p style="font-family: poppins;">This bot has been removed from your list.</p>`,
+          icon: 'success',
+          confirmButtonText: 'OK',
+          allowOutsideClick: false,  
+          allowEscapeKey: false
+        })
+      } catch (err) {
+        console.log("deSubscribe failed")
+      }
+    }
+  });
+};
+
 
 
 </script>
@@ -346,6 +437,7 @@ export default {
               html: `<p style="font-family: poppins;">Comment posted successfully!</p>`,
               icon: 'success',
               confirmButtonText: 'OK',
+              showCancelButton: true,
               allowOutsideClick: false,  
               allowEscapeKey: false
             });

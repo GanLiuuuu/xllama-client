@@ -87,7 +87,25 @@
               <ChevronRightIcon class="size-5 flex-none text-gray-400" aria-hidden="true" />
             </li>
           </ul>
-        
+          <TransitionRoot as="template" :show="isEditingFAQ">
+            <Dialog class="relative z-10" @close="isEditingFAQ = false">
+              <TransitionChild as="template" enter="ease-out duration-300" enter-from="opacity-0" enter-to="opacity-100" leave="ease-in duration-200" leave-from="opacity-100" leave-to="opacity-0">
+                <div class="fixed inset-0 hidden bg-gray-500/75 transition-opacity md:block" />
+              </TransitionChild>
+
+              <div class="fixed inset-0 z-10 w-screen overflow-y-auto">
+                <div class="flex min-h-full items-stretch justify-center text-center md:items-center md:px-2 lg:px-4">
+                  <!-- This element is to trick the browser into centering the modal contents. -->
+                  <span class="hidden md:inline-block md:h-screen md:align-middle" aria-hidden="true">&#8203;</span>
+                  <TransitionChild as="template" enter="ease-out duration-300" enter-from="opacity-0 translate-y-4 md:translate-y-0 md:scale-95" enter-to="opacity-100 translate-y-0 md:scale-100" leave="ease-in duration-200" leave-from="opacity-100 translate-y-0 md:scale-100" leave-to="opacity-0 translate-y-4 md:translate-y-0 md:scale-95">
+                    <DialogPanel class="flex w-full transform text-left text-base transition md:my-8 md:max-w-2xl md:px-4 lg:max-w-2xl">
+                      <AddBotFAQ :bot = "editBotFAQ"/>
+                    </DialogPanel>
+                  </TransitionChild>
+                </div>
+              </div>
+            </Dialog>
+          </TransitionRoot>
         </div>
 
           <!--Home Page-->
@@ -264,8 +282,10 @@ import Recently from './RecentlyView.vue'
 import EditForm from '../components/EditForm.vue';
 import Search from './SearchView.vue'
 import RecommendBotList from '../components/RecommendBotList.vue'
+import AddBotFAQ from '../components/AddBotFAQ.vue';
 import { ref } from 'vue'
 import { onMounted } from 'vue';
+import { Dialog, DialogPanel, TransitionChild, TransitionRoot } from '@headlessui/vue'
 import {
   FolderIcon,
   HomeIcon,
@@ -402,7 +422,6 @@ const secondaryNavigationRecommendation = [
 <script>
 
 import { MagnifyingGlassCircleIcon } from '@heroicons/vue/20/solid';
-
 
 export default {
   computed: {
