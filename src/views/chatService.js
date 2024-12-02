@@ -96,6 +96,12 @@ export class ChatService {
     }
     async refinePrompt(userPrompt) {
       try {
+        // 检查是否存在 refinePromptMessage
+        if (!this.config.refinePromptMessage || !Array.isArray(this.config.refinePromptMessage)) {
+          console.warn(`No refinePromptMessage configured for ${this.config.name}`);
+          return [];
+        }
+
         const messages = [
           ...this.config.refinePromptMessage,
           {
@@ -113,6 +119,10 @@ export class ChatService {
             max_tokens: 150
           })
         });
+
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
 
         const data = await response.json();
         const refinedPrompts = data.choices[0].message.content

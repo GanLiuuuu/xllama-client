@@ -19,7 +19,11 @@ export const botConfig = {
     systemMessages: {
       singleTurn: "You are a helpful assistant. Provide direct and concise answers to questions.",
       multiTurn: "You are a helpful assistant. Maintain conversation context and provide relevant responses."
-    }
+    },
+    refinePromptMessage: [{
+      role: "system",
+      content: "You are a helpful assistant that improves user prompts. For each user prompt, suggest 2-3 refined versions that are more specific, clearer, and likely to get better responses. Keep refined prompts concise and focused."
+    }]
   },
   GPT4: {
     id: 2,
@@ -40,7 +44,11 @@ export const botConfig = {
     systemMessages: {
       singleTurn: "You are a helpful assistant. Provide direct and concise answers to questions.",
       multiTurn: "You are a helpful assistant. Maintain conversation context and provide relevant responses."
-    }
+    },
+    refinePromptMessage: [{
+      role: "system",
+      content: "You are a helpful assistant that improves user prompts. For each user prompt, suggest 2-3 refined versions that are more specific, clearer, and likely to get better responses. Keep refined prompts concise and focused."
+    }]
   },
   GPT4_MINI: {
     id: 3,
@@ -61,7 +69,11 @@ export const botConfig = {
     systemMessages: {
       singleTurn: "You are a helpful assistant. Provide direct and concise answers to questions.",
       multiTurn: "You are a helpful assistant. Maintain conversation context and provide relevant responses."
-    }
+    },
+    refinePromptMessage: [{
+      role: "system",
+      content: "You are a helpful assistant that improves user prompts. For each user prompt, suggest 2-3 refined versions that are more specific, clearer, and likely to get better responses. Keep refined prompts concise and focused."
+    }]
   },
   DALLE3: {
     id: 4,
@@ -80,7 +92,11 @@ export const botConfig = {
       n: 1,
       size: "1024x1024"
     }),
-    handleResponse: (response) => response.data[0].url
+    handleResponse: (response) => response.data[0].url,
+    refinePromptMessage: [{
+      role: "system",
+      content: "You are a helpful assistant that improves image generation prompts. For each prompt, suggest 2-3 refined versions that are more detailed and likely to generate better images. Focus on visual details and artistic style."
+    }]
   },
   TRANSLATOR: {
     id: 5,
@@ -98,7 +114,11 @@ export const botConfig = {
         { role: 'system', content: "You are a professional translator." },
         ...messages
       ]
-    })
+    }),
+    refinePromptMessage: [{
+      role: "system",
+      content: "You are a helpful assistant that improves translation prompts. For each prompt, suggest 2-3 refined versions that are more precise about the translation requirements, including target language, tone, and context."
+    }]
   },
   MATH_SOLVER: {
     id: 6,
@@ -116,7 +136,11 @@ export const botConfig = {
         { role: 'system', content: "You are a mathematics expert." },
         ...messages
       ]
-    })
+    }),
+    refinePromptMessage: [{
+      role: "system",
+      content: "You are a helpful assistant that improves mathematical problem prompts. For each prompt, suggest 2-3 refined versions that are more precise about the mathematical concepts and desired solution approach."
+    }]
   }
 }
 
