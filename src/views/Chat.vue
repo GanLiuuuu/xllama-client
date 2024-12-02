@@ -85,8 +85,16 @@
           @suggestionClick="handleSuggestionClick"
         />
       </div>
-       <!-- 输入框和发送按钮 -->
-       <div class="flex items-center gap-3">
+      
+      <div class="mb-4">
+        <PromptRefinement
+          :refinedPrompts="refinedPrompts"
+          @select-prompt="handleRefinedPrompt"
+        />
+      </div>
+
+      <!-- 输入框和发送按钮 -->
+      <div class="flex items-center gap-3">
         <input 
           type="text" 
           @keyup.enter="sendMsg" 
@@ -114,6 +122,7 @@ import { ChatService } from './chatService.js'
 import PromptSuggestions from '../components/PromptSuggestions.vue'
 import { useStore } from 'vuex'
 import axios from "axios";
+import PromptRefinement from '../components/PromptRefinement.vue'
 
 // Model options
 const models = [
@@ -367,5 +376,48 @@ const saveChatInteraction = async (interaction) => {
   } catch (error) {
     console.error('Error saving chat interaction:', error.response?.data || error.message)
   }
+}
+
+const refinedPrompts = ref([])
+const isRefining = ref(false)
+
+// Add debounce utility
+const debounce = (fn, delay) => {
+  let timeoutId
+  return (...args) => {
+    clearTimeout(timeoutId)
+    timeoutId = setTimeout(() => fn(...args), delay)
+  }
+}
+
+// Add method to get refined prompts
+const getRefinedPrompts = debounce(async (input) => {
+  if (!input || input.length < 10 || isRefining.value) return
+  
+  isRefining.value = true
+  try {
+    const chatService = new ChatService(selected.value.name)
+    const prompts = await chatService.refinePrompt(input)
+    refinedPrompts.value = prompts
+    console.error(prompts)
+  } catch (error) {
+    console.error('Error getting refined prompts:', error)
+  } finally {
+    isRefining.value = false
+  }
+}, 1000) // 1 second delay
+
+// Add watcher for text input
+watch(text, (newValue) => {
+  if (newValue) {
+    getRefinedPrompts(newValue)
+  } else {
+    refinedPrompts.value = []
+  }
+})
+
+const handleRefinedPrompt = (refinedPrompt) => {
+  text.value = refinedPrompt
+  refinedPrompts.value = []
 }
 </script>

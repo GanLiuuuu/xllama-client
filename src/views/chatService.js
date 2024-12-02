@@ -74,4 +74,36 @@ export class ChatService {
         throw error;
       }
     }
+    async refinePrompt(userPrompt) {
+      try {
+        const messages = [
+          ...this.config.refinePromptMessage,
+          {
+            role: "user",
+            content: `Original prompt: "${userPrompt}"\n\nPlease suggest 2-3 improved versions of this prompt. Format each suggestion on a new line starting with a dash (-).`
+          }
+        ];
+
+        const response = await fetch(this.config.apiEndpoint, {
+          method: 'POST',
+          headers: this.config.headers,
+          body: JSON.stringify({
+            ...this.config.formatRequest(messages),
+            temperature: 0.7,
+            max_tokens: 150
+          })
+        });
+
+        const data = await response.json();
+        const refinedPrompts = data.choices[0].message.content
+          .split('\n')
+          .filter(line => line.trim().startsWith('-'))
+          .map(line => line.substring(1).trim());
+
+        return refinedPrompts;
+      } catch (error) {
+        console.error('Error refining prompt:', error);
+        return [];
+      }
+    }
   }
