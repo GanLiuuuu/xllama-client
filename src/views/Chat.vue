@@ -1,4 +1,5 @@
 <template>
+
   <div class="chat-area" style="padding: 40px">
     <div style="overflow: auto; height: 550px;" ref="chatContainer">
       <!-- Render message history -->
@@ -99,7 +100,8 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onBeforeUnmount, nextTick, computed } from 'vue'
+// TODO: 利用路由器对于每一个界面刷新历史纪录
+import { ref, onMounted, onBeforeUnmount, nextTick, computed, watch } from 'vue'
 import { Listbox, ListboxButton, ListboxLabel, ListboxOption, ListboxOptions } from '@headlessui/vue'
 import { CheckIcon, ChevronUpDownIcon } from '@heroicons/vue/20/solid'
 import { ChatService } from './chatService.js'
@@ -145,32 +147,50 @@ const getCurrentUserId = async () => {
 }
 onMounted(async () => {
   currentUserId.value = await getCurrentUserId()
-  alert(currentUserId.value)
-  if (currentUserId.value) {
-    await createNewSession()
-  } else {
-    console.error('Failed to get user ID')
-  }
 })
 
-const createNewSession = async () => {
-  try {
-    const response = await axios.post('/api/chat/session', {
-      userId: currentUserId.value,
-      botId: selected.value.id,
-      sessionName: `Chat with ${selected.value.name}`
-    })
-    
-    if (!response.data.sessionId) {
-      throw new Error('No sessionId in response')
+// 监听 currentSessionId 的变化
+watch(
+  () => store.state.currentSessionId,
+  async (newSessionId) => {
+    if (newSessionId) {
+      try {
+        // 直接从后端获取聊天记录
+        const response = await axios.get(`/api/chat/session/${newSessionId}/history`)
+        console.error(response.data)
+        if (response.data) {
+          // 修改映射逻辑，为每条消息创建一对人类和机器人的消息
+          const messages = []
+          response.data.forEach(interaction => {
+            // 添加用户消息
+            messages.push({
+              id: `${interaction.interaction_id}-human`,
+              type: 'human',
+              content: interaction.interaction_req,
+              isStreaming: false
+            })
+            // 添加机器人回复
+            messages.push({
+              id: `${interaction.interaction_id}-bot`,
+              type: 'bot',
+              content: interaction.interaction_res,
+              isStreaming: false
+            })
+          })
+          messageHistory.value = messages
+          await scrollToBottom()
+        }
+      } catch (error) {
+        console.error('Error loading chat history:', error)
+        messageHistory.value = []
+      }
+    } else {
+      // 清空聊天记录
+      messageHistory.value = []
     }
-    
-    sessionId.value = response.data.sessionId
-    alert(sessionId.value)
-  } catch (error) {
-    console.error('Error creating chat session:', error.response?.data || error.message)
-  }
-}
+  },
+  { immediate: true }
+)
 
 const scrollToBottom = async () => {
   await nextTick()
@@ -239,7 +259,7 @@ const updateLastBotMessage = (content, isStreaming) => {
 
 // Send message
 const sendMsg = async () => {
-  if (!text.value && !uploadedImageUrl.value || !text.value) {
+  if (!text.value && !uploadedImageUrl.value || !text.value || !store.state.currentSessionId) {
     return
   }
 
@@ -261,9 +281,6 @@ const sendMsg = async () => {
     }
     
     await saveChatInteraction({
-      sessionId: sessionId.value,
-      userId: currentUserId.value,
-      botId: selected.value.id,
       request: userMessage,
       response: currentContent
     })
@@ -320,19 +337,18 @@ const getRowStyle = () => {
   }
 }
 
+// 修改 saveChatInteraction
 const saveChatInteraction = async (interaction) => {
   try {
     await axios.post('/api/chat/interaction', {
-      sessionId: interaction.sessionId,
-      userId: interaction.userId,
-      botId: interaction.botId,
+      sessionId: store.state.currentSessionId,
+      userId: currentUserId.value,
+      botId: selected.value.id,
       interactionReq: interaction.request,
       interactionRes: interaction.response
-    });
-    // 成功时不需要检查 success 字段
-    // 如果请求成功，axios 不会抛出异常
+    })
   } catch (error) {
-    console.error('Error saving chat interaction:', error.response?.data || error.message);
+    console.error('Error saving chat interaction:', error.response?.data || error.message)
   }
-};
+}
 </script>

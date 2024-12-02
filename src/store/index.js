@@ -20,7 +20,8 @@ const store = createStore({
                 lastname: '',
                 country: '',
                 about: ""
-            }
+            },
+            currentSessionId: null,
         };
     },
     mutations: {
@@ -47,6 +48,9 @@ const store = createStore({
         },
         updateName(state, username) {
             state.user.username = username;
+        },
+        setCurrentSessionId(state, sessionId) {
+            state.currentSessionId = sessionId
         }
     },
     actions: {

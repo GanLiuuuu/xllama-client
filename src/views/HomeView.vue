@@ -19,11 +19,18 @@
               </ul>
             </li>
             <li>
-              <div class="text-xs/6 font-semibold text-gray-400">Your conversations</div>
+              <div class="text-xs/6 font-semibold text-gray-400">
+                Your conversations
+                <button @click="createNewChat" 
+                        class="ml-2 inline-flex items-center rounded-md bg-indigo-500 px-2 py-1 text-xs font-semibold text-white hover:bg-indigo-400">
+                  <PlusIcon class="size-4 mr-1" />
+                  New Chat
+                </button>
+              </div>
               <ul role="list" class="-mx-2 mt-2 space-y-1">
-                <li v-for="conversation in conversations" :key="conversation.name">
-                  <a @click="selectNavItem(conversation)" :href="conversation.href"
-                    :class="[conversation.current ? 'bg-gray-800 text-white' : 'text-gray-400 hover:bg-gray-800 hover:text-white', 'group flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold']">
+                <li v-for="conversation in conversations" :key="conversation.id">
+                  <a @click="selectChat(conversation)" 
+                     :class="[conversation.current ? 'bg-gray-800 text-white' : 'text-gray-400 hover:bg-gray-800 hover:text-white', 'group flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold']">
                     <span class="truncate">{{ conversation.name }}</span>
                   </a>
                 </li>
@@ -247,7 +254,9 @@ import {
   ClockIcon
 } from '@heroicons/vue/24/outline'
 import axios from "axios";
-
+import { PlusIcon } from '@heroicons/vue/20/solid'
+import { useStore } from 'vuex';
+const store = useStore();
 
 function getFormattedDate(date, format = "YYYY-MM-DD HH:mm:ss") {
   return date ? dayjs(date).format(format) : null;
@@ -260,9 +269,7 @@ const navigation = ref([
   {name: 'Search', href: '#', icon: MagnifyingGlassCircleIcon, current: false},
 ]);
 
-const conversations = [
-  { id: 1, name: 'Chat', href: '#', current: false },
-]
+const conversations = ref([])
 
 const currentNavItem = ref('Home');
 const currentSubNavItem = ref('Overview');
@@ -275,7 +282,7 @@ function selectNavItem(item) {
       item1.current = false;
     }
   });
-  conversations.forEach(item1 => {
+  conversations.value.forEach(item1 => {
     if (item1 !== item) {
       item1.current = false;
     }
@@ -340,6 +347,37 @@ const secondaryNavigation = [
   { name: 'Settings', href: '#', current: false },
   { name: 'Usage stats', href: '#', current: false }
 ]
+
+const createNewChat = async () => {
+  try {
+    const response = await axios.post('/api/chat/session', {
+      userId: store.state.user.userId,
+      botId: 1, // 默认bot ID
+      sessionName: `Chat ${conversations.value.length + 1}`
+    })
+    
+    if (response.data.sessionId) {
+      const newChat = {
+        id: conversations.value.length + 1,
+        name: `Chat ${conversations.value.length + 1}`,
+        sessionId: response.data.sessionId,
+        current: false
+      }
+      conversations.value.push(newChat)
+      selectChat(newChat)
+    }
+  } catch (error) {
+    console.error('Error creating new chat:', error)
+  }
+}
+
+const selectChat = (chat) => {
+  conversations.value.forEach(c => c.current = false)
+  chat.current = true
+  currentNavItem.value = 'Chat'
+  // 存储当前选中的会话ID到 Vuex store
+  store.commit('setCurrentSessionId', chat.sessionId)
+}
 
 </script>
 
