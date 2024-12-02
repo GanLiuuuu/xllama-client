@@ -11,11 +11,12 @@
           <p><strong>Highlight:</strong> {{ bot.highlight }}</p> -->
           <p><strong>Views:</strong> {{ bot.views }}</p>
           <p><strong>Publish Date</strong> {{ getFormattedDate(bot.createdAt) }}</p>
+          <p><strong>Rating</strong> {{ bot.rating }}</p>
         </div>
       </li>
     </ul>
     <TransitionRoot as="template" :show="isShowBotModal">
-      <Dialog class="relative z-10" @close="isShowBotModal = false">
+      <Dialog class="relative z-10" @close="closeModal()">
         <TransitionChild as="template" enter="ease-out duration-300" enter-from="opacity-0" enter-to="opacity-100" leave="ease-in duration-200" leave-from="opacity-100" leave-to="opacity-0">
           <div class="fixed inset-0 hidden bg-gray-500/75 transition-opacity md:block" />
         </TransitionChild>
@@ -59,7 +60,7 @@ function getFormattedDate(date, format = "YYYY-MM-DD hh:mm:ss") {
   return date ? dayjs(date.slice(0,19)).format(format) : null;
 }
 
-onMounted(async () => {
+async function ranking(){
   const errorMessage = ref(null);
   if(props.constraint === 'You may like'){
     try{
@@ -90,11 +91,20 @@ onMounted(async () => {
     showBots.value = allBots.value;
     showBots.value.sort((a, b) => parseInt(b.views) - parseInt(a.views));
   }
+}
+
+onMounted(async () => {
+  ranking();
 });
 
 function openModal(bot) {
   showBot.value = bot;
   isShowBotModal.value = true;
+}
+
+function closeModal() {
+  isShowBotModal.value = false;
+  ranking();
 }
 
 </script>

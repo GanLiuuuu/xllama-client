@@ -144,9 +144,9 @@
               <TabPanel class="text-sm text-gray-500">
                 <dl>
                   <template v-for="faq in faqs" :key="faq.question">
-                    <dt class="mt-10 font-medium text-gray-900">{{ faq.question }}</dt>
+                    <dt class="mt-10 font-medium text-gray-900">{{ "Q : " + faq.question }}</dt>
                     <dd class="mt-2 text-sm/6 text-gray-500">
-                      <p>{{ faq.answer }}</p>
+                      <p>{{ "A : " + faq.answer }}</p>
                     </dd>
                   </template>
                 </dl>
@@ -295,7 +295,6 @@ async function ifSubscribedBot(email, botId) {
     const response = await axios.get(`/bots/ifSubscribe`, {
       params: { email, botId },
     }); // 请求 bot 的 reviews 信息
-    console.log(Boolean(response.data));
     return response.data;
   } catch (error) {
     throw new Error(error.response?.data?.message || 'Failed to fetch subscribed info');

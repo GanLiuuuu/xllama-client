@@ -38,7 +38,7 @@
     </ul>
     
     <TransitionRoot as="template" :show="isShowBotModal">
-      <Dialog class="relative z-10" @close="isShowBotModal = false">
+      <Dialog class="relative z-10" @close="closeModal()">
         <TransitionChild as="template" enter="ease-out duration-300" enter-from="opacity-0" enter-to="opacity-100" leave="ease-in duration-200" leave-from="opacity-100" leave-to="opacity-0">
           <div class="fixed inset-0 hidden bg-gray-500/75 transition-opacity md:block" />
         </TransitionChild>
@@ -78,9 +78,14 @@ const openModal = (bot) => {
   isShowBotModal.value = true
 }
 
-const closeModal = () => {
+const closeModal = async() => {
   isShowBotModal.value = false
-  showBot.value = null
+  try{
+    bots.value = await fetchBots()
+    return;
+  }catch(error){
+    errorMessage.value = error.message;
+  }
 }
 
 const bots = ref([

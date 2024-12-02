@@ -37,7 +37,8 @@
                 <!-- Submit Button -->
                 <div>
                     <button type="submit"
-                        class="flex w-full mx-auto justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm/6 font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500">
+                        class="flex w-full mx-auto justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm/6 font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500"
+                        >
                         Submit
                     </button>
                 </div>
@@ -47,6 +48,9 @@
 </template>
 
 <script>
+import axios from 'axios';
+import Swal from 'sweetalert2';
+
 export default {
     props: {
         bot: {
@@ -74,7 +78,7 @@ export default {
             // 提交数据
             for(let i = 0; i < this.QA.length; i++) {
                 const formData = new FormData();
-                formData.append('bot', this.props.bot.id);
+                formData.append('bot', this.bot.id);
                 formData.append('question', this.QA[i].question);
                 formData.append('answer', this.QA[i].answer);
 
@@ -83,8 +87,18 @@ export default {
                         'Content-Type': 'multipart/form-data',
                     },
                 }).then(() => {
-                    QA[i].question = '';
-                    QA[i].answer = '';
+                    this.QA[i].question = '';
+                    this.QA[i].answer = '';
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Success!',
+                        confirmButtonText: 'OK',
+                        text: 'FAQ has been added successfully!',
+                    }).then((result) => {
+                        if(result.isConfirmed) {
+                            this.$emit('FAQfinished');
+                        }
+                    });
                 }).catch(error => {
                     console.error('An error occurred:', error);
                 });

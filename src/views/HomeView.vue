@@ -99,7 +99,7 @@
                   <span class="hidden md:inline-block md:h-screen md:align-middle" aria-hidden="true">&#8203;</span>
                   <TransitionChild as="template" enter="ease-out duration-300" enter-from="opacity-0 translate-y-4 md:translate-y-0 md:scale-95" enter-to="opacity-100 translate-y-0 md:scale-100" leave="ease-in duration-200" leave-from="opacity-100 translate-y-0 md:scale-100" leave-to="opacity-0 translate-y-4 md:translate-y-0 md:scale-95">
                     <DialogPanel class="flex w-full transform text-left text-base transition md:my-8 md:max-w-2xl md:px-4 lg:max-w-2xl">
-                      <AddBotFAQ :bot = "editBotFAQ"/>
+                      <AddBotFAQ :bot = "editBotFAQ" @FAQfinished="handleFAQfinished"/>
                     </DialogPanel>
                   </TransitionChild>
                 </div>
@@ -301,6 +301,11 @@ const isEditingFAQ = ref(false)
 
 function getFormattedDate(date, format = "YYYY-MM-DD HH:mm:ss") {
   return date ? dayjs(date.slice(0, 19)).format(format) : null;
+}
+
+function handleFAQfinished() {
+  console.log('FAQ finished')
+  isEditingFAQ.value = false
 }
 
 const openEditingFAQ = (bot) => {
