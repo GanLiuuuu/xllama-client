@@ -2,6 +2,9 @@ import { botConfig } from './botConfig.js';
 export class ChatService {
     constructor(botType) {
       this.config = botConfig[botType];
+      if (!this.config) {
+        throw new Error(`Bot type ${botType} not found in config`);
+      }
     }
     async sendMessage(messages) {
         try {
@@ -19,11 +22,20 @@ export class ChatService {
       }
     async *streamMessage(messages, onProgress) {
       try {
+        // Handle different bot types
+        if (this.config.type === 'image') {
+          const prompt = messages[messages.length - 1].content[0].text;
+          const response = await this.handleImageGeneration(prompt);
+          yield response;
+          if (onProgress) onProgress(response);
+          return;
+        }
+
         const systemMessage = messages[0]?.role === 'system' ? [] : [{
           role: 'system',
-          content: messages.length > 1 
-            ? 'You are a helpful assistant. Maintain conversation context and provide relevant responses based on the chat history.'
-            : 'You are a helpful assistant. Provide direct answers to questions.'
+          content: this.config.systemMessages?.[messages.length > 1 ? 'multiTurn' : 'singleTurn'] 
+            || this.config.systemPrompt
+            || "You are a helpful assistant."
         }]
 
         const fullMessages = [...systemMessage, ...messages]
@@ -64,10 +76,8 @@ export class ChatService {
                 let content = '';
                 
                 // Handle different bot response formats
-                if (this.config.name === 'GPT35' || this.config.name === 'GPT4') {
+                if (this.config.type === 'text') {
                   content = json.choices[0]?.delta?.content || '';
-                } else if (this.config.name === 'CLAUDE') {
-                  content = json.completion || '';
                 }
                 if (content) {
                   yield content;
@@ -80,7 +90,7 @@ export class ChatService {
           }
         }
       } catch (error) {
-        console.error(`Error in ${this.config.name} streaming API call:`, error);
+        console.error(`Error in ${this.config.name} API call:`, error);
         throw error;
       }
     }
@@ -114,6 +124,27 @@ export class ChatService {
       } catch (error) {
         console.error('Error refining prompt:', error);
         return [];
+      }
+    }
+    // New method for handling image generation
+    async handleImageGeneration(prompt) {
+      try {
+        const response = await fetch(this.config.apiEndpoint, {
+          method: 'POST',
+          headers: this.config.headers,
+          body: JSON.stringify(this.config.formatRequest(prompt))
+        });
+
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const data = await response.json();
+        const imageUrl = this.config.handleResponse(data);
+        return imageUrl.startsWith('@') ? imageUrl.substring(1) : imageUrl;
+      } catch (error) {
+        console.error('Error generating image:', error);
+        throw error;
       }
     }
   }

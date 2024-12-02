@@ -29,7 +29,12 @@
           </div>
           <div class="chat-message" style="flex: 1; text-align: left; padding-left: 10px;">
             <div class="tip right" style="background-color: #e0f7fa; padding: 10px; border-radius: 8px; display: inline-block; max-width: 70%;">
-              {{ message.content }}
+              <template v-if="selected.type === 'image'">
+                <img :src="message.content" alt="Generated image" style="max-width: 100%; border-radius: 4px;">
+              </template>
+              <template v-else>
+                {{ message.content }}
+              </template>
               <span v-if="message.isStreaming" class="typing-indicator" style="display: inline-block; margin-left: 4px;">▊</span>
             </div>
           </div>
@@ -49,12 +54,17 @@
             Upload photo
           </button>
         </div>
-        
+
         <Listbox as="div" v-model="selected">
           <ListboxLabel class="block text-sm/6 font-medium text-gray-900">Model</ListboxLabel>
           <div class="relative mt-2">
             <ListboxButton class="relative w-full cursor-default rounded-md bg-white py-1.5 pl-3 pr-10 text-left text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-600 sm:text-sm/6">
-              <span class="block truncate">{{ selected.name }}</span>
+              <div class="flex items-center">
+                <span class="block truncate">{{ getDisplayName(selected.name) }}</span>
+                <span class="ml-2 inline-flex items-center rounded-md bg-gray-50 px-2 py-1 text-xs font-medium text-gray-600 ring-1 ring-inset ring-gray-500/10">
+                  {{ selected.type }}
+                </span>
+              </div>
               <span class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
                 <ChevronUpDownIcon class="size-5 text-gray-400" aria-hidden="true" />
               </span>
@@ -62,9 +72,46 @@
 
             <transition leave-active-class="transition ease-in duration-100" leave-from-class="opacity-100" leave-to-class="opacity-0">
               <ListboxOptions class="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black/5 focus:outline-none sm:text-sm">
-                <ListboxOption as="template" v-for="model in models" :key="model.id" :value="model" v-slot="{ active, selected }">
+                <!-- Official Models -->
+                <div class="px-3 py-2 text-xs font-semibold text-gray-500">Official Models</div>
+                <ListboxOption 
+                  v-for="model in models.filter(m => !m.custom)" 
+                  :key="model.id" 
+                  :value="model" 
+                  v-slot="{ active, selected }"
+                >
                   <li :class="[active ? 'bg-indigo-600 text-white' : 'text-gray-900', 'relative cursor-default select-none py-2 pl-3 pr-9']">
-                    <span :class="[selected ? 'font-semibold' : 'font-normal', 'block truncate']">{{ model.name }}</span>
+                    <div class="flex items-center">
+                      <span :class="[selected ? 'font-semibold' : 'font-normal', 'block truncate']">
+                        {{ getDisplayName(model.name) }}
+                      </span>
+                      <span class="ml-2 inline-flex items-center rounded-md" :class="[active ? 'bg-indigo-300' : 'bg-gray-50', 'px-2 py-1 text-xs font-medium ring-1 ring-inset']" :style="{ color: active ? 'white' : 'gray', borderColor: active ? 'white' : 'gray' }">
+                        {{ model.type }}
+                      </span>
+                    </div>
+                    <span v-if="selected" :class="[active ? 'text-white' : 'text-indigo-600', 'absolute inset-y-0 right-0 flex items-center pr-4']">
+                      <CheckIcon class="size-5" aria-hidden="true" />
+                    </span>
+                  </li>
+                </ListboxOption>
+
+                <!-- Custom Models -->
+                <div class="mt-2 px-3 py-2 text-xs font-semibold text-gray-500">Custom Models</div>
+                <ListboxOption 
+                  v-for="model in models.filter(m => m.custom)" 
+                  :key="model.id" 
+                  :value="model" 
+                  v-slot="{ active, selected }"
+                >
+                  <li :class="[active ? 'bg-indigo-600 text-white' : 'text-gray-900', 'relative cursor-default select-none py-2 pl-3 pr-9']">
+                    <div class="flex items-center">
+                      <span :class="[selected ? 'font-semibold' : 'font-normal', 'block truncate']">
+                        {{ getDisplayName(model.name) }}
+                      </span>
+                      <span class="ml-2 inline-flex items-center rounded-md" :class="[active ? 'bg-indigo-300' : 'bg-gray-50', 'px-2 py-1 text-xs font-medium ring-1 ring-inset']" :style="{ color: active ? 'white' : 'gray', borderColor: active ? 'white' : 'gray' }">
+                        {{ model.type }}
+                      </span>
+                    </div>
                     <span v-if="selected" :class="[active ? 'text-white' : 'text-indigo-600', 'absolute inset-y-0 right-0 flex items-center pr-4']">
                       <CheckIcon class="size-5" aria-hidden="true" />
                     </span>
@@ -73,6 +120,7 @@
               </ListboxOptions>
             </transition>
           </div>
+          <p class="mt-2 text-sm text-gray-500">{{ selected.description }}</p>
         </Listbox>
       </div>
     </div>
@@ -135,7 +183,7 @@
 </template>
 
 <script setup>
-// TODO: 利用路由器对于每一个界面刷新历史纪录
+// TODO: 利用路由器对于每一界面刷新历史纪录
 import { ref, onMounted, onBeforeUnmount, nextTick, computed, watch } from 'vue'
 import { Listbox, ListboxButton, ListboxLabel, ListboxOption, ListboxOptions } from '@headlessui/vue'
 import { CheckIcon, ChevronUpDownIcon } from '@heroicons/vue/20/solid'
@@ -147,10 +195,48 @@ import PromptRefinement from '../components/PromptRefinement.vue'
 
 // Model options
 const models = [
-  { id: 0, name: 'GPT35' },
-  { id: 1, name: 'GPT4' },
+  // Official Models
+  { 
+    id: 1, 
+    name: 'GPT35',
+    description: 'General purpose chat model with broad knowledge',
+    type: 'text'
+  },
+  { 
+    id: 2, 
+    name: 'GPT4',
+    description: 'Most capable GPT-4 model for general tasks',
+    type: 'text'
+  },
+  { 
+    id: 3, 
+    name: 'GPT4_MINI',
+    description: 'Smaller, faster version of GPT-4',
+    type: 'text'
+  },
+  { 
+    id: 4, 
+    name: 'DALLE3',
+    description: 'Advanced image generation model',
+    type: 'image'
+  },
+  // Custom Models
+  { 
+    id: 5, 
+    name: 'TRANSLATOR',
+    description: 'Specialized in language translation',
+    type: 'text',
+    custom: true
+  },
+  { 
+    id: 6, 
+    name: 'MATH_SOLVER',
+    description: 'Specialized in solving mathematical problems',
+    type: 'text',
+    custom: true
+  }
 ]
-const selected = ref(models[1])
+const selected = ref(models[0])
 
 const text = ref('')
 const uploadedImageUrl = ref('')
@@ -160,10 +246,8 @@ const fileInput = ref(null)
 const sessionId = ref(null)
 const currentUserId = ref(null)
 
-// 添加 store
 const store = useStore()
 
-// 获取用户ID的函数
 const getCurrentUserId = async () => {
   try {
     const userEmail = store.state.user.email
@@ -220,7 +304,7 @@ watch(
         messageHistory.value = []
       }
     } else {
-      // 清空聊天记录
+      // 清空天记录
       messageHistory.value = []
     }
   },
@@ -336,11 +420,21 @@ const sendMsg = async () => {
     const chatService = new ChatService(selected.value.name)
     const messages = formatMessages(text.value, uploadedImageUrl.value)
     
-    for await (const chunk of chatService.streamMessage(messages, (content) => {
-      currentContent += content
-      updateLastBotMessage(currentContent, true)
-    })) {
-      continue;
+    // 特殊处理图像生成模型
+    if (selected.value.type === 'image') {
+      for await (const imageUrl of chatService.streamMessage(messages)) {
+        // 移除可能的 @ 前缀
+        currentContent = imageUrl.startsWith('@') ? imageUrl.substring(1) : imageUrl
+        updateLastBotMessage(currentContent, false)
+      }
+    } else {
+      // 处理文本模型
+      for await (const chunk of chatService.streamMessage(messages, (content) => {
+        currentContent += content
+        updateLastBotMessage(currentContent, true)
+      })) {
+        continue;
+      }
     }
     
     await saveChatInteraction({
@@ -350,7 +444,7 @@ const sendMsg = async () => {
     
     updateLastBotMessage(currentContent, false)
   } catch (error) {
-    console.error('Error with streaming API:', error)
+    console.error('Error with API:', error)
     updateLastBotMessage('Sorry, I couldn\'t process that request.', false)
   }
 
@@ -459,5 +553,17 @@ const handleRefinedPrompt = (refinedPrompt) => {
 const isMultiTurn = ref(true)
 const toggleChatMode = () => {
   isMultiTurn.value = !isMultiTurn.value
+}
+
+const getDisplayName = (modelName) => {
+  const nameMap = {
+    'GPT35': 'GPT3.5-turbo',
+    'GPT4': 'GPT4-turbo',
+    'GPT4_MINI': 'GPT4-mini',
+    'DALLE3': 'DALL-E 3',
+    'TRANSLATOR': 'Translator',
+    'MATH_SOLVER': 'Math Solver'
+  }
+  return nameMap[modelName] || modelName
 }
 </script>
