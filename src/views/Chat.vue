@@ -104,6 +104,9 @@ import { Listbox, ListboxButton, ListboxLabel, ListboxOption, ListboxOptions } f
 import { CheckIcon, ChevronUpDownIcon } from '@heroicons/vue/20/solid'
 import { ChatService } from './chatService.js'
 import PromptSuggestions from '../components/PromptSuggestions.vue'
+import { useStore } from 'vuex'
+import axios from "axios";
+
 // Model options
 const models = [
   { id: 0, name: 'GPT35' },
@@ -116,6 +119,58 @@ const uploadedImageUrl = ref('')
 const messageHistory = ref([])
 const chatContainer = ref(null)
 const fileInput = ref(null)
+const sessionId = ref(null)
+const currentUserId = ref(null)
+
+// 添加 store
+const store = useStore()
+
+// 获取用户ID的函数
+const getCurrentUserId = async () => {
+  try {
+    const userEmail = store.state.user.email
+    const response = await axios.get('/user/getUserId', {
+      params: { email: userEmail }
+    })
+    
+    if (!response.data.userId) {
+      throw new Error('No userId in response')
+    }
+    
+    return response.data.userId
+  } catch (error) {
+    console.error('Error getting user ID:', error.response?.data || error.message)
+    return null
+  }
+}
+onMounted(async () => {
+  currentUserId.value = await getCurrentUserId()
+  alert(currentUserId.value)
+  if (currentUserId.value) {
+    await createNewSession()
+  } else {
+    console.error('Failed to get user ID')
+  }
+})
+
+const createNewSession = async () => {
+  try {
+    const response = await axios.post('/api/chat/session', {
+      userId: currentUserId.value,
+      botId: selected.value.id,
+      sessionName: `Chat with ${selected.value.name}`
+    })
+    
+    if (!response.data.sessionId) {
+      throw new Error('No sessionId in response')
+    }
+    
+    sessionId.value = response.data.sessionId
+    alert(sessionId.value)
+  } catch (error) {
+    console.error('Error creating chat session:', error.response?.data || error.message)
+  }
+}
 
 const scrollToBottom = async () => {
   await nextTick()
@@ -188,8 +243,8 @@ const sendMsg = async () => {
     return
   }
 
-  addMessage('human', text.value)
-  
+  const userMessage = text.value
+  addMessage('human', userMessage)
   addMessage('bot', '', true)
   
   let currentContent = ''
@@ -202,18 +257,23 @@ const sendMsg = async () => {
       currentContent += content
       updateLastBotMessage(currentContent, true)
     })) {
-      // Process each chunk
       continue;
     }
     
-    // Finalize message
+    await saveChatInteraction({
+      sessionId: sessionId.value,
+      userId: currentUserId.value,
+      botId: selected.value.id,
+      request: userMessage,
+      response: currentContent
+    })
+    
     updateLastBotMessage(currentContent, false)
   } catch (error) {
     console.error('Error with streaming API:', error)
     updateLastBotMessage('Sorry, I couldn\'t process that request.', false)
   }
 
-  // Reset input
   text.value = ''
   uploadedImageUrl.value = ''
 }
@@ -259,4 +319,20 @@ const getRowStyle = () => {
     padding: '5px 0'
   }
 }
+
+const saveChatInteraction = async (interaction) => {
+  try {
+    await axios.post('/api/chat/interaction', {
+      sessionId: interaction.sessionId,
+      userId: interaction.userId,
+      botId: interaction.botId,
+      interactionReq: interaction.request,
+      interactionRes: interaction.response
+    });
+    // 成功时不需要检查 success 字段
+    // 如果请求成功，axios 不会抛出异常
+  } catch (error) {
+    console.error('Error saving chat interaction:', error.response?.data || error.message);
+  }
+};
 </script>
