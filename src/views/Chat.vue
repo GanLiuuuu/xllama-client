@@ -242,6 +242,54 @@
               Define the AI's behavior and role
             </p>
           </div>
+
+          <!-- Finetune Settings -->
+          <div class="border-t pt-4 mt-4">
+            <h4 class="text-sm font-medium text-gray-900 mb-4">Model Fine-tuning</h4>
+            
+            <!-- Dataset Selection -->
+            <div class="mb-4">
+              <label class="block text-sm font-medium text-gray-700">
+                Dataset
+              </label>
+              <select 
+                v-model="finetuneSettings.selectedDataset"
+                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+              >
+                <option value="">Select a dataset</option>
+                <option v-for="dataset in datasets" :key="dataset.id" :value="dataset.id">
+                  {{ dataset.name }}
+                </option>
+              </select>
+            </div>
+
+            <!-- Base Model Selection -->
+            <div class="mb-4">
+              <label class="block text-sm font-medium text-gray-700">
+                Base Model
+              </label>
+              <select 
+                v-model="finetuneSettings.selectedBaseModel"
+                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+              >
+                <option value="">Select a base model</option>
+                <option v-for="model in baseModels" :key="model.id" :value="model.id">
+                  {{ model.name }}
+                </option>
+              </select>
+            </div>
+
+            <!-- Finetune Button -->
+            <div class="flex justify-end">
+              <button 
+                @click="startFinetune"
+                :disabled="!canStartFinetune"
+                class="inline-flex items-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                Start Fine-tuning
+              </button>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -354,7 +402,7 @@ watch(
               content: interaction.interaction_req,
               isStreaming: false
             })
-            // 添���机器人回复
+            // 添加机器人回复
             messages.push({
               id: `${interaction.interaction_id}-bot`,
               type: 'bot',
@@ -638,4 +686,64 @@ watch(selected, (newModel) => {
     modelSettings.value.systemMessage = newModel.systemPrompt
   }
 })
+
+// 数据集选项
+const datasets = ref([
+  { id: 'dataset1', name: 'Customer Service Dataset' },
+  { id: 'dataset2', name: 'Technical Documentation Dataset' },
+  { id: 'dataset3', name: 'Medical Conversation Dataset' },
+  { id: 'dataset4', name: 'Legal Document Dataset' }
+])
+
+// 基础模型选项
+const baseModels = ref([
+  { id: 'gpt-3.5-turbo', name: 'GPT-3.5 Turbo' },
+  { id: 'gpt-4', name: 'GPT-4' },
+  { id: 'davinci', name: 'Davinci' },
+  { id: 'curie', name: 'Curie' }
+])
+
+// 微调设置
+const finetuneSettings = ref({
+  selectedDataset: '',
+  selectedBaseModel: ''
+})
+
+// 检查是否可以开始微调
+const canStartFinetune = computed(() => {
+  return finetuneSettings.value.selectedDataset && 
+         finetuneSettings.value.selectedBaseModel
+})
+
+// 开始微调的方法
+const startFinetune = async () => {
+  if (!canStartFinetune.value) return
+
+  try {
+    console.log('Starting fine-tuning with settings:', {
+      dataset: finetuneSettings.value.selectedDataset,
+      baseModel: finetuneSettings.value.selectedBaseModel
+    })
+    
+    // TODO: 实现实际的微调逻辑
+    // 可以在这里添加与后端的通信代码
+    
+    // 示例：
+    // const response = await axios.post('/api/finetune', {
+    //   datasetId: finetuneSettings.value.selectedDataset,
+    //   baseModelId: finetuneSettings.value.selectedBaseModel
+    // })
+    
+    // 成功提示
+    alert('Fine-tuning started successfully!')
+  } catch (error) {
+    console.error('Error starting fine-tuning:', error)
+    alert('Failed to start fine-tuning. Please try again.')
+  }
+}
+
+// 可选：监听设置变化
+watch(finetuneSettings, (newSettings) => {
+  console.log('Fine-tune settings changed:', newSettings)
+}, { deep: true })
 </script>
