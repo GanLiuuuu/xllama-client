@@ -6,6 +6,7 @@ export const botConfig = {
     type: 'text',
     official: true,
     apiEndpoint: 'https://api.openai-proxy.org/v1/chat/completions',
+    //apiEndpoint2: '172.29.11.239/',
     model: 'gpt-3.5-turbo',
     description: 'General purpose chat model with broad knowledge',
     headers: {

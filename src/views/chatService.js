@@ -73,7 +73,7 @@ export class ChatService {
           },
           body: JSON.stringify(requestBody)
         });
-
+       
         if (!response.ok) {
           const errorData = await response.json().catch(() => ({}));
           throw new Error(`HTTP error! status: ${response.status}, message: ${JSON.stringify(errorData)}`);
@@ -118,41 +118,72 @@ export class ChatService {
     }
     async refinePrompt(userPrompt) {
       try {
-        // 检查是否存在 refinePromptMessage
-        if (!this.config.refinePromptMessage || !Array.isArray(this.config.refinePromptMessage)) {
-          console.warn(`No refinePromptMessage configured for ${this.config.name}`);
-          return [];
-        }
-
-        const messages = [
-          ...this.config.refinePromptMessage,
-          {
-            role: "user",
-            content: `Original prompt: "${userPrompt}"\n\nPlease suggest 2-3 improved versions of this prompt. Format each suggestion on a new line starting with a dash (-).`
-          }
-        ];
-
+        const messages = [{
+          role: "system",
+          content: "You are a helpful assistant that improves prompts. Provide 2-3 improved versions of the given prompt. Each suggestion should start with a dash (-) on a new line."
+        }, {
+          role: "user",
+          content: `Original prompt: "${userPrompt}"\n\nPlease suggest 2-3 improved versions of this prompt.`
+        }];
+    
         const response = await fetch(this.config.apiEndpoint, {
           method: 'POST',
-          headers: this.config.headers,
+          headers: {
+            ...this.config.headers,
+            'Accept': 'text/event-stream',
+          },
           body: JSON.stringify({
-            ...this.config.formatRequest(messages),
+            model: this.config.model || 'gpt-3.5-turbo',
+            messages: messages,
+            stream: true,
             temperature: 0.7,
             max_tokens: 150
           })
         });
-
+    
         if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
+          const errorData = await response.json().catch(() => ({}));
+          throw new Error(`HTTP error! status: ${response.status}, message: ${JSON.stringify(errorData)}`);
         }
-
-        const data = await response.json();
-        const refinedPrompts = data.choices[0].message.content
+    
+        const reader = response.body.getReader();
+        const decoder = new TextDecoder();
+        let buffer = '';
+        let fullContent = '';
+    
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
+    
+          buffer += decoder.decode(value, { stream: true });
+          const lines = buffer.split('\n');
+          buffer = lines.pop() || '';
+    
+          for (const line of lines) {
+            if (line.startsWith('data: ')) {
+              const content = line.slice(6);
+              if (content === '[DONE]') continue;  // Skip [DONE] messages
+              
+              try {
+                const json = JSON.parse(content);
+                if (json.choices?.[0]?.delta?.content) {
+                  fullContent += json.choices[0].delta.content;
+                }
+              } catch (e) {
+                console.error('Error parsing SSE message:', e);
+              }
+            }
+          }
+        }
+    
+        // Process the complete content after stream ends
+        const refinedPrompts = fullContent
           .split('\n')
           .filter(line => line.trim().startsWith('-'))
           .map(line => line.substring(1).trim());
-
+    
         return refinedPrompts;
+    
       } catch (error) {
         console.error('Error refining prompt:', error);
         return [];
