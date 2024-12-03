@@ -392,24 +392,7 @@ const showRedeemModal = ref(false);
 const currentRecommendationSubNavItem = ref('Latest');
 const homeRefreshKey = ref(0);
 
-function selectNavItem(item) {
-  currentNavItem.value = item.name;
-  item.current = true;
-  navigation.value.forEach(item1 => {
-    if (item1 !== item) {
-      item1.current = false;
-    }
-  });
-  conversations.value.forEach(item1 => {
-    if (item1 !== item) {
-      item1.current = false;
-    }
-  });
-  
-  if (item.name === 'Home') {
-    window.location.reload();
-  }
-}
+
 
 function selectSubNavItem(item) {
   currentSubNavItem.value = item.name;
@@ -529,28 +512,7 @@ const secondaryNavigationRecommendation = [
 
 
 
-const createNewChat = async () => {
-  try {
-    const response = await axios.post('/api/chat/session', {
-      userId: store.state.user.userId,
-      botId: 1, // 默认bot ID
-      sessionName: `Chat ${conversations.value.length + 1}`
-    })
-    
-    if (response.data.sessionId) {
-      const newChat = {
-        id: conversations.value.length + 1,
-        name: `Chat ${conversations.value.length + 1}`,
-        sessionId: response.data.sessionId,
-        current: false
-      }
-      conversations.value.push(newChat)
-      selectChat(newChat)
-    }
-  } catch (error) {
-    console.error('Error creating new chat:', error)
-  }
-}
+
 
 const selectChat = (chat) => {
   conversations.value.forEach(c => c.current = false)
@@ -558,6 +520,153 @@ const selectChat = (chat) => {
   currentNavItem.value = 'Chat'
   // 存储当前选中的会话ID到 Vuex store
   store.commit('setCurrentSessionId', chat.sessionId)
+}
+
+// 在 script setup 中添加获取聊天列表的函数
+const fetchChatList = async () => {
+  try {
+    // 确保有 userId
+    if (!store.state.user.userId) {
+      const email = store.state.user.email;
+      const userResponse = await axios.get('/user/getUserId', {
+        params: { email: email }
+      });
+      if (!userResponse.data.userId) {
+        throw new Error('Could not get user ID');
+      }
+      store.state.user.userId = userResponse.data.userId;
+    }
+
+    // 清空当前聊天列表
+    conversations.value = [];
+    
+    // 从后端获取聊天列表，添加 userId 参数
+    const response = await axios.get('/api/chat/sessions', {
+      params: { userId: store.state.user.userId }
+    });
+    
+    // 将获取的聊天列表转换为需要的格式并更新
+    if (response.data) {
+      conversations.value = response.data.map(chat => ({
+        id: chat.sessionId,
+        name: chat.sessionName || `Chat ${chat.sessionId}`,
+        sessionId: chat.sessionId,
+        current: false
+      }));
+    }
+  } catch (error) {
+    console.error('Error fetching chat list:', error);
+  }
+};
+
+// 修改 mounted 钩子来初始加载聊天列表
+onMounted(() => {
+  const isLoggedIn = store.state.user.isLoggedIn;
+  if (!isLoggedIn) {
+    router.push('/login');
+  } else {
+    const email = store.state.user.email;
+    if (email) {
+      store.commit('updateEmail', email);
+      store.dispatch('fetchUserByEmail', email);
+      if (store.state.user.userType === 'admin') {
+        router.push('/Admin');
+      }
+      // 加载聊天列表
+      fetchChatList();
+    }
+
+    // 评论
+    axios.get(`/user/comments?email=${email}`)
+      .then((response) => {
+        reviews.value = response.data;
+      })
+      .catch((error) => {
+        console.error("Failed to fetch user comments:", error);
+      });
+
+    // 机器人数量
+    axios.get(`/user/bots?email=${email}`)
+      .then((response) => {
+        Mybots.value = response.data; // 获取 bots 数据
+      })
+      .catch((error) => {
+        console.error("Failed to fetch bots:", error);
+      });
+    // 交互统计
+    axios.post('/user/getUsageStats', new URLSearchParams({ email }))
+      .then(response => {
+        usageStats.value = response.data; // 将返回的数据存储到 usageStats
+      })
+      .catch(error => {
+        console.error("Error fetching usage stats:", error);
+      });
+    // 获取用户创建的bots
+    axios.get('/bots/userBots', {
+      params: { id: store.state.user.email },
+    }).then(response => {
+      bots.value = response.data;
+    }).catch(error => {
+      console.error("Failed to fetch user bots:", error);
+    });
+  }
+});
+
+// 修改 createNewChat 函数
+const createNewChat = async () => {
+  try {
+    // 确保有 userId
+    if (!store.state.user.userId) {
+      const email = store.state.user.email;
+      const userResponse = await axios.get('/user/getUserId', {
+        params: { email: email }
+      });
+      if (!userResponse.data.userId) {
+        throw new Error('Could not get user ID');
+      }
+      store.state.user.userId = userResponse.data.userId;
+    }
+
+    const response = await axios.post('/api/chat/session', {
+      userId: store.state.user.userId,
+      botId: 1, // 默认bot ID
+      sessionName: `Chat ${conversations.value.length + 1}`
+    });
+    
+    if (response.data.sessionId) {
+      // 创建新聊天后重新获取完整的聊天列表
+      await fetchChatList();
+      
+      // 选择新创建的聊天
+      const newChat = conversations.value.find(c => c.sessionId === response.data.sessionId);
+      if (newChat) {
+        selectChat(newChat);
+      }
+    }
+  } catch (error) {
+    console.error('Error creating new chat:', error);
+  }
+};
+
+// 修改 selectNavItem 函数，在切换到 Chat 时刷新聊天列表
+function selectNavItem(item) {
+  currentNavItem.value = item.name;
+  item.current = true;
+  navigation.value.forEach(item1 => {
+    if (item1 !== item) {
+      item1.current = false;
+    }
+  });
+  
+  // 如果切换到 Chat，刷新聊天列表
+  if (item.name === 'Chat') {
+    fetchChatList();
+  }
+  
+  // 如果切换到 Home，刷新页面
+  if (item.name === 'Home') {
+    window.location.reload();
+  }
 }
 
 </script>
