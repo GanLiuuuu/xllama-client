@@ -436,7 +436,6 @@ export default {
               html: `<p style="font-family: poppins;">Comment posted successfully!</p>`,
               icon: 'success',
               confirmButtonText: 'OK',
-              showCancelButton: true,
               allowOutsideClick: false,  
               allowEscapeKey: false
             });
