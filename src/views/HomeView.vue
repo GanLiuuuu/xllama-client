@@ -288,7 +288,6 @@
 
 <script setup>
 import dayjs from 'dayjs';
-import { useStore } from 'vuex'
 import Chat from './Chat.vue'
 import Discover from './DiscoverView.vue'
 import Recently from './RecentlyView.vue'
@@ -306,7 +305,6 @@ import {
 import axios from "axios";
 import { PlusIcon } from '@heroicons/vue/20/solid'
 import { useStore } from 'vuex';
-const store = useStore();
 
 function getFormattedDate(date, format = "YYYY-MM-DD HH:mm:ss") {
   return date ? dayjs(date).format(format) : null;
