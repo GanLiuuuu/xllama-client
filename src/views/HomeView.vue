@@ -152,10 +152,8 @@
                     :class="[statIdx % 2 === 1 ? 'sm:border-l' : statIdx === 2 ? 'lg:border-l' : '', 'border-t border-white/5 px-4 py-6 sm:px-6 lg:px-8']">
                     <p class="text-sm/6 font-medium text-gray-400">{{ stat.name }}</p>
                     <p class="mt-2 flex items-baseline gap-x-2">
-                      <span class="text-4xl font-semibold tracking-tight text-white">{{ stat.name === 'Points' ?
-                        user.points : stat.name === 'Tokens' ? user.tokens : stat.name === "Number of bots" ?
-                          Mybots.length :
-                          stat.value }}</span>
+                      <span class="text-4xl font-semibold tracking-tight text-white">{{ stat.name === 'Points' ? user.points : stat.name==='Tokens'? user.tokens: stat.name ==="Number of bots"? Mybots.length :stat.name ==="Comments"? reviews.length: stat.value }}</span>
+
                       <span v-if="stat.unit" class="text-sm text-gray-400">{{ stat.unit }}</span>
                     </p>
                   </div>
@@ -261,9 +259,8 @@
             <Chat/>
           </div>
           <div v-if="currentNavItem == 'Recently'">
-          <!-- Recently -->
-          <Recently />
-        </div>
+            <Recently />
+          </div>
       </main>
     </div>
   </div>
@@ -378,6 +375,7 @@ const navigation = ref([
   { name: 'Discover', href: '#', icon: SignalIcon, current: false },
   { name: 'Recommendation', href: '#', icon: HandThumbUpIcon, current: false },
   { name: 'Search', href: '#', icon: MagnifyingGlassCircleIcon, current: false},
+  { name: 'Recently', href: '#', icon: ClockIcon, current: false },
 ]);
 
 const conversations = ref([])
@@ -508,7 +506,7 @@ const stats = [
   { name: 'Points', value: ref((() => this.$store.state.user.points)) },
   { name: 'Tokens', value: '0', unit: 'tokens' },
   { name: 'Number of bots', value: '0' },
-  { name: 'Success rate', value: '98.5%' },
+  { name: 'Comments', value: '98.5%' },
 ]
 const secondaryNavigation = [
   { name: 'Overview', href: '#', current: true },

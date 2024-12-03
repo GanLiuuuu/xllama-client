@@ -51,7 +51,7 @@
           </li>
         </ul>
         <TransitionRoot as="template" :show="isShowBotModal">
-          <Dialog class="relative z-10" @close="isShowBotModal = false">
+          <Dialog class="relative z-10" @close="closePage">
             <TransitionChild as="template" enter="ease-out duration-300" enter-from="opacity-0" enter-to="opacity-100" leave="ease-in duration-200" leave-from="opacity-100" leave-to="opacity-0">
               <div class="fixed inset-0 hidden bg-gray-500/75 transition-opacity md:block" />
             </TransitionChild>
@@ -62,7 +62,7 @@
                 <span class="hidden md:inline-block md:h-screen md:align-middle" aria-hidden="true">&#8203;</span>
                 <TransitionChild as="template" enter="ease-out duration-300" enter-from="opacity-0 translate-y-4 md:translate-y-0 md:scale-95" enter-to="opacity-100 translate-y-0 md:scale-100" leave="ease-in duration-200" leave-from="opacity-100 translate-y-0 md:scale-100" leave-to="opacity-0 translate-y-4 md:translate-y-0 md:scale-95">
                   <DialogPanel class="flex w-full transform text-left text-base transition md:my-8 md:max-w-2xl md:px-4 lg:max-w-2xl">
-                    <BotDetail :botId = "showBot.id"/>
+                    <BotDetail_admin :bot-id="showBot.id"/>
                   </DialogPanel>
                 </TransitionChild>
               </div>
@@ -77,7 +77,7 @@
   import { ref } from 'vue'
   import axios from 'axios'
   import { Dialog, DialogPanel, TransitionChild, TransitionRoot } from '@headlessui/vue'
-  import BotDetail from '../components/BotDetail.vue';
+  import BotDetail_admin from '../components/BotDetail_admin.vue';
   import Fuse from 'fuse.js';
 
   const options = {
@@ -86,7 +86,6 @@
   };
 
   const fuse = ref(null);
-  const searchResults = ref([]);
 
   const users = ref([]);
   const bots = ref([]);
@@ -106,7 +105,10 @@
   showBot.value = bot
   isShowBotModal.value = true
   }
-
+  function closePage(){
+    isShowBotModal.value = false
+    searchBots()
+  }
   function select(item) {
     secondary.forEach(item1 => {
       item1.current = false;
@@ -129,17 +131,18 @@
       const response = await axios.get('/user/searchUsers', {
         params: { username: searchQuery.value.trim() }
       });
-      users.value = response.data; 
+      users.value = response.data;
     } catch (error) {
       console.error('Error fetching users:', error);
       // users.value = [];
     }
   }
 
+
   async function searchBots() {
     try {
       const response = await axios.get('/bots/showall');
-      temp_bots.value = response.data;
+      temp_bots.value = response.data.filter(bot => bot.state === 'Online'); // 过滤出 state 为 Offline 的 bot
     } catch (error) {
       console.error('Error fetching bots:', error);
       //bots.value = [];
@@ -150,52 +153,10 @@
     }
     fuse.value = new Fuse(temp_bots.value, options);
     bots.value = fuse.value.search(searchQuery.value.trim()).map(result => result.item);
-    // console.log(bots.value);
-    // console.log(searchQuery.value.trim());
-    // fuse.value = new Fuse(temp_bots.value, options);
-    // bots.value = fuse.value.search(searchQuery.value.trim()).map(result => result.item);
-    // console.log(bots.value);
   }
     
-  users.value = [
-    { username: 'Username1', email: "user1@example.com", avatarUrl: "http://localhost:8081/avatars/user1.jpg", bio: "Hello!" },
-    { username: 'Username2', email: "user2@example.com", avatarUrl: "http://localhost:8081/avatars/user2.jpg", bio: "Nice to meet you" },
-  ];
+  users.value = [];
   
-  temp_bots.value =[
-    {
-      id: 1,
-      name: 'Xbot_007',
-      version: '1.0',
-      views: '123',
-      createdAt: '2022-12-13',
-      price: '2,000.00',
-      state: 'Online',
-      description: 'This is a chatbot that can help you with your daily tasks.',
-      highlight: 'It is very easy to use and can be customized to suit your needs; it is also very affordable; it is very reliable and can be used for a long time.',
-    },
-    {
-      id: 2,
-      name: 'Chat_GPT4',
-      version: '1.0',
-      views: '456',
-      createdAt: '2023-01-22',
-      price: '14,000.00', 
-      state: 'Offline',
-      description: 'This is a bot that can help you deal with complex problems.',
-      highlight: 'It is very powerful and can be used for a long time; it is also very reliable and can be used for a long time.',
-    },
-    {
-      id: 3,
-      name: 'Llama',
-      version: '1.0',
-      views: '789',
-      createdAt:'2023-01-23',
-      price: '7,600.00', 
-      state: 'Online',
-      description: 'This is a bot help you with many calculations.',
-      highlight: 'It can help calculate many things; it is very reliable and can be used for a long time.',
-    },
-  ]
+  temp_bots.value =[]
   </script>
   
