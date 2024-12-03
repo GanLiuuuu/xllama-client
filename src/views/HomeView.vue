@@ -511,7 +511,6 @@ const stats = [
 const secondaryNavigation = [
   { name: 'Overview', href: '#', current: true },
   { name: 'Settings', href: '#', current: false },
-  { name: 'Usage stats', href: '#', current: false }
 ]
 const secondaryNavigationRecommendation = [
   { name: 'Latest', href: '#', current: true },

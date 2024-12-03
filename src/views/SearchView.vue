@@ -16,20 +16,39 @@
           </li>
         </ul>
       </nav>
-                
+
       <!-- Conditional Rendering for Users -->
-      <div v-if="currentN === 'User'" class="mt-4">
-        <ul class="space-y-2">
-          <li v-for="user in users" :key="user.email" class="text-gray-900">
-            <router-link 
-              :to="`/user/${encodeURIComponent(user.email)}`" 
-              class="block px-4 bg-indigo-200 py-2 text-sm hover:bg-indigo-100 rounded-md"
-            >
-              <div>
-                <img class="size-8 rounded-full bg-gray-800" :src="user.avatarUrl" alt="用户头像" />
-                <p><strong>{{ user.username }}</strong></p>
-                <p>Email: {{ user.email }}</p>
-                <p>{{ user.bio }}</p>
+      <div v-if="currentN === 'User'" class="mt-6">
+        <ul class="divide-y divide-indigo-800">
+          <li v-for="user in users" :key="user.email" class="bg-indigo-900 text-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 py-4">
+            <router-link :to="`/user/${encodeURIComponent(user.email)}`" class="flex items-center px-6 py-4 hover:bg-indigo-800 rounded-lg transition-all duration-300">
+              <div class="flex items-center" style="gap: 1.5rem;">
+                <!-- 用户头像 -->
+                <img class="w-14 h-14 rounded-full bg-gray-700 border-4 border-indigo-400 shadow-sm hover:scale-105 transition-transform duration-300" :src="user.avatarUrl" alt="用户头像" style="max-width: 56px; max-height: 56px; object-fit: cover;"/>
+                <!-- 用户信息 -->
+                <div class="text-sm leading-tight space-y-2">
+                  <!-- 用户名 -->
+                  <p class="font-bold text-xl text-white flex items-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-indigo-400 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M5.121 17.804A10.97 10.97 0 012 12C2 6.477 6.477 2 12 2s10 4.477 10 10c0 1.57-.363 3.057-1.006 4.389"/>
+                    </svg>
+                    &nbsp;{{ user.username }}
+                  </p>
+                  <!-- 用户邮箱 -->
+                  <div class="flex items-center text-indigo-300">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M16 12h.01M12 8h.01M12 16h.01M8 12h.01M6 16h.01M4 8h.01M4 16h.01"/>
+                    </svg>
+                    &nbsp;{{ user.email }}
+                  </div>
+                  <!-- 用户简介 -->
+                  <p class="text-gray-400 text-sm mt-2 border-t border-indigo-800 pt-2 flex items-center hover:text-gray-200 transition-colors duration-200" :title="user.about">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M12 12c-3.31 0-6 2.686-6 6h12c0-3.314-2.69-6-6-6zM6 6c0-2.21 3.134-4 6-4s6 1.79 6 4c0 1.46-3.583 4-6 4s-6-2.54-6-4z"/>
+                    </svg>
+                    &nbsp;{{ user.about || "No bio available" }}
+                  </p>
+                </div>
               </div>
             </router-link>
           </li>
@@ -156,46 +175,7 @@
     // bots.value = fuse.value.search(searchQuery.value.trim()).map(result => result.item);
     // console.log(bots.value);
   }
-    
-  users.value = [
-    { username: 'Username1', email: "user1@example.com", avatarUrl: "http://localhost:8081/avatars/user1.jpg", bio: "Hello!" },
-    { username: 'Username2', email: "user2@example.com", avatarUrl: "http://localhost:8081/avatars/user2.jpg", bio: "Nice to meet you" },
-  ];
-  
-  temp_bots.value =[
-    {
-      id: 1,
-      name: 'Xbot_007',
-      version: '1.0',
-      views: '123',
-      createdAt: '2022-12-13',
-      price: '2,000.00',
-      state: 'Online',
-      description: 'This is a chatbot that can help you with your daily tasks.',
-      highlight: 'It is very easy to use and can be customized to suit your needs; it is also very affordable; it is very reliable and can be used for a long time.',
-    },
-    {
-      id: 2,
-      name: 'Chat_GPT4',
-      version: '1.0',
-      views: '456',
-      createdAt: '2023-01-22',
-      price: '14,000.00', 
-      state: 'Offline',
-      description: 'This is a bot that can help you deal with complex problems.',
-      highlight: 'It is very powerful and can be used for a long time; it is also very reliable and can be used for a long time.',
-    },
-    {
-      id: 3,
-      name: 'Llama',
-      version: '1.0',
-      views: '789',
-      createdAt:'2023-01-23',
-      price: '7,600.00', 
-      state: 'Online',
-      description: 'This is a bot help you with many calculations.',
-      highlight: 'It can help calculate many things; it is very reliable and can be used for a long time.',
-    },
-  ]
+  users.value = [];
+  temp_bots.value =[]
   </script>
   
