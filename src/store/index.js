@@ -20,8 +20,7 @@ const store = createStore({
                 lastname: '',
                 country: '',
                 about: ""
-            },
-            currentSessionId: null,
+            }
         };
     },
     mutations: {
@@ -48,9 +47,6 @@ const store = createStore({
         },
         updateName(state, username) {
             state.user.username = username;
-        },
-        setCurrentSessionId(state, sessionId) {
-            state.currentSessionId = sessionId
         }
     },
     actions: {
@@ -59,7 +55,7 @@ const store = createStore({
                 .then(response => {
                     if (response.data === "login successful") {
                         commit('setUserEmail', email);
-                        return true;
+                        return this.dispatch('fetchUserByEmail', email).then(() => true);
                     } else {
                         return false;
                     }
@@ -74,6 +70,7 @@ const store = createStore({
             return axios.post('/user/getInformation', { email })
                 .then(response => {
                     if (response.data) {
+                        console.log(response.data);
                         commit('setUserInfo', response.data);
                     } else {
                         console.error("User not found");
