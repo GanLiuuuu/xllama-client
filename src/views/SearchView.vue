@@ -74,7 +74,7 @@
   </template>
   
   <script setup>
-  import { ref } from 'vue'
+  import { ref, onMounted } from 'vue'
   import axios from 'axios'
   import { Dialog, DialogPanel, TransitionChild, TransitionRoot } from '@headlessui/vue'
   import BotDetail from '../components/BotDetail.vue';
@@ -101,6 +101,10 @@
   ]
   
   const searchQuery = ref(''); 
+
+  onMounted(() => {
+    searchUsers();
+  });
 
   const openModal = (bot) => {
   showBot.value = bot
