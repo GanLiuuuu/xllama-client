@@ -179,6 +179,72 @@
         {{ isMultiTurn ? 'Bot will remember conversation context' : 'Each question is independent' }}
       </p>
     </div>
+
+    <div class="mt-4 bg-gray-50 sm:rounded-lg">
+      <div class="px-4 py-5 sm:p-6">
+        <div class="flex items-center justify-between">
+          <h3 class="text-base font-semibold text-gray-900">Model Settings</h3>
+          <button 
+            @click="isSettingsOpen = !isSettingsOpen"
+            class="inline-flex items-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
+          >
+            {{ isSettingsOpen ? 'Hide Settings' : 'Show Settings' }}
+          </button>
+        </div>
+        
+        <div v-if="isSettingsOpen" class="mt-4 space-y-4">
+          <!-- Temperature Slider -->
+          <div>
+            <label class="block text-sm font-medium text-gray-700">
+              Temperature: {{ modelSettings.temperature }}
+            </label>
+            <input 
+              type="range" 
+              v-model="modelSettings.temperature" 
+              min="0" 
+              max="2" 
+              step="0.1"
+              class="w-full mt-1"
+            >
+            <p class="mt-1 text-sm text-gray-500">
+              Controls randomness: 0 is focused, 2 is more creative
+            </p>
+          </div>
+
+          <!-- Max Tokens Input -->
+          <div>
+            <label class="block text-sm font-medium text-gray-700">
+              Max Tokens
+            </label>
+            <input 
+              type="number" 
+              v-model="modelSettings.maxTokens" 
+              min="1" 
+              max="4000"
+              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+            >
+            <p class="mt-1 text-sm text-gray-500">
+              Maximum length of the response
+            </p>
+          </div>
+
+          <!-- System Message Input -->
+          <div>
+            <label class="block text-sm font-medium text-gray-700">
+              System Message
+            </label>
+            <textarea 
+              v-model="modelSettings.systemMessage" 
+              rows="3"
+              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+            ></textarea>
+            <p class="mt-1 text-sm text-gray-500">
+              Define the AI's behavior and role
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -341,27 +407,22 @@ const formatMessages = (text, imageUrl) => {
   }
   
   // Add current message
-  let content = []
   if (text) {
-    content.push({
-      type: 'text',
-      text: text
-    })
+    if (imageUrl) {
+      messages.push({
+        role: 'user',
+        content: [
+          { type: 'text', text: text },
+          { type: 'image_url', image_url: { url: imageUrl } }
+        ]
+      })
+    } else {
+      messages.push({
+        role: 'user',
+        content: text
+      })
+    }
   }
-
-  if (imageUrl) {
-    content.push({
-      type: 'image_url',
-      image_url: {
-        url: imageUrl
-      }
-    })
-  }
-
-  messages.push({
-    role: 'user',
-    content: content
-  })
 
   return messages
 }
@@ -414,6 +475,13 @@ const sendMsg = async () => {
   
   try {
     const chatService = new ChatService(selected.value.name)
+    // 设置用户自定义参数
+    chatService.setSettings({
+      temperature: modelSettings.value.temperature,
+      maxTokens: modelSettings.value.maxTokens,
+      systemMessage: modelSettings.value.systemMessage
+    })
+    
     const messages = formatMessages(text.value, uploadedImageUrl.value)
     
     // 特殊处理图像生成模型
@@ -559,4 +627,18 @@ const getDisplayName = (modelName) => {
   }
   return nameMap[modelName] || modelName
 }
+
+const isSettingsOpen = ref(false)
+const modelSettings = ref({
+  temperature: 0.7,
+  maxTokens: 2000,
+  systemMessage: "You are a helpful assistant."
+})
+
+// 监听模型变化，更新系统消息
+watch(selected, (newModel) => {
+  if (newModel.systemPrompt) {
+    modelSettings.value.systemMessage = newModel.systemPrompt
+  }
+})
 </script>

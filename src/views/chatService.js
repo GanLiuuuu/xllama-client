@@ -22,7 +22,6 @@ export class ChatService {
       }
     async *streamMessage(messages, onProgress) {
       try {
-        // Handle different bot types
         if (this.config.type === 'image') {
           const prompt = messages[messages.length - 1].content[0].text;
           const response = await this.handleImageGeneration(prompt);
@@ -31,14 +30,33 @@ export class ChatService {
           return;
         }
 
-        const systemMessage = messages[0]?.role === 'system' ? [] : [{
+        const formattedMessages = messages.map(msg => {
+          if (Array.isArray(msg.content)) {
+            return {
+              ...msg,
+              content: msg.content.map(c => c.text || c).join('\n')
+            }
+          }
+          return msg
+        })
+
+        const systemMessage = formattedMessages[0]?.role === 'system' ? [] : [{
           role: 'system',
-          content: this.config.systemMessages?.[messages.length > 1 ? 'multiTurn' : 'singleTurn'] 
-            || this.config.systemPrompt
-            || "You are a helpful assistant."
+          content: this.settings?.systemMessage || 
+                   this.config.systemMessages?.[formattedMessages.length > 1 ? 'multiTurn' : 'singleTurn'] || 
+                   this.config.systemPrompt ||
+                   "You are a helpful assistant."
         }]
 
-        const fullMessages = [...systemMessage, ...messages]
+        const fullMessages = [...systemMessage, ...formattedMessages]
+
+        const requestBody = {
+          model: this.config.model || 'gpt-3.5-turbo',
+          messages: fullMessages,
+          stream: true,
+          temperature: parseFloat(this.settings?.temperature) || 0.7,
+          max_tokens: parseInt(this.settings?.maxTokens) || 2000
+        }
 
         const response = await fetch(this.config.apiEndpoint, {
           method: 'POST',
@@ -46,17 +64,14 @@ export class ChatService {
             ...this.config.headers,
             'Accept': 'text/event-stream',
           },
-          body: JSON.stringify({
-            ...this.config.formatRequest(fullMessages),
-            stream: true,
-            temperature: messages.length > 1 ? 0.7 : 0.3
-          })
+          body: JSON.stringify(requestBody)
         });
-  
+
         if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
+          const errorData = await response.json().catch(() => ({}));
+          throw new Error(`HTTP error! status: ${response.status}, message: ${JSON.stringify(errorData)}`);
         }
-  
+
         const reader = response.body.getReader();
         const decoder = new TextDecoder();
         let buffer = '';
@@ -156,5 +171,8 @@ export class ChatService {
         console.error('Error generating image:', error);
         throw error;
       }
+    }
+    setSettings(settings) {
+      this.settings = settings;
     }
   }
