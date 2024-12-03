@@ -347,6 +347,13 @@ const models = [
     description: 'Specialized in solving mathematical problems',
     type: 'text',
     custom: true
+  },
+  { 
+    id: 7, 
+    name: 'testBOT',
+    description: 'Specialized in bots',
+    type: 'text',
+    custom: true
   }
 ]
 const selected = ref(models[0])
@@ -526,7 +533,10 @@ const updateLastBotMessage = (content, isStreaming) => {
   scrollToBottom()
 }
 
-// Send message
+// 添加 WebSocket 相关的代码
+const socket = ref(null)
+
+// 修改 sendMsg 方法
 const sendMsg = async () => {
   if (!text.value || !store.state.currentSessionId) {
     return
@@ -539,36 +549,86 @@ const sendMsg = async () => {
   let currentContent = ''
   
   try {
-    const chatService = new ChatService(selected.value.name)
-    chatService.setSettings({
-      temperature: modelSettings.value.temperature,
-      maxTokens: modelSettings.value.maxTokens,
-      systemMessage: modelSettings.value.systemMessage
-    })
-    
-    // 根据模型类型处理消息
-    if (selected.value.type === 'image') {
-      const imageUrl = await chatService.handleImageGeneration(text.value);
-      currentContent = imageUrl;
-      updateLastBotMessage(currentContent, false);
-    } else {
-      const messages = formatMessages(text.value, uploadedImageUrl.value)
-      for await (const chunk of chatService.streamMessage(messages, (content) => {
-        currentContent += content
-        updateLastBotMessage(currentContent, true)
-      })) {
-        continue;
-      }
-    }
+    // 当 id > 6 时使用 WebSocket
+    if (selected.value.id > 6) {
+      // 创建新的 WebSocket 连接
+      socket.value = new WebSocket('ws://localhost:8000/ws')
+      
+      // 等待连接建立
+      await new Promise((resolve, reject) => {
+        socket.value.onopen = () => {
+          console.log('WebSocket connected')
+          resolve()
+        }
+        socket.value.onerror = (error) => {
+          console.error('WebSocket connection error:', error)
+          reject(error)
+        }
+      })
 
-    await saveChatInteraction({
-      request: userMessage,
-      response: currentContent
-    })
-    updateLastBotMessage(currentContent, false)
+      // 等待接收响应
+      const response = await new Promise((resolve, reject) => {
+        socket.value.onmessage = (event) => {
+          const response = JSON.parse(event.data)
+          resolve(response)
+        }
+        socket.value.onerror = (error) => {
+          reject(error)
+        }
+      })
+
+      // 发送消息
+      const msgObj = {
+        content: text.value,
+        
+      }
+      socket.value.send(JSON.stringify(msgObj))
+
+      // 处理响应
+      updateLastBotMessage(response.content, false)
+
+      // 关闭连接
+      socket.value.close()
+      socket.value = null
+
+    } else {
+      // 使用原来的方法
+      const chatService = new ChatService(selected.value.name)
+      chatService.setSettings({
+        temperature: modelSettings.value.temperature,
+        maxTokens: modelSettings.value.maxTokens,
+        systemMessage: modelSettings.value.systemMessage
+      })
+      
+      // 根据模型类型处理消息
+      if (selected.value.type === 'image') {
+        const imageUrl = await chatService.handleImageGeneration(text.value);
+        currentContent = imageUrl;
+        updateLastBotMessage(currentContent, false);
+      } else {
+        const messages = formatMessages(text.value, uploadedImageUrl.value)
+        for await (const chunk of chatService.streamMessage(messages, (content) => {
+          currentContent += content
+          updateLastBotMessage(currentContent, true)
+        })) {
+          continue;
+        }
+      }
+
+      await saveChatInteraction({
+        request: userMessage,
+        response: currentContent
+      })
+      updateLastBotMessage(currentContent, false)
+    }
   } catch (error) {
     console.error('Error with API:', error)
     updateLastBotMessage('Sorry, I couldn\'t process that request.', false)
+    // 确保在发生错误时也关闭 WebSocket
+    if (socket.value) {
+      socket.value.close()
+      socket.value = null
+    }
   }
 
   text.value = ''
@@ -770,4 +830,5 @@ const startFinetune = async () => {
 watch(finetuneSettings, (newSettings) => {
   console.log('Fine-tune settings changed:', newSettings)
 }, { deep: true })
+//TODO: 根据用户的userbot表格来搜索
 </script>

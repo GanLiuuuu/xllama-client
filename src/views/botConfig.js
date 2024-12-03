@@ -5,8 +5,7 @@ export const botConfig = {
     name: 'GPT3.5-turbo',
     type: 'text',
     official: true,
-    //apiEndpoint: 'https://api.openai-proxy.org/v1/chat/completions',
-    apiEndpoint: 'http://172.29.11.239:8000/v1/chat/completions',
+    apiEndpoint: 'https://api.openai-proxy.org/v1/chat/completions',
     model: 'gpt-3.5-turbo',
     description: 'General purpose chat model with broad knowledge',
     headers: {
@@ -59,14 +58,14 @@ export const botConfig = {
     type: 'text',
     official: false,
     apiEndpoint: 'https://api.openai-proxy.org/v1/chat/completions',
-    model: 'gpt-4',
+    model: 'gpt-4o',
     description: 'Smaller, faster version of GPT-4',
     headers: {
       'Content-Type': 'application/json',
       'Authorization': 'Bearer sk-6Y7nQnrQPav7gv6h0Dhl6QLPdeTUvxjyDrrKhfYbb590sGl5'
     },
     formatRequest: (messages) => ({
-      model: 'gpt-4',
+      model: 'gpt-4o',
       messages: messages
     }),
     systemMessages: {
