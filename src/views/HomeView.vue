@@ -116,7 +116,7 @@
         </div>
 
           <!--Home Page-->
-          <div v-if="currentNavItem == 'Home' ">
+          <div v-if="currentNavItem == 'Home'" :key="homeRefreshKey">
             <header>
               <!-- Secondary navigation -->
               <nav class="flex overflow-x-auto border-b border-white/10 py-4">
@@ -390,6 +390,7 @@ const redeemAmount = ref('');
 const showChargeModal = ref(false);
 const showRedeemModal = ref(false);
 const currentRecommendationSubNavItem = ref('Latest');
+const homeRefreshKey = ref(0);
 
 function selectNavItem(item) {
   currentNavItem.value = item.name;
@@ -404,6 +405,10 @@ function selectNavItem(item) {
       item1.current = false;
     }
   });
+  
+  if (item.name === 'Home') {
+    window.location.reload();
+  }
 }
 
 function selectSubNavItem(item) {
@@ -440,7 +445,6 @@ function convertPointsToTokens() {
       store.dispatch('redeem', pointsToConvert).then(success => {
         if (success) {
           alert(`redeem successfully! Current points: ${store.state.user.points}`);
-          showRedeemModal.value = false;
         } else {
           alert("redeem failed.");
         }
