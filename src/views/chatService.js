@@ -23,7 +23,14 @@ export class ChatService {
     async *streamMessage(messages, onProgress) {
       try {
         if (this.config.type === 'image') {
-          const prompt = messages[messages.length - 1].content[0].text;
+          const prompt = typeof messages === 'string' 
+            ? messages 
+            : messages[messages.length - 1]?.content;
+
+          if (!prompt) {
+            throw new Error('No prompt provided for image generation');
+          }
+
           const response = await this.handleImageGeneration(prompt);
           yield response;
           if (onProgress) onProgress(response);
@@ -154,6 +161,11 @@ export class ChatService {
     // New method for handling image generation
     async handleImageGeneration(prompt) {
       try {
+        console.log('Image generation request:', {
+          endpoint: this.config.apiEndpoint,
+          body: this.config.formatRequest(prompt)
+        });
+
         const response = await fetch(this.config.apiEndpoint, {
           method: 'POST',
           headers: this.config.headers,
@@ -161,12 +173,18 @@ export class ChatService {
         });
 
         if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
+          const errorData = await response.json().catch(() => ({}));
+          throw new Error(`HTTP error! status: ${response.status}, message: ${JSON.stringify(errorData)}`);
         }
 
         const data = await response.json();
-        const imageUrl = this.config.handleResponse(data);
-        return imageUrl.startsWith('@') ? imageUrl.substring(1) : imageUrl;
+        console.log('Image generation response:', data);
+
+        if (!data.data || !data.data[0] || !data.data[0].url) {
+          throw new Error('Invalid response format from image API');
+        }
+
+        return data.data[0].url;
       } catch (error) {
         console.error('Error generating image:', error);
         throw error;

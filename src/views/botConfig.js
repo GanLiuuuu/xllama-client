@@ -83,6 +83,7 @@ export const botConfig = {
     type: 'image',
     official: true,
     apiEndpoint: 'https://api.openai-proxy.org/v1/images/generations',
+    model: 'dall-e-3',
     description: 'Advanced image generation model',
     headers: {
       'Content-Type': 'application/json',
@@ -90,15 +91,13 @@ export const botConfig = {
     },
     formatRequest: (prompt) => ({
       model: "dall-e-3",
-      prompt: prompt,
+      prompt: typeof prompt === 'string' ? prompt : prompt[0].content,
       n: 1,
-      size: "1024x1024"
+      size: "1024x1024",
+      quality: "standard",
+      response_format: "url"
     }),
-    handleResponse: (response) => response.data[0].url,
-    refinePromptMessage: [{
-      role: "system",
-      content: "You are a helpful assistant that improves image generation prompts. For each prompt, suggest 2-3 refined versions that are more detailed and likely to generate better images. Focus on visual details and artistic style."
-    }]
+    handleResponse: (response) => response.data[0].url
   },
   TRANSLATOR: {
     id: 5,

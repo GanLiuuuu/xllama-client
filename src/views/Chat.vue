@@ -354,7 +354,7 @@ watch(
               content: interaction.interaction_req,
               isStreaming: false
             })
-            // 添加机器人回复
+            // 添���机器人回复
             messages.push({
               id: `${interaction.interaction_id}-bot`,
               type: 'bot',
@@ -463,7 +463,7 @@ const updateLastBotMessage = (content, isStreaming) => {
 
 // Send message
 const sendMsg = async () => {
-  if (!text.value && !uploadedImageUrl.value || !text.value || !store.state.currentSessionId) {
+  if (!text.value || !store.state.currentSessionId) {
     return
   }
 
@@ -475,23 +475,19 @@ const sendMsg = async () => {
   
   try {
     const chatService = new ChatService(selected.value.name)
-    // 设置用户自定义参数
     chatService.setSettings({
       temperature: modelSettings.value.temperature,
       maxTokens: modelSettings.value.maxTokens,
       systemMessage: modelSettings.value.systemMessage
     })
     
-    const messages = formatMessages(text.value, uploadedImageUrl.value)
-    
-    // 特殊处理图像生成模型
+    // 根据模型类型处理消息
     if (selected.value.type === 'image') {
-      for await (const imageUrl of chatService.streamMessage(messages)) {
-        currentContent = imageUrl.startsWith('@') ? imageUrl.substring(1) : imageUrl
-        updateLastBotMessage(currentContent, false)
-      }
+      const imageUrl = await chatService.handleImageGeneration(text.value);
+      currentContent = imageUrl;
+      updateLastBotMessage(currentContent, false);
     } else {
-      // 处理文本模型
+      const messages = formatMessages(text.value, uploadedImageUrl.value)
       for await (const chunk of chatService.streamMessage(messages, (content) => {
         currentContent += content
         updateLastBotMessage(currentContent, true)
@@ -499,6 +495,7 @@ const sendMsg = async () => {
         continue;
       }
     }
+
     await saveChatInteraction({
       request: userMessage,
       response: currentContent
