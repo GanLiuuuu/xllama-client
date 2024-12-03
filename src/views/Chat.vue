@@ -391,7 +391,7 @@ watch(
         const response = await axios.get(`/api/chat/session/${newSessionId}/history`)
         console.error(response.data)
         if (response.data) {
-          // 修改映射逻辑，为每条消息创建一对人类和机器人的消息
+          // 修改映射逻辑，每条消息创建一对人类和机器人的消息
           const messages = []
           response.data.forEach(interaction => {
             // 添加用户消息
@@ -445,11 +445,19 @@ const formatMessages = (text, imageUrl) => {
   
   // If multi-turn mode is enabled, include chat history
   if (isMultiTurn.value) {
-    // Get last few messages for context (limiting to last 4 turns to keep context manageable)
-    const contextMessages = messageHistory.value.slice(-8).map(msg => ({
-      role: msg.type === 'human' ? 'user' : 'assistant',
-      content: msg.content
-    }))
+    const contextMessages = messageHistory.value.slice(-8).map(msg => {
+      // 如果消息内容是数组（包含图片），保持原样
+      if (Array.isArray(msg.content)) {
+        return {
+          role: msg.type === 'human' ? 'user' : 'assistant',
+          content: msg.content
+        }
+      }
+      return {
+        role: msg.type === 'human' ? 'user' : 'assistant',
+        content: msg.content
+      }
+    })
     messages.push(...contextMessages)
   }
   
@@ -459,8 +467,17 @@ const formatMessages = (text, imageUrl) => {
       messages.push({
         role: 'user',
         content: [
-          { type: 'text', text: text },
-          { type: 'image_url', image_url: { url: imageUrl } }
+          {
+            type: 'text',
+            text: text
+          },
+          {
+            type: 'image_url',
+            image_url: {
+              url: imageUrl,  // 现在这里直接是base64数据
+              detail: 'auto'
+            }
+          }
         ]
       })
     } else {
@@ -471,6 +488,7 @@ const formatMessages = (text, imageUrl) => {
     }
   }
 
+  console.log('Formatted messages:', JSON.stringify(messages, null, 2))
   return messages
 }
 const clearChatHistory = async () => {
@@ -562,27 +580,23 @@ const handleFileUpload = async (event) => {
   const file = event.target.files[0]
   if (!file) return
   
-  const formData = new FormData()
-  formData.append('smfile', file)
-
   try {
-    const response = await fetch('apis/api/v2/upload', {
-      method: 'POST',
-      headers: {
-        Authorization: 'xUYYZYpzzZFXNRoCiuy1OGjc7nGlgaIL',
-      },
-      body: formData
+    // 读取文件为base64
+    const base64Data = await new Promise((resolve, reject) => {
+      const reader = new FileReader()
+      reader.onload = () => resolve(reader.result)
+      reader.onerror = reject
+      reader.readAsDataURL(file)
     })
     
-    const data = await response.json()
-    if (data.code === 'success') {
-      uploadedImageUrl.value = data.data.url
-      console.log('Image uploaded to SMMS. URL: ', uploadedImageUrl.value)
-    } else {
-      console.error('Error uploading image: ', data.message)
-    }
+    uploadedImageUrl.value = base64Data
+    console.log('Image converted to base64 successfully')
+    
+    // 可选：添加提示信息
+    text.value = text.value || 'What is in this image?'
   } catch (error) {
-    console.error('Error with image upload: ', error)
+    console.error('Error processing image:', error)
+    alert('Failed to process image. Please try again.')
   }
 }
 

@@ -40,11 +40,25 @@ export class ChatService {
         const formattedMessages = messages.map(msg => {
           if (Array.isArray(msg.content)) {
             return {
-              ...msg,
-              content: msg.content.map(c => c.text || c).join('\n')
+              role: msg.role,
+              content: msg.content.map(item => {
+                if (item.type === 'image_url') {
+                  return {
+                    type: 'image_url',
+                    image_url: {
+                      url: item.image_url.url,
+                      detail: item.image_url.detail || 'auto'
+                    }
+                  }
+                }
+                return item
+              })
             }
           }
-          return msg
+          return {
+            role: msg.role,
+            content: typeof msg.content === 'string' ? msg.content : JSON.stringify(msg.content)
+          }
         })
 
         const systemMessage = formattedMessages[0]?.role === 'system' ? [] : [{
@@ -56,6 +70,8 @@ export class ChatService {
         }]
 
         const fullMessages = [...systemMessage, ...formattedMessages]
+
+        console.log('Sending messages to API:', JSON.stringify(fullMessages, null, 2))
 
         const requestBody = {
           model: this.config.model || 'gpt-3.5-turbo',
