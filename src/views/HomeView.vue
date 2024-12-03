@@ -378,6 +378,7 @@ const navigation = ref([
   { name: 'Discover', href: '#', icon: SignalIcon, current: false },
   { name: 'Recommendation', href: '#', icon: HandThumbUpIcon, current: false },
   { name: 'Search', href: '#', icon: MagnifyingGlassCircleIcon, current: false},
+  { name: 'Recently', href: '#', icon: ClockIcon, current: false },
 ]);
 
 const conversations = ref([])
