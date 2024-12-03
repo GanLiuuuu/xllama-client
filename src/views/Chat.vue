@@ -600,15 +600,26 @@ const getRowStyle = () => {
 
 const saveChatInteraction = async (interaction) => {
   try {
-    await axios.post('/api/chat/interaction', {
+    const response = await axios.post('/api/chat/interaction', {
       sessionId: store.state.currentSessionId,
       userId: currentUserId.value,
       botId: selected.value.id,
       interactionReq: interaction.request,
       interactionRes: interaction.response
     })
+    
+    // 更新 store 中的 tokens（假设响应中包含了更新后的 tokens）
+    if (response.data.remainingTokens) {
+      store.commit('updateUserTokens', response.data.remainingTokens)
+    }
   } catch (error) {
-    console.error('Error saving chat interaction:', error.response?.data || error.message)
+    if (error.response?.status === 402) {  // Payment Required
+      alert('Insufficient tokens. Please recharge.')
+    } else {
+      console.error('Error saving chat interaction:', error.response?.data || error.message)
+      alert('Failed to save chat interaction. Please try again.')
+    }
+    throw error  // 重新抛出错误，让调用者知道保存失败
   }
 }
 

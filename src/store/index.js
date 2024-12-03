@@ -51,6 +51,9 @@ const store = createStore({
         },
         setCurrentSessionId(state, sessionId) {
             state.currentSessionId = sessionId;
+        },
+        updateUserTokens(state, tokens) {
+            state.user.tokens = tokens;
         }
     },
     actions: {
