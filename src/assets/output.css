@@ -1938,6 +1938,10 @@ select {
   padding-top: 3.5rem;
 }
 
+.pt-4 {
+  padding-top: 1rem;
+}
+
 .pt-8 {
   padding-top: 2rem;
 }
@@ -2500,6 +2504,11 @@ select {
   background-color: rgb(99 102 241 / var(--tw-bg-opacity, 1));
 }
 
+.focus\:border-indigo-500:focus {
+  --tw-border-opacity: 1;
+  border-color: rgb(99 102 241 / var(--tw-border-opacity, 1));
+}
+
 .focus\:bg-white:focus {
   --tw-bg-opacity: 1;
   background-color: rgb(255 255 255 / var(--tw-bg-opacity, 1));
@@ -2578,6 +2587,14 @@ select {
 
 .focus-visible\:outline-red-600:focus-visible {
   outline-color: #dc2626;
+}
+
+.disabled\:cursor-not-allowed:disabled {
+  cursor: not-allowed;
+}
+
+.disabled\:opacity-50:disabled {
+  opacity: 0.5;
 }
 
 @media (min-width: 640px) {

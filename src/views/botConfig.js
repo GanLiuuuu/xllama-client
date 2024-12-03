@@ -5,7 +5,8 @@ export const botConfig = {
     name: 'GPT3.5-turbo',
     type: 'text',
     official: true,
-    apiEndpoint: 'https://api.openai-proxy.org/v1/chat/completions',
+    //apiEndpoint: 'https://api.openai-proxy.org/v1/chat/completions',
+    apiEndpoint: 'http://172.29.11.239:8000/v1/chat/completions',
     model: 'gpt-3.5-turbo',
     description: 'General purpose chat model with broad knowledge',
     headers: {
@@ -14,7 +15,8 @@ export const botConfig = {
     },
     formatRequest: (messages) => ({
       model: 'gpt-3.5-turbo',
-      messages: messages
+      messages: messages,
+      stream: true
     }),
     systemMessages: {
       singleTurn: "You are a helpful assistant. Provide direct and concise answers to questions.",
@@ -39,7 +41,8 @@ export const botConfig = {
     },
     formatRequest: (messages) => ({
       model: 'gpt-4-turbo-preview',
-      messages: messages
+      messages: messages,
+      stream: true
     }),
     systemMessages: {
       singleTurn: "You are a helpful assistant. Provide direct and concise answers to questions.",
@@ -54,7 +57,7 @@ export const botConfig = {
     id: 3,
     name: 'GPT4-mini',
     type: 'text',
-    official: true,
+    official: false,
     apiEndpoint: 'https://api.openai-proxy.org/v1/chat/completions',
     model: 'gpt-4',
     description: 'Smaller, faster version of GPT-4',
@@ -79,8 +82,9 @@ export const botConfig = {
     id: 4,
     name: 'DALL-E 3',
     type: 'image',
-    official: true,
+    official: false,
     apiEndpoint: 'https://api.openai-proxy.org/v1/images/generations',
+    model: 'dall-e-3',
     description: 'Advanced image generation model',
     headers: {
       'Content-Type': 'application/json',
@@ -88,15 +92,13 @@ export const botConfig = {
     },
     formatRequest: (prompt) => ({
       model: "dall-e-3",
-      prompt: prompt,
+      prompt: typeof prompt === 'string' ? prompt : prompt[0].content,
       n: 1,
-      size: "1024x1024"
+      size: "1024x1024",
+      quality: "standard",
+      response_format: "url"
     }),
-    handleResponse: (response) => response.data[0].url,
-    refinePromptMessage: [{
-      role: "system",
-      content: "You are a helpful assistant that improves image generation prompts. For each prompt, suggest 2-3 refined versions that are more detailed and likely to generate better images. Focus on visual details and artistic style."
-    }]
+    handleResponse: (response) => response.data[0].url
   },
   TRANSLATOR: {
     id: 5,
