@@ -23,7 +23,6 @@
             </div>
 
             <div>
-              <h3 class="sr-only">Reviews</h3>
               <div class="flex items-center">
                 <StarIcon v-for="rating in [0, 1, 2, 3, 4]" :key="rating"
                   :class="[average > rating ? 'text-yellow-400' : 'text-gray-300', 'size-5 shrink-0']"
@@ -53,10 +52,14 @@
           </div>
 
           <div class="mt-10 grid grid-cols-1 gap-x-6 gap-y-4 sm:grid-cols-2">
-            <button type="button"
-              class="flex w-full items-center justify-center rounded-md border border-transparent bg-indigo-600 px-8 py-3 text-base font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-gray-50 col-span-2"
-              >
-              Add to My Bot List</button>
+            <button v-if="!ifSubscribed" type="button"
+              class="flex w-full items-center justify-center rounded-md border border-transparent bg-indigo-600 px-8 py-3 text-base font-medium text-white hover:bg-indigo-700 focus:outline-none col-span-2"
+              @click = subscribeBot(props.botId)>
+              Subscribe</button>
+            <button v-if="ifSubscribed" type="button"
+              class="flex w-full items-center justify-center rounded-md border border-transparent bg-gray-500 px-8 py-3 text-base font-medium text-white hover:bg-gray-600 focus:outline-none col-span-2"
+              @click = deSubscribe(props.botId)>
+              Subscribed</button>
           </div>
         </div>
 
@@ -122,10 +125,10 @@
                   <div class="flex-none py-10">
                     <img :src="review.avatarUrl" alt="" class="size-10 rounded-full bg-gray-100" />
                   </div>
-                  <div :class="[reviewIdx === 0 ? '' : 'border-t border-gray-200', 'py-10']">
+                  <div :class="[reviewIdx === 0 ? '' : 'border-t border-gray-200 w-full', 'py-10']">
                     <h3 class="font-medium text-gray-900">{{ review.user }}</h3>
                     <p>
-                      {{ getFormattedDate(review.createdAt) }}
+                      {{ getFormattedDate(review.date) }}
                     </p>
 
                     <div class="mt-4 flex items-center">
@@ -139,13 +142,11 @@
               </TabPanel>
 
               <TabPanel class="text-sm text-gray-500">
-                <h3 class="sr-only">Frequently Asked Questions</h3>
-
                 <dl>
                   <template v-for="faq in faqs" :key="faq.question">
-                    <dt class="mt-10 font-medium text-gray-900">{{ faq.question }}</dt>
+                    <dt class="mt-10 font-medium text-gray-900">{{ "Q : " + faq.question }}</dt>
                     <dd class="mt-2 text-sm/6 text-gray-500">
-                      <p>{{ faq.answer }}</p>
+                      <p>{{ "A : " + faq.answer }}</p>
                     </dd>
                   </template>
                 </dl>
@@ -161,17 +162,23 @@
 <script setup>
 import { StarIcon } from '@heroicons/vue/20/solid'
 import { Tab, TabGroup, TabList, TabPanel, TabPanels } from '@headlessui/vue'
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, reactive } from 'vue';
 import axios from 'axios';
 import dayjs from 'dayjs';
+import { useStore } from 'vuex';
 const isFocused = ref(false);
 const isLoading = ref(true);
 const errorMessage = ref(null);
 const average = ref(4); //初始average为0
 
+const store = useStore();
+const user = reactive( {
+  email : store.state.user.email,
+  avatarUrl: store.state.user.avatarUrl
+} );
 
 function getFormattedDate(date, format = "MMMM D, YYYY") {
-  return date ? dayjs(date).format(format) : null;
+  return date ? dayjs(date.slice(0, 19)).format(format) : null;
 }
 
 const product = ref({
@@ -197,7 +204,7 @@ const reviews = ref([
       content: `
           <p>This icon pack is just what I need for my latest project. There's an icon for just about anything I could ever need. Love the playful look!</p>
         `,
-      createdAt: '2021-07-16',
+      date: '2021-07-16',
       user: 'Emily Selman',
       avatarUrl:
         'https://images.unsplash.com/photo-1502685104226-ee32379fefbe?ixlib=rb-=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=8&w=256&h=256&q=80',
@@ -208,7 +215,7 @@ const reviews = ref([
       content: `
           <p>Blown away by how polished this icon pack is. Everything looks so consistent and each SVG is optimized out of the box so I can use it directly with confidence. It would take me several hours to create a single icon this good, so it's a steal at this price.</p>
         `,
-      createdAt: '2021-07-12',
+      date: '2021-07-12',
       user: 'Hector Gibbons',
       avatarUrl:
         'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?ixlib=rb-=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=8&w=256&h=256&q=80',
@@ -227,6 +234,8 @@ const faqs = ref([{
       "Yes. The icons are drawn on a 24 x 24 pixel grid, but the icons can be scaled to different sizes as needed. We don't recommend going smaller than 20 x 20 or larger than 64 x 64 to retain legibility and visual balance.",
   }]
 ); //初始faq为空
+
+const ifSubscribed = ref(false);
 
 const props = defineProps({
   botId:{
@@ -281,6 +290,17 @@ async function fetchFAQs(id) {
   }
 }
 
+async function ifSubscribedBot(email, botId) {
+  try {
+    const response = await axios.get(`/bots/ifSubscribe`, {
+      params: { email, botId },
+    }); // 请求 bot 的 reviews 信息
+    return response.data;
+  } catch (error) {
+    throw new Error(error.response?.data?.message || 'Failed to fetch subscribed info');
+  }
+}
+
 onMounted(async () => {
   try{
     product.value = await fetchBotDetail(props.botId); // 加载数据
@@ -290,6 +310,7 @@ onMounted(async () => {
     reviews.value = await fetchBotReviews(props.botId); // 加载 reviews 数据
     average.value = await fetchAverageRating(props.botId); // 加载 reviews 数据
     faqs.value = await fetchFAQs(props.botId); // 加载 reviews 数据
+    ifSubscribed.value = await ifSubscribedBot(user.email, props.botId); // 加载 subscribe 数据
   } catch (error) {
     errorMessage.value = error.message; // 捕获错误
   } finally {
@@ -308,10 +329,78 @@ function handleBlur() {
   }
 }
 
+const fetchUserBots = async () => {
+  try {
+    const email = user.email; //获取用户邮箱，此处只是一个例子，不一定可行
+    const response = await axios.get(`/bots/${email}`);
+    userBots.value = response.data;
+    console.log(userBots.value);
+  } catch (err) {
+
+  }
+};
+//购买（订阅）bot 
+const subscribeBot = async (botId) => {
+  try {
+    const email = user.email;
+    await axios.post(`/bots/${email}/${botId}`);
+    console.log("subscribe:"+botId);
+    await fetchUserBots(); // 刷新列表
+    ifSubscribed.value = await ifSubscribedBot(user.email, props.botId);
+    Swal.fire({
+      title: 'Success!',
+      html: `<p style="font-family: poppins;">This bot has been added to your list.</p>`,
+      icon: 'success',
+      confirmButtonText: 'OK',
+      allowOutsideClick: false,  
+      allowEscapeKey: false
+    })
+  } catch (err) {
+    console.log("Subscribe failed")
+  }
+};
+
+const deSubscribe = async (botId) => {
+  Swal.fire({
+    title: 'Check?',
+    html: `<p style="font-family: poppins;">Confirm unsubscription?</p>`,
+    icon: 'warning',
+    confirmButtonText: 'Yes',
+    showCancelButton: 'Cancel',
+    cancelButtonText: 'Cancel',
+    showCancelButton: true,
+    allowOutsideClick: false,  
+    allowEscapeKey: false
+  }).then(async (result) =>{
+    if(result.isConfirmed){
+      try {
+        const email = user.email;
+        await axios.delete(`/bots/${email}/${botId}`);
+        console.log("deSubscribe:"+botId);
+        await fetchUserBots(); // 刷新列表
+        ifSubscribed.value = await ifSubscribedBot(user.email, props.botId);
+        Swal.fire({
+          title: 'Success!',
+          html: `<p style="font-family: poppins;">This bot has been removed from your list.</p>`,
+          icon: 'success',
+          confirmButtonText: 'OK',
+          allowOutsideClick: false,  
+          allowEscapeKey: false
+        })
+      } catch (err) {
+        console.log("deSubscribe failed")
+      }
+    }
+  });
+};
+
+
 
 </script>
 
 <script>
+import Swal from 'sweetalert2';
+
 export default {
   data() {
     return {
@@ -328,14 +417,51 @@ export default {
     async postComment() {
       if (this.comment && this.rating) {
         try {
-          await axios.post(`/bots/addReview`, {
-            user: this.user.email,
-            bot: props.botId,
-            rating: this.rating,
-            content: this.comment,
+          const formData = new FormData();
+          formData.append('user', this.user.email);
+          formData.append('bot', this.props.botId);
+          formData.append('rating', this.rating);
+          formData.append('content', this.comment);
+
+          await axios.post(`/bots/addReview`, formData, {
+            headers: {
+              'Content-Type': 'multipart/form-data'
+            }
+          }).then(() => {
+            this.comment = '';
+            this.rating = 0;
+            this.isFocused = false;
+            Swal.fire({
+              title: 'Success!',
+              html: `<p style="font-family: poppins;">Comment posted successfully!</p>`,
+              icon: 'success',
+              confirmButtonText: 'OK',
+              showCancelButton: true,
+              allowOutsideClick: false,  
+              allowEscapeKey: false
+            });
+          }).catch((error) => {
+            console.log(error.response.data);
           });
+          
+          const newReviews = await axios.get(`/bots/botReviews`, {
+            params: { id:this.props.botId },
+          }); // 重加载 reviews 数据
+          this.reviews = newReviews.data;
+          const newAverage = await axios.get(`/bots/avg`, {
+            params: { id:this.props.botId },
+          }); // 重加载 average 数据
+          this.average = newAverage.data; // 重加载 average 数据
         }
         catch (error) {
+          Swal.fire({
+            title: 'Oops!',
+            html: `<p style="font-family: poppins;">Thers's some thing wrong!</p>`,
+            icon: 'error',
+            confirmButtonText: 'OK',
+            allowOutsideClick: false,  
+            allowEscapeKey: false
+          });
           throw new Error(error.response?.data?.message || 'Failed to post comment');
         }
       }

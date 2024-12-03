@@ -136,7 +136,7 @@ export default {
 
 
             // 校验 Version 格式
-            const versionPattern = /^\d+\.\d+$/; // 匹配 x.x 格式
+            const versionPattern = /^\d+\.\d+(\.\d+)?$/; // 匹配 x.x 或 x.x.x 格式
             if (!versionPattern.test(this.product.version)) {
                 alert('Version must be in the format x.x (e.g., 1.0)');
                 return;
