@@ -69,16 +69,18 @@
 
                 <!-- Upload Bot File -->
                 <div>
-                    <label class="block text-sm/6 font-bold text-white">Upload Bot File (.zip)</label>
+                    <label class="block text-sm/6 font-bold text-white">Enter the URL of your model.zip</label>
                     <div class="mt-2">
-                        <p v-if="selectedBotFile" class="mb-2 text-sm text-white">Selected: {{ selectedBotFile }}</p>
-                        <label for="botFile"
-                            class="cursor-pointer rounded-md bg-indigo-600 py-1 px-2 text-center text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500"
-                            style="width: 150px; display: inline-block;">
-                            Choose File
-                        </label>
-                        <input id="botFile" name="botFile" ref="botFile" type="file" accept=".zip" class="hidden"
-                            @change="handleBotFileChange" />
+                        <input 
+                            v-model="botFileURL" 
+                            id="botFileURL" 
+                            name="botFileURL" 
+                            type="text" 
+                            placeholder="Enter .zip file URL" 
+                            required
+                            autocomplete="off"
+                            class="block w-full rounded-md border-0 bg-white/5 py-1.5 text-white shadow-sm ring-1 ring-inset ring-white/10 focus:ring-2 focus:ring-inset focus:ring-indigo-500 sm:text-sm/6"
+                            >
                     </div>
                 </div>
 
@@ -120,7 +122,7 @@ export default {
                 description: '',
             },
             selectedAvatarFile: '', // 存储头像文件名称
-            selectedBotFile: '', // 存储 bot 文件名称
+            botFileURL: '', // 存储 bot 文件名称
             isSubmitting: false, // 是否正在提交
         };
     },
@@ -134,15 +136,7 @@ export default {
             }
         },
 
-        // 处理 bot 文件选择
-        handleBotFileChange(event) {
-            const file = event.target.files[0];
-            if (file) {
-                this.selectedBotFile = file.name; // 更新 bot 文件名称
-            } else {
-                this.selectedBotFile = ''; // 清空文件名
-            }
-        },
+        
         goToMainPage() {
             this.$router.push('/'); // 跳转到主页
         },
@@ -182,7 +176,6 @@ export default {
 
             // 校验上传文件
             const avatarFile = this.$refs.avatarFile.files[0];
-            const botFile = this.$refs.botFile.files[0];
 
             console.log('Avatar file:', avatarFile);
             if (!avatarFile) {
@@ -190,8 +183,8 @@ export default {
                 return;
             }
 
-            if (!botFile) {
-                alert('Bot file is required.');
+            if (!this.botFileURL) {
+                alert('Bot file URL is required.');
                 return;
             }
 
@@ -202,21 +195,13 @@ export default {
                 return;
             }
 
-            // 校验 bot 文件类型（必须是 .zip）
-            const botFileName = botFile.name;
-            if (!botFileName.endsWith('.zip')) {
-                alert('Bot file must be a .zip file.');
-                return;
-            }
-
             // 提交数据
             console.log('Submitted data:', {
                 ...this.product,
                 avatarFile,
-                botFile,
+                botFileURL,
             });
 
-            
             const productDetails = {
                 name: this.product.name,
                 version: this.product.version,
@@ -229,7 +214,7 @@ export default {
             const formData = new FormData();
             formData.append('productDetails', JSON.stringify(productDetails));
             formData.append('avatarFile', this.$refs.avatarFile.files[0]);
-            formData.append('botFile', this.$refs.botFile.files[0]);
+            formData.append('botFile', this.botFileURL);
 
             axios.post('/bots/add', formData, {
                 headers: {
