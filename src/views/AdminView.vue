@@ -242,7 +242,9 @@ async function resetFreeTokens() {
     const formData = new FormData();
     formData.append('reset', true);
     await axios.post(`admin/resetFreeTokens`, formData, {
-      
+      headers: {
+        'Content-Type': 'multipart/form-data'
+      }
     }).then(() => {
       Swal.fire({
         title: 'Success!',
