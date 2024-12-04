@@ -81,7 +81,7 @@
                 <!-- Official Models -->
                 <div class="px-3 py-2 text-xs font-semibold text-gray-500">Official Models</div>
                 <ListboxOption 
-                  v-for="model in models.filter(m => !m.custom)" 
+                  v-for="model in filteredModels.filter(m => !m.custom)" 
                   :key="model.id" 
                   :value="model" 
                   v-slot="{ active, selected }"
@@ -102,9 +102,9 @@
                 </ListboxOption>
 
                 <!-- Custom Models -->
-                <div class="mt-2 px-3 py-2 text-xs font-semibold text-gray-500">Custom Models</div>
+                <div class="mt-2 px-3 py-2 text-xs font-semibold text-gray-500">My Bots</div>
                 <ListboxOption 
-                  v-for="model in models.filter(m => m.custom)" 
+                  v-for="model in filteredModels.filter(m => m.custom)" 
                   :key="model.id" 
                   :value="model" 
                   v-slot="{ active, selected }"
@@ -362,6 +362,34 @@ const models = [
     custom: true
   }
 ]
+
+// 添加一个ref来存储用户有权限的bot id列表
+const userBotIds = ref([])
+
+// 修改 fetchUserBots 函数
+const fetchUserBots = async () => {
+  try {
+    const userEmail = store.state.user.email
+    const response = await axios.get(`/bots/${userEmail}`)
+    
+    userBotIds.value = response.data.map(bot => bot.id)
+  } catch (error) {
+    console.error('Error fetching user bots:', error)
+  }
+}
+
+// 添加一个计算属性来过滤显示的模型
+const filteredModels = computed(() => {
+  return models.filter(model => {
+    // 官方模型始终显示
+    if (!model.custom) {
+      return true
+    }
+    // 自定义模型只有在用户拥有权限时显示
+    return userBotIds.value.includes(model.id)
+  })
+})
+
 const selected = ref(models[0])
 
 const text = ref('')
@@ -392,6 +420,7 @@ const getCurrentUserId = async () => {
   }
 }
 onMounted(async () => {
+  await fetchUserBots()
   currentUserId.value = await getCurrentUserId()
 })
 // 监听 currentSessionId 的变化
@@ -893,6 +922,4 @@ watch(finetuneSettings, (newSettings) => {
 const triggerTxtInput = () => {
   txtInput.value?.click()
 }
-
-//TODO: 根据用户的userbot表格来搜索
 </script>
