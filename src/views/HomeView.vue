@@ -351,7 +351,7 @@ import axios from "axios";
 import { PlusIcon } from '@heroicons/vue/20/solid'
 import { useStore } from 'vuex';
 const store = useStore();
-
+import  router  from '../router';
 const editBotFAQ = ref(null)
 const isEditingFAQ = ref(false)
 
