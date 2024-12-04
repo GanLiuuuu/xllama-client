@@ -49,10 +49,16 @@
           <p>You can ask questions via text, images, files, and voice inputs.</p>
         </div>
         <div class="mt-5">
-          <input type="file" @change="handleFileUpload" style="display: none" ref="fileInput" />
-          <button @click="triggerFileInput" type="button" class="inline-flex items-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50">
-            Upload photo
-          </button>
+          <input type="file" @change="handleFileUpload" style="display: none" ref="fileInput" accept="image/*" />
+          <input type="file" @change="handleTxtUpload" style="display: none" ref="txtInput" accept=".txt" />
+          <div class="flex gap-2">
+            <button @click="triggerFileInput" type="button" class="inline-flex items-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50">
+              Upload photo
+            </button>
+            <button @click="triggerTxtInput" type="button" class="inline-flex items-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50">
+              Upload txt
+            </button>
+          </div>
         </div>
 
         <Listbox as="div" v-model="selected">
@@ -536,14 +542,54 @@ const updateLastBotMessage = (content, isStreaming) => {
 // 添加 WebSocket 相关的代码
 const socket = ref(null)
 
-// 修改 sendMsg 方法
+// 添加新的 ref 用于存储 txt 内容
+const txtInput = ref(null)
+const txtContent = ref('')
+const txtFileName = ref('')
+
+// 修改处理txt文件上传的方法
+const handleTxtUpload = async (event) => {
+  const file = event.target.files[0]
+  if (!file) return
+  
+  try {
+    const content = await new Promise((resolve, reject) => {
+      const reader = new FileReader()
+      reader.onload = () => resolve(reader.result)
+      reader.onerror = reject
+      reader.readAsText(file)
+    })
+    
+    // 存储txt内容和文件名
+    txtContent.value = content
+    txtFileName.value = file.name
+    
+    // 提示用户文件已上传
+    alert(`File "${file.name}" uploaded successfully. It will be sent with your next message.`)
+    
+    // 清除文件输入
+    event.target.value = ''
+  } catch (error) {
+    console.error('Error reading txt file:', error)
+    alert('Failed to read txt file. Please try again.')
+  }
+}
+
+// 修改发送消息的方法
 const sendMsg = async () => {
-  if (!text.value || !store.state.currentSessionId) {
+  if ((!text.value && !txtContent.value) || !store.state.currentSessionId) {
     return
   }
 
-  const userMessage = text.value
-  addMessage('human', userMessage)
+  // 构建消息内容
+  let messageContent = text.value
+  if (txtContent.value) {
+    messageContent = messageContent ? 
+      `${messageContent}\n\nFile content from "${txtFileName.value}":\n${txtContent.value}` :
+      `File content from "${txtFileName.value}":\n${txtContent.value}`
+  }
+
+  addMessage('human', messageContent)
   addMessage('bot', '', true)
   
   let currentContent = ''
@@ -626,7 +672,7 @@ const sendMsg = async () => {
       }
 
       await saveChatInteraction({
-        request: userMessage,
+        request: messageContent,
         response: currentContent
       })
       updateLastBotMessage(currentContent, false)
@@ -642,6 +688,8 @@ const sendMsg = async () => {
   }
 
   text.value = ''
+  txtContent.value = ''
+  txtFileName.value = ''
   uploadedImageUrl.value = ''
 }
 
@@ -840,5 +888,11 @@ const startFinetune = async () => {
 watch(finetuneSettings, (newSettings) => {
   console.log('Fine-tune settings changed:', newSettings)
 }, { deep: true })
+
+// 添加触发txt文件输入的方法
+const triggerTxtInput = () => {
+  txtInput.value?.click()
+}
+
 //TODO: 根据用户的userbot表格来搜索
 </script>
