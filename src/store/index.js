@@ -19,7 +19,8 @@ const store = createStore({
                 firstname: '',
                 lastname: '',
                 country: '',
-                about: ""
+                about: "",
+                freeTokens: 0
             },
             currentSessionId: null  // 添加新的状态
         };

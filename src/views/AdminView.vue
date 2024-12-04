@@ -25,9 +25,9 @@
         </nav>
       </div>
     </div>
-    <div class="xl:pl-72">
+    <div  class="xl:pl-72" >
       <main class="lg:pr-px">
-        <div style="padding: 20px">
+        <div style="padding: 20px"  v-if="currentNavItem == 'Search' ">
           <div style="margin-bottom: 20px" class="border-b border-gray-200 pb-5 sm:flex sm:items-center sm:justify-between">
             <p class="text-base font-semibold text-indigo-100">To Excel</p>
             <div class="mt-3 sm:ml-4 sm:mt-0 flex space-x-4">
@@ -57,9 +57,15 @@
               </form>
             </div>
           </div>
-          <Search />
+          <SearchView_admin></SearchView_admin>
+        </div>
+
+        <div style="padding: 20px" v-if="currentNavItem == 'Check' ">
+            <check-view_admin></check-view_admin>
+
 
         </div>
+
       </main>
     </div>
   </div>
@@ -67,14 +73,19 @@
 <script setup>
 import { ref } from 'vue'
 import Search from './SearchView.vue'
-import { MagnifyingGlassCircleIcon } from '@heroicons/vue/24/outline'
+import {ClockIcon, MagnifyingGlassCircleIcon, SignalIcon} from '@heroicons/vue/24/outline'
 import axios from "axios";
+import SearchView_admin from "./SearchView_admin.vue";
+import CheckView_admin from "./CheckView_admin.vue";
 
 const navigation = ref([
   { name: 'Search', href: '#', icon: MagnifyingGlassCircleIcon, current: true },
+  { name: 'Check', href: '#', icon: SignalIcon, current: true },
+
 ])
 
 const currentNavItem = ref('Search')
+
 
 function selectNavItem(item) {
   currentNavItem.value = item.name

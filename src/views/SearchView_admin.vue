@@ -16,7 +16,7 @@
           </li>
         </ul>
       </nav>
-
+                
       <!-- Conditional Rendering for Users -->
       <div v-if="currentN === 'User'" class="mt-6">
         <ul class="divide-y divide-indigo-800">
@@ -55,22 +55,55 @@
         </ul>
       </div>
 
-      <!-- Conditional Rendering for Bots -->
-      <div v-if="currentN === 'Bot'" class="mt-4">
-        <ul class="space-y-2">
-          <li v-for="bot in bots" :key="bot.username" class="text-gray-900" @click="openModal(bot)">
-            <div class=" block px-4 bg-indigo-200 py-2 text-sm hover:bg-indigo-100 rounded-md">
-              <img class="size-8 rounded-full bg-gray-800" :src="bot.avatarUrl" alt="机器人头像" />
-              <p><strong>{{ bot.name }}</strong></p>
-              <p><strong>Version:</strong> {{ bot.version }}</p>
-              <p><strong>Price:</strong> {{ bot.price }}</p>
-              <p><strong>Description:</strong> {{ bot.description }}</p>
-              <p><strong>Highlight:</strong> {{ bot.highlight }}</p>
+      <div v-if="currentN === 'Bot'" class="mt-6">
+        <ul class="divide-y divide-indigo-800">
+          <li v-for="bot in bots" :key="bot.username" class="bg-indigo-900 text-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 py-4 cursor-pointer" @click="openModal(bot)">
+            <div class="flex items-center px-6 py-4 hover:bg-indigo-800 rounded-lg transition-all duration-300" style="gap: 1.5rem;">
+              <!-- 机器人头像 -->
+              <img class="w-14 h-14 rounded-full bg-gray-700 border-4 border-indigo-400 shadow-sm hover:scale-105 transition-transform duration-300" :src="bot.avatarUrl" alt="机器人头像" style="max-width: 56px; max-height: 56px; object-fit: cover;"/>
+              <!-- 机器人信息 -->
+              <div class="text-sm leading-tight space-y-2">
+                <!-- 机器人名称 -->
+                <p class="font-bold text-xl text-white flex items-center">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-indigo-400 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M9.75 3.75L14.25 9 9.75 14.25"/>
+                  </svg>
+                  &nbsp;{{ bot.name }}
+                </p>
+                <!-- 机器人版本 -->
+                <div class="flex items-center text-indigo-300">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16"/>
+                  </svg>
+                  &nbsp;<strong>Version：</strong> {{ bot.version }}
+                </div>
+                <!-- 机器人价格 -->
+                <div class="flex items-center text-indigo-300">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 8c-4.418 0-8 3.582-8 8h16c0-4.418-3.582-8-8-8zM6 6h12v1H6z"/>
+                  </svg>
+                  &nbsp;<strong>Price：</strong> {{ bot.price }}
+                </div>
+                <!-- 机器人描述 -->
+                <p class="text-gray-400 text-sm border-t border-indigo-800 pt-2 flex items-center hover:text-gray-200 transition-colors duration-200" :title="bot.description">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M4 7h16M4 12h16M4 17h16"/>
+                  </svg>
+                  &nbsp;<strong>Description：</strong> {{ bot.description }}
+                </p>
+                <!-- 机器人亮点 -->
+                <p class="text-gray-400 text-sm border-t border-indigo-800 pt-2 flex items-center hover:text-gray-200 transition-colors duration-200" :title="bot.highlight">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6m0 6v-6m0-6H6m6 0h6"/>
+                  </svg>
+                  &nbsp;<strong>Highlight：</strong> {{ bot.highlight }}
+                </p>
+              </div>
             </div>
           </li>
         </ul>
         <TransitionRoot as="template" :show="isShowBotModal">
-          <Dialog class="relative z-10" @close="isShowBotModal = false">
+          <Dialog class="relative z-10" @close="closePage">
             <TransitionChild as="template" enter="ease-out duration-300" enter-from="opacity-0" enter-to="opacity-100" leave="ease-in duration-200" leave-from="opacity-100" leave-to="opacity-0">
               <div class="fixed inset-0 hidden bg-gray-500/75 transition-opacity md:block" />
             </TransitionChild>
@@ -81,7 +114,7 @@
                 <span class="hidden md:inline-block md:h-screen md:align-middle" aria-hidden="true">&#8203;</span>
                 <TransitionChild as="template" enter="ease-out duration-300" enter-from="opacity-0 translate-y-4 md:translate-y-0 md:scale-95" enter-to="opacity-100 translate-y-0 md:scale-100" leave="ease-in duration-200" leave-from="opacity-100 translate-y-0 md:scale-100" leave-to="opacity-0 translate-y-4 md:translate-y-0 md:scale-95">
                   <DialogPanel class="flex w-full transform text-left text-base transition md:my-8 md:max-w-2xl md:px-4 lg:max-w-2xl">
-                    <BotDetail :botId = "showBot.id"/>
+                    <BotDetail_admin :bot-id="showBot.id"/>
                   </DialogPanel>
                 </TransitionChild>
               </div>
@@ -93,10 +126,10 @@
   </template>
   
   <script setup>
-  import { ref, onMounted } from 'vue'
+  import { ref } from 'vue'
   import axios from 'axios'
   import { Dialog, DialogPanel, TransitionChild, TransitionRoot } from '@headlessui/vue'
-  import BotDetail from '../components/BotDetail.vue';
+  import BotDetail_admin from '../components/BotDetail_admin.vue';
   import Fuse from 'fuse.js';
 
   const options = {
@@ -105,7 +138,6 @@
   };
 
   const fuse = ref(null);
-  const searchResults = ref([]);
 
   const users = ref([]);
   const bots = ref([]);
@@ -121,15 +153,14 @@
   
   const searchQuery = ref(''); 
 
-  onMounted(() => {
-    searchUsers();
-  });
-
   const openModal = (bot) => {
   showBot.value = bot
   isShowBotModal.value = true
   }
-
+  function closePage(){
+    isShowBotModal.value = false
+    searchBots()
+  }
   function select(item) {
     secondary.forEach(item1 => {
       item1.current = false;
@@ -152,17 +183,18 @@
       const response = await axios.get('/user/searchUsers', {
         params: { username: searchQuery.value.trim() }
       });
-      users.value = response.data; 
+      users.value = response.data;
     } catch (error) {
       console.error('Error fetching users:', error);
       // users.value = [];
     }
   }
 
+
   async function searchBots() {
     try {
       const response = await axios.get('/bots/showall');
-      temp_bots.value = response.data;
+      temp_bots.value = response.data.filter(bot => bot.state === 'Online'); // 过滤出 state 为 Offline 的 bot
     } catch (error) {
       console.error('Error fetching bots:', error);
       //bots.value = [];
@@ -173,13 +205,10 @@
     }
     fuse.value = new Fuse(temp_bots.value, options);
     bots.value = fuse.value.search(searchQuery.value.trim()).map(result => result.item);
-    // console.log(bots.value);
-    // console.log(searchQuery.value.trim());
-    // fuse.value = new Fuse(temp_bots.value, options);
-    // bots.value = fuse.value.search(searchQuery.value.trim()).map(result => result.item);
-    // console.log(bots.value);
   }
+    
   users.value = [];
+  
   temp_bots.value =[]
   </script>
   
