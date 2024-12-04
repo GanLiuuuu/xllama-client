@@ -205,11 +205,7 @@ function downloadStats() {
 
 async function Incentive() {
   try {
-    await axios.post(`admin/resetFreeTokens`, null, {
-      headers: {
-        'Content-Type': 'multipart/form-data'
-      }
-    }).then(() => {
+    await axios.post(`bots/incentive`).then(() => {
       Swal.fire({
         title: 'Success!',
         html: `<p style="font-family: poppins;">Reset Free Tokens successfully!</p>`,
@@ -220,19 +216,24 @@ async function Incentive() {
         allowEscapeKey: false
       });
     }).catch((error) => {
-      console.log(error.response.data);
-    }).finally(() => {
+      console.log(error.response?.data);
+      Swal.fire({
+        title: 'Error!',
+        html: `<p style="font-family: poppins;">${error.response?.data?.message || 'An error occurred'}</p>`,
+        icon: 'error',
+        confirmButtonText: 'OK'
+      });
     });
   } catch (error) {
     Swal.fire({
       title: 'Oops!',
-      html: `<p style="font-family: poppins;">Thers's some thing wrong!</p>`,
+      html: `<p style="font-family: poppins;">There's something wrong!</p>`,
       icon: 'error',
       confirmButtonText: 'OK',
       allowOutsideClick: false,
       allowEscapeKey: false
     });
-    throw new Error(error.response?.data?.message || 'Failed to post comment');
+    throw new Error(error.response?.data?.message || 'Failed to process request');
   }
 }
 
