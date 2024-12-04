@@ -69,24 +69,32 @@
 
                 <!-- Upload Bot File -->
                 <div>
-                    <label class="block text-sm/6 font-bold text-white">Upload Bot File (.zip)</label>
+                    <label class="block text-sm/6 font-bold text-white">Enter the URL of your model.zip</label>
                     <div class="mt-2">
-                        <p v-if="selectedBotFile" class="mb-2 text-sm text-white">Selected: {{ selectedBotFile }}</p>
-                        <label for="botFile"
-                            class="cursor-pointer rounded-md bg-indigo-600 py-1 px-2 text-center text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500"
-                            style="width: 150px; display: inline-block;">
-                            Choose File
-                        </label>
-                        <input id="botFile" name="botFile" ref="botFile" type="file" accept=".zip" class="hidden"
-                            @change="handleBotFileChange" />
+                        <input 
+                            v-model="botFileURL" 
+                            id="botFileURL" 
+                            name="botFileURL" 
+                            type="text" 
+                            placeholder="Enter .zip file URL" 
+                            required
+                            autocomplete="off"
+                            class="block w-full rounded-md border-0 bg-white/5 py-1.5 text-white shadow-sm ring-1 ring-inset ring-white/10 focus:ring-2 focus:ring-inset focus:ring-indigo-500 sm:text-sm/6"
+                            >
                     </div>
                 </div>
 
                 <!-- Submit Button -->
                 <div>
                     <button type="submit"
-                        class="flex w-full mx-auto justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm/6 font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500">
-                        Submit
+                            :class="{
+                                'flex w-full mx-auto justify-center rounded-md px-3 py-1.5 text-sm/6 font-semibold shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2': true,
+                                'bg-indigo-600 text-white hover:bg-indigo-500 focus-visible:outline-indigo-500': !isSubmitting,
+                                'bg-gray-300 text-black cursor-not-allowed': isSubmitting
+                                 }"
+                            :disabled="isSubmitting"> 
+                        <span v-if="isSubmitting" class="absolute ml-40 w-5 h-5 border-4 border-t-transparent border-blue-600 rounded-full animate-spin"></span>
+                        {{ isSubmitting ? 'Submmitting' : 'Submit' }}
                     </button>
                 </div>
 
@@ -114,7 +122,8 @@ export default {
                 description: '',
             },
             selectedAvatarFile: '', // 存储头像文件名称
-            selectedBotFile: '', // 存储 bot 文件名称
+            botFileURL: '', // 存储 bot 文件名称
+            isSubmitting: false, // 是否正在提交
         };
     },
     methods: {
@@ -127,20 +136,12 @@ export default {
             }
         },
 
-        // 处理 bot 文件选择
-        handleBotFileChange(event) {
-            const file = event.target.files[0];
-            if (file) {
-                this.selectedBotFile = file.name; // 更新 bot 文件名称
-            } else {
-                this.selectedBotFile = ''; // 清空文件名
-            }
-        },
+        
         goToMainPage() {
             this.$router.push('/'); // 跳转到主页
         },
         handleSubmit() {
-
+            this.isSubmitting = true; // 设置正在提交状态
 
             // 校验 Version 格式
             const versionPattern = /^\d+\.\d+(\.\d+)?$/; // 匹配 x.x 或 x.x.x 格式
@@ -175,7 +176,6 @@ export default {
 
             // 校验上传文件
             const avatarFile = this.$refs.avatarFile.files[0];
-            const botFile = this.$refs.botFile.files[0];
 
             console.log('Avatar file:', avatarFile);
             if (!avatarFile) {
@@ -183,8 +183,8 @@ export default {
                 return;
             }
 
-            if (!botFile) {
-                alert('Bot file is required.');
+            if (!this.botFileURL) {
+                alert('Bot file URL is required.');
                 return;
             }
 
@@ -195,21 +195,13 @@ export default {
                 return;
             }
 
-            // 校验 bot 文件类型（必须是 .zip）
-            const botFileName = botFile.name;
-            if (!botFileName.endsWith('.zip')) {
-                alert('Bot file must be a .zip file.');
-                return;
-            }
-
             // 提交数据
             console.log('Submitted data:', {
                 ...this.product,
                 avatarFile,
-                botFile,
+                botFileURL,
             });
 
-            
             const productDetails = {
                 name: this.product.name,
                 version: this.product.version,
@@ -222,13 +214,14 @@ export default {
             const formData = new FormData();
             formData.append('productDetails', JSON.stringify(productDetails));
             formData.append('avatarFile', this.$refs.avatarFile.files[0]);
-            formData.append('botFile', this.$refs.botFile.files[0]);
+            formData.append('botFile', this.botFileURL);
 
             axios.post('/bots/add', formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data'
                 }
             }).then(response => {
+                this.isSubmitting = false; // 设置提交状态为 false
                 Swal.fire({
                     title: 'Success!',
                     html: `<p style="font-family: poppins;">Your bot has been upload successfully.<br>Waiting for Admin review.</p>`,
@@ -242,6 +235,7 @@ export default {
                 });
                 console.log('Server response:', response.data);
             }).catch(error => {
+                this.isSubmitting = false; // 设置提交状态为 false
                 Swal.fire({
                     title: 'Error!',
                     html: `<p style="font-family: poppins;">Something wrong when uploading!</p>`,
