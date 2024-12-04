@@ -243,7 +243,10 @@
             <div v-if="currentRecommendationSubNavItem == 'Latest'">
               <RecommendBotList :constraint="currentRecommendationSubNavItem" />
             </div>
-            <div v-if="currentRecommendationSubNavItem == 'Top-rated'">
+            <div v-if="currentRecommendationSubNavItem == 'Top-rated-all-the-time'">
+              <RecommendBotList :constraint="currentRecommendationSubNavItem" />
+            </div>
+            <div v-if="currentRecommendationSubNavItem == 'Top-rated-within-a-month'">
               <RecommendBotList :constraint="currentRecommendationSubNavItem" />
             </div>
             <div v-if="currentRecommendationSubNavItem == 'Most-visited'">
@@ -505,7 +508,8 @@ const secondaryNavigation = [
 ]
 const secondaryNavigationRecommendation = [
   { name: 'Latest', href: '#', current: true },
-  { name: 'Top-rated', href: '#', current: false },
+  { name: 'Top-rated-all-the-time', href: '#', current: false },
+  { name: 'Top-rated-within-a-month', href: '#', current: false },
   { name: 'Most-visited', href: '#', current: false },
   { name: 'You may like', href: '#', current: false }
 ]

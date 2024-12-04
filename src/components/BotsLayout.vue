@@ -212,7 +212,7 @@ function getFormattedDate(date, format = "MMMM D, YYYY") {
 
 async function fetchBots(){
   try{
-    const response = await axios.get('/bots/showall');
+    const response = await axios.get('/bots/showAllOnline');
     return response.data;
   } catch (error) {
     throw new Error(error.response?.data?.message || 'Failed to fetch bot lists');

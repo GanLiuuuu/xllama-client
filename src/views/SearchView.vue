@@ -141,7 +141,7 @@
 
   async function searchBots() {
     try {
-      const response = await axios.get('/bots/showall');
+      const response = await axios.get('/bots/showAllOnline');
       temp_bots.value = response.data;
     } catch (error) {
       console.error('Error fetching bots:', error);

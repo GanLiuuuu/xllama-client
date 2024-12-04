@@ -96,13 +96,20 @@
 </template>
 
 <script>
+import axios from 'axios';
+import Swal from 'sweetalert2';
+
 export default {
+    computed: {
+        User() {
+            return this.$store.state.user;
+        },
+    },
     data() {
         return {
             product: {
                 name: '',
                 version: '',
-                releaseDate: '',
                 highlights: '',
                 description: '',
             },
@@ -207,9 +214,9 @@ export default {
             const productDetails = {
                 name: this.product.name,
                 version: this.product.version,
-                releaseDate: this.product.releaseDate,
-                highlights: this.product.highlights,
-                description: this.product.description
+                highlight: this.product.highlights,
+                description: this.product.description,
+                createdBy: this.User.email,
             };
 
 
@@ -218,17 +225,26 @@ export default {
             formData.append('avatarFile', this.$refs.avatarFile.files[0]);
             formData.append('botFile', this.$refs.botFile.files[0]);
 
-            axios.post('/bots/submit', formData, {
+            axios.post('/bots/add', formData, {
                 headers: {
-                    'Content-Type': 'multipart/form-data',
-                },
+                    'Content-Type': 'multipart/form-data'
+                }
             }).then(response => {
-                alert('Server response: ' + response.data);
+                Swal.fire({
+                    title: 'Success!',
+                    html: `<p style="font-family: poppins;">Your bot has been upload successfully.<br>Waiting for Admin review.</p>`,
+                    icon: 'success',
+                    confirmButtonText: 'OK',
+                    allowOutsideClick: false,  
+                    allowEscapeKey: false
+                }).then((result) => {
+                    if(result.isConfirmed)
+                        this.goToMainPage();
+                });
                 console.log('Server response:', response.data);
             }).catch(error => {
                 console.error('An error occurred:', error);
             });
-
         },
     },
 };

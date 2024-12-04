@@ -250,7 +250,7 @@ async function fetchBotDetail(id) {
       params: { id }
     }
     ); // 发送 GET 请求
-    response.data.highlight = response.data.highlight.split(';'); 
+    response.data.highlight = response.data.highlight.split(';').map(item => item.trim()).filter(item => item !== '');
     return response.data; // 返回数据
   } catch (error) {
     throw new Error(error.response?.data?.message || 'Failed to fetch bot details');
