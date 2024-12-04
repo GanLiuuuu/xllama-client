@@ -65,6 +65,14 @@
               </MenuButton>
 
             </Menu>
+            <Menu as="div" class="relative">
+              <MenuButton class="flex items-center gap-x-1 text-sm/6 font-medium text-white cursor-pointer"
+                @click="navigateToFinetune">
+                Finetune
+                <PlusIcon class="size-5 text-gray-500" aria-hidden="true" />
+              </MenuButton>
+
+            </Menu>
           </header>
           <ul role="list" class="divide-y divide-white/5">
             <li v-for="bot in bots" :key="bot.id"
@@ -807,6 +815,9 @@ export default {
     },
     navigateToUpload() {
       this.$router.push('/upload');
+    },
+    navigateToFinetune() {
+      this.$router.push('/finetune');
     },
   },
   mounted() {

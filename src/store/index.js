@@ -22,7 +22,8 @@ const store = createStore({
                 about: "",
                 freeTokens: 0
             },
-            currentSessionId: null  // 添加新的状态
+            currentSessionId: null,  // 添加新的状态
+            lora: null
         };
     },
     mutations: {
@@ -55,6 +56,9 @@ const store = createStore({
         },
         updateUserTokens(state, tokens) {
             state.user.tokens = tokens;
+        },
+        setLora(state, lora) {
+            state.lora = lora
         }
     },
     actions: {

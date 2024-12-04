@@ -359,7 +359,7 @@ const models = [
     name: 'testBOT',
     description: 'Specialized in bots',
     type: 'text',
-    custom: true
+    
   }
 ]
 
@@ -484,7 +484,6 @@ const handleSuggestionClick = (suggestion) => {
 }
 const formatMessages = (text, imageUrl) => {
   let messages = []
-  
   // If multi-turn mode is enabled, include chat history
   if (isMultiTurn.value) {
     const contextMessages = messageHistory.value.slice(-8).map(msg => {
@@ -647,9 +646,10 @@ const sendMsg = async () => {
         value: {
           base: "Llama_3_2_Instruct",
           id: "meta-llama/Llama-3.2-1B-Instruct",
-          lora: null,
+          lora: store.state.lora,
           query: text.value,
           history: null,
+          
         },
       }
       socket.value.send(JSON.stringify(msgObj))
@@ -904,7 +904,8 @@ const startFinetune = async () => {
     //   datasetId: finetuneSettings.value.selectedDataset,
     //   baseModelId: finetuneSettings.value.selectedBaseModel
     // })
-    
+
+    // TODO: 加新bots
     // 成功提示
     alert('Fine-tuning started successfully!')
   } catch (error) {

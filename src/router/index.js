@@ -3,6 +3,7 @@ import LandingPage from '../views/LandingPageView.vue'
 import HomePage from '../views/HomeView.vue'
 import Admin from '../views/AdminView.vue'
 import UserDetail from '../views/UserDetail.vue'
+import Finetune from '../views/Finetune.vue'
 const router = createRouter({
 	history: createWebHistory(),
 	routes: [
@@ -48,6 +49,11 @@ const router = createRouter({
 		},{
 			path: '/admin',
 			component: () => import('../views/AdminView.vue')
+		},
+		{
+			path: '/finetune',
+			name: 'Finetune',
+			component: () => import('../views/Finetune.vue')
 		},
 	],
 })
