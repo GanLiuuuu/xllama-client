@@ -547,13 +547,13 @@ const sendMsg = async () => {
   addMessage('bot', '', true)
   
   let currentContent = ''
-  
+
   try {
     // 当 id > 6 时使用 WebSocket
     if (selected.value.id > 6) {
       // 创建新的 WebSocket 连接
-      socket.value = new WebSocket('ws://localhost:8000/ws')
-      
+      socket.value = new WebSocket('ws://localhost:8080')
+
       // 等待连接建立
       await new Promise((resolve, reject) => {
         socket.value.onopen = () => {
@@ -566,26 +566,36 @@ const sendMsg = async () => {
         }
       })
 
+      // 发送消息
+      const msgObj = {
+        type: "chat",
+        value: {
+          base: "Llama_3_2_Instruct",
+          id: "meta-llama/Llama-3.2-1B-Instruct",
+          lora: null,
+          query: text.value,
+          history: null,
+        },
+      }
+      socket.value.send(JSON.stringify(msgObj))
+
       // 等待接收响应
+      let res = null
       const response = await new Promise((resolve, reject) => {
         socket.value.onmessage = (event) => {
-          const response = JSON.parse(event.data)
-          resolve(response)
+          const recv = JSON.parse(event.data)
+          console.log(recv)
+          res = recv.value
+          resolve(res.response)
         }
         socket.value.onerror = (error) => {
           reject(error)
         }
       })
 
-      // 发送消息
-      const msgObj = {
-        content: text.value,
-        
-      }
-      socket.value.send(JSON.stringify(msgObj))
 
       // 处理响应
-      updateLastBotMessage(response.content, false)
+      updateLastBotMessage(res.response, false)
 
       // 关闭连接
       socket.value.close()
