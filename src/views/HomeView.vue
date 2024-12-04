@@ -3,6 +3,9 @@
     <div class="hidden xl:fixed xl:inset-y-0 xl:z-50 xl:flex xl:w-72 xl:flex-col">
       <div class="flex grow flex-col gap-y-5 overflow-y-auto bg-black/10 px-6 ring-1 ring-white/5">
         <div class="flex h-16 shrink-0 items-center">
+          <button type="button" @click="logout" class="inline-flex items-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 right-0.5">
+            Logout
+          </button>
           <img class="h-8 w-auto" src="../assets/image.png" alt="Your Company" />
         </div>
         <nav class="flex flex-1 flex-col">
@@ -354,9 +357,15 @@ import axios from "axios";
 import { PlusIcon } from '@heroicons/vue/20/solid'
 import { useStore } from 'vuex';
 const store = useStore();
-import  router  from '../router';
+import { useRouter } from 'vue-router';
+
+const router = useRouter();
+
+
+
 const editBotFAQ = ref(null)
 const isEditingFAQ = ref(false)
+
 
 function getFormattedDate(date, format = "YYYY-MM-DD HH:mm:ss") {
   return date ? dayjs(date.slice(0, 19)).format(format) : null;
@@ -420,6 +429,11 @@ function confirmRecharge() {
     alert('Please enter points to recharge');
   }
 }
+
+function logout() {
+  router.push('/login');
+}
+
 
 function convertPointsToTokens() {
   if (redeemAmount.value !== '') {

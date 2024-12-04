@@ -255,7 +255,7 @@ export default {
           }).then(() => {
             Swal.fire({
               title: 'Success!',
-              html: `<p style="font-family: poppins;">Change Price successfully!</p>`,
+              html: `<p style="font-family: poppins;">Pass check successfully!</p>`,
               icon: 'success',
               confirmButtonText: 'OK',
               showCancelButton: true,
@@ -306,7 +306,7 @@ export default {
         }).then(() => {
           Swal.fire({
             title: 'Success!',
-            html: `<p style="font-family: poppins;">Change Price successfully!</p>`,
+            html: `<p style="font-family: poppins;">Bot Fail the check!</p>`,
             icon: 'success',
             confirmButtonText: 'OK',
             showCancelButton: true,
