@@ -85,8 +85,14 @@
                 <!-- Submit Button -->
                 <div>
                     <button type="submit"
-                        class="flex w-full mx-auto justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm/6 font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500">
-                        Submit
+                            :class="{
+                                'flex w-full mx-auto justify-center rounded-md px-3 py-1.5 text-sm/6 font-semibold shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2': true,
+                                'bg-indigo-600 text-white hover:bg-indigo-500 focus-visible:outline-indigo-500': !isSubmitting,
+                                'bg-gray-300 text-black cursor-not-allowed': isSubmitting
+                                 }"
+                            :disabled="isSubmitting"> 
+                        <span v-if="isSubmitting" class="absolute ml-40 w-5 h-5 border-4 border-t-transparent border-blue-600 rounded-full animate-spin"></span>
+                        {{ isSubmitting ? 'Submmitting' : 'Submit' }}
                     </button>
                 </div>
 
@@ -115,6 +121,7 @@ export default {
             },
             selectedAvatarFile: '', // 存储头像文件名称
             selectedBotFile: '', // 存储 bot 文件名称
+            isSubmitting: false, // 是否正在提交
         };
     },
     methods: {
@@ -140,7 +147,7 @@ export default {
             this.$router.push('/'); // 跳转到主页
         },
         handleSubmit() {
-
+            this.isSubmitting = true; // 设置正在提交状态
 
             // 校验 Version 格式
             const versionPattern = /^\d+\.\d+(\.\d+)?$/; // 匹配 x.x 或 x.x.x 格式
@@ -203,7 +210,6 @@ export default {
             }
 
             // 提交数据
-            alert('Form submitted successfully!');
             console.log('Submitted data:', {
                 ...this.product,
                 avatarFile,
@@ -230,6 +236,7 @@ export default {
                     'Content-Type': 'multipart/form-data'
                 }
             }).then(response => {
+                this.isSubmitting = false; // 设置提交状态为 false
                 Swal.fire({
                     title: 'Success!',
                     html: `<p style="font-family: poppins;">Your bot has been upload successfully.<br>Waiting for Admin review.</p>`,
@@ -243,6 +250,15 @@ export default {
                 });
                 console.log('Server response:', response.data);
             }).catch(error => {
+                this.isSubmitting = false; // 设置提交状态为 false
+                Swal.fire({
+                    title: 'Error!',
+                    html: `<p style="font-family: poppins;">Something wrong when uploading!</p>`,
+                    icon: 'error',
+                    confirmButtonText: 'OK',
+                    allowOutsideClick: false,  
+                    allowEscapeKey: false
+                })
                 console.error('An error occurred:', error);
             });
         },
