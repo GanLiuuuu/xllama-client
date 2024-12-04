@@ -203,7 +203,6 @@ export default {
             }
 
             // 提交数据
-            alert('Form submitted successfully!');
             console.log('Submitted data:', {
                 ...this.product,
                 avatarFile,
@@ -243,6 +242,14 @@ export default {
                 });
                 console.log('Server response:', response.data);
             }).catch(error => {
+                Swal.fire({
+                    title: 'Error!',
+                    html: `<p style="font-family: poppins;">Something wrong when uploading!</p>`,
+                    icon: 'error',
+                    confirmButtonText: 'OK',
+                    allowOutsideClick: false,  
+                    allowEscapeKey: false
+                })
                 console.error('An error occurred:', error);
             });
         },
