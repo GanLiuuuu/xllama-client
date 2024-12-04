@@ -586,7 +586,6 @@ onMounted(() => {
       if (store.state.user.userType === 'admin') {
         router.push('/Admin');
       }
-      // 加载聊天列表
       fetchChatList();
     }
 
