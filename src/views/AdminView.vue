@@ -3,8 +3,12 @@
     <div class="hidden xl:fixed xl:inset-y-0 xl:z-50 xl:flex xl:w-72 xl:flex-col">
       <div class="flex grow flex-col gap-y-5 overflow-y-auto bg-black/10 px-6 ring-1 ring-white/5">
         <div class="flex h-16 shrink-0 items-center">
+          <button type="button" @click="logout" class="inline-flex items-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 right-0.5">
+            Logout
+          </button>
           <img class="h-8 w-auto" src="../assets/image.png" alt="Your Company" />
         </div>
+
         <nav class="flex flex-1 flex-col">
           <ul role="list" class="flex flex-1 flex-col gap-y-7">
             <li>
@@ -46,7 +50,7 @@
 <!--            </div>-->
 <!--          </div>-->
 
-          <div style="" class="border-b border-gray-200 pb-5 sm:flex sm:items-center sm:justify-between">            <!-- 标题 -->
+          <div style="margin-bottom: 20px" class="border-b border-gray-200 pb-5 sm:flex sm:items-center sm:justify-between">
             <p class="text-base font-semibold text-indigo-100">Edit and Upload</p>
             <div class="mt-3 sm:ml-4 sm:mt-0">
               <form @submit.prevent="uploadFile" class="flex items-center space-x-2">
@@ -57,6 +61,21 @@
               </form>
             </div>
           </div>
+
+          <div style="" class="border-b border-gray-200 pb-5 sm:flex sm:items-center sm:justify-between">            <!-- 标题 -->
+            <p class="text-base font-semibold text-indigo-100">Administrative authority</p>
+            <div class="mt-3 sm:ml-4 sm:mt-0 flex space-x-4">
+              <button type="button" @click="Incentive" class="inline-flex items-center rounded-md bg-indigo-600 px-4 py-2 text-sm font-semibold text-white shadow hover:bg-indigo-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-600 mr-2">
+                Incentive
+              </button>
+              <button type="button" @click="resetFreeTokens" class="inline-flex items-center rounded-md bg-indigo-600 px-4 py-2 text-sm font-semibold text-white shadow hover:bg-indigo-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-600">
+                reset free tokens
+              </button>
+            </div>
+          </div>
+
+
+
           <SearchView_admin></SearchView_admin>
         </div>
 
@@ -77,6 +96,10 @@ import {ClockIcon, MagnifyingGlassCircleIcon, SignalIcon} from '@heroicons/vue/2
 import axios from "axios";
 import SearchView_admin from "./SearchView_admin.vue";
 import CheckView_admin from "./CheckView_admin.vue";
+import Swal from "sweetalert2";
+import { useRouter } from 'vue-router';
+
+const router = useRouter();
 
 const navigation = ref([
   { name: 'Search', href: '#', icon: MagnifyingGlassCircleIcon, current: true },
@@ -129,6 +152,11 @@ const uploadFile = async () => {
     alert('An error occurred while uploading the file.');
   }
 };
+
+function logout() {
+  router.push('/login');
+}
+
 function downloadComment() {
   axios.get('admin/export/comments', {
     responseType: 'blob', // 指定接收二进制数据
@@ -173,6 +201,74 @@ function downloadStats() {
   }).catch(error => {
     console.error('Error downloading the file:', error);
   });
+}
+
+async function Incentive() {
+  try {
+    await axios.post(`admin/resetFreeTokens`, null, {
+      headers: {
+        'Content-Type': 'multipart/form-data'
+      }
+    }).then(() => {
+      Swal.fire({
+        title: 'Success!',
+        html: `<p style="font-family: poppins;">Reset Free Tokens successfully!</p>`,
+        icon: 'success',
+        confirmButtonText: 'OK',
+        showCancelButton: true,
+        allowOutsideClick: false,
+        allowEscapeKey: false
+      });
+    }).catch((error) => {
+      console.log(error.response.data);
+    }).finally(() => {
+    });
+  } catch (error) {
+    Swal.fire({
+      title: 'Oops!',
+      html: `<p style="font-family: poppins;">Thers's some thing wrong!</p>`,
+      icon: 'error',
+      confirmButtonText: 'OK',
+      allowOutsideClick: false,
+      allowEscapeKey: false
+    });
+    throw new Error(error.response?.data?.message || 'Failed to post comment');
+  }
+}
+
+async function resetFreeTokens() {
+  try {
+    const formData = new FormData();
+    formData.append('reset', true);
+    await axios.post(`admin/resetFreeTokens`, formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data'
+      }
+    }).then(() => {
+      Swal.fire({
+        title: 'Success!',
+        html: `<p style="font-family: poppins;">Reset Free Tokens successfully!</p>`,
+        icon: 'success',
+        confirmButtonText: 'OK',
+        showCancelButton: true,
+        allowOutsideClick: false,
+        allowEscapeKey: false
+      });
+    }).catch((error) => {
+      console.log(error.response.data);
+    }).finally(() => {
+    });
+  } catch (error) {
+    Swal.fire({
+      title: 'Oops!',
+      html: `<p style="font-family: poppins;">Thers's some thing wrong!</p>`,
+      icon: 'error',
+      confirmButtonText: 'OK',
+      allowOutsideClick: false,
+      allowEscapeKey: false
+    });
+    throw new Error(error.response?.data?.message || 'Failed to post comment');
+  }
 }
 
 const statuses = {
