@@ -42,7 +42,9 @@ import { Dialog, DialogPanel, TransitionChild, TransitionRoot } from '@headlessu
 import BotDetail from '../components/BotDetail.vue';
 import axios from 'axios'
 import dayjs from 'dayjs';
+import { useStore } from 'vuex';
 
+const store = useStore();
 
 const props = defineProps({
   constraint:{
@@ -64,7 +66,9 @@ async function ranking(){
   const errorMessage = ref(null);
   if(props.constraint === 'You may like'){
     try{
-      const response = await axios.get('/bots/recommend');
+      const response = await axios.get('/bots/recommend', {
+        params: { username: store.state.user.email }
+      });
       showBots.value = response.data;
     } catch (error) {
       errorMessage.value = error.message; // 捕获错误
