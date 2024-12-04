@@ -42,7 +42,9 @@ import { Dialog, DialogPanel, TransitionChild, TransitionRoot } from '@headlessu
 import BotDetail from '../components/BotDetail.vue';
 import axios from 'axios'
 import dayjs from 'dayjs';
+import { useStore } from 'vuex';
 
+const store = useStore();
 
 const props = defineProps({
   constraint:{
@@ -64,7 +66,9 @@ async function ranking(){
   const errorMessage = ref(null);
   if(props.constraint === 'You may like'){
     try{
-      const response = await axios.get('/bots/recommend');
+      const response = await axios.get('/bots/recommend', {
+        params: { username: store.state.user.email }
+      });
       showBots.value = response.data;
     } catch (error) {
       errorMessage.value = error.message; // 捕获错误
@@ -72,8 +76,14 @@ async function ranking(){
     return;
   }
   try{
-    const response = await axios.get('/bots/showall');
-    allBots.value = response.data;
+    if(props.constraint === 'Top-rated-within-a-month'){
+      const response = await axios.get('/bots/showAllOnlineMonthly');
+      allBots.value = response.data;
+    }
+    else{
+      const response = await axios.get('/bots/showAllOnline');
+      allBots.value = response.data;
+    }
   } catch (error) {
     errorMessage.value = error.message; // 捕获错误
   }
@@ -83,7 +93,7 @@ async function ranking(){
     showBots.value = allBots.value;
     showBots.value.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
   }
-  else if(props.constraint === 'Top-rated') {
+  else if(props.constraint === 'Top-rated-within-a-month' || props.constraint === 'Top-rated-all-the-time'){
     showBots.value = allBots.value;
     showBots.value.sort((a, b) => parseFloat(b.rating) - parseFloat(a.rating));
   }
