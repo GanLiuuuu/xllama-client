@@ -41,41 +41,7 @@ const errorMessage = ref(null); // 错误消息
 
 const RecentlyUseList = ref(
     [
-        {
-          id: 1,
-          projectName: 'Bot 1',
-          status: 'Online',
-          last_use_time: '2024-11-27 14:13:10',
-          interactionCount: 3,
-        },
-        {
-          id: 2,
-          projectName: 'Bot 2',
-          status: 'Online',
-          last_use_time: '2024-11-27 13:00:00',
-          interactionCount: 3,
-        },
-        {
-          id: 3,
-          projectName: 'Bot 3',
-          status: 'Online',
-          last_use_time: '2024-11-26 12:00:00',
-          interactionCount: 3,
-        },
-        {
-          id: 4,
-          projectName: 'Bot 4',
-          status: 'Offline',
-          last_use_time: '2024-11-20 12:00:00',
-          interactionCount: 3,
-        },
-        {
-          id: 5,
-          projectName: 'Bot 5',
-          status: 'error',
-          last_use_time: '2023-11-27 12:00:00',
-          interactionCount: 3,
-        },
+
     ]
 )
 const statuses = {
