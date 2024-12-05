@@ -165,7 +165,7 @@ const handleSubmit = async () => {
     })
     
     // 返回主页
-    router.push('/')
+    router.push('/Home')
     
   } catch (error) {
     console.error('Fine-tuning error:', error)
