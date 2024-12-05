@@ -316,31 +316,35 @@ import axios from "axios";
 import PromptRefinement from '../components/PromptRefinement.vue'
 
 // Model options
-const models = [
+const models = [  // 保持为普通数组
   // Official Models
   { 
     id: 1, 
     name: 'GPT35',
     description: 'General purpose chat model with broad knowledge',
-    type: 'text'
+    type: 'text',
+    custom: false
   },
   { 
     id: 2, 
     name: 'GPT4',
     description: 'Most capable GPT-4 model for general tasks',
-    type: 'text'
+    type: 'text',
+    custom: true
   },
   { 
     id: 3, 
     name: 'GPT4_MINI',
     description: 'Smaller, faster version of GPT-4',
-    type: 'text'
+    type: 'text',
+    custom: true
   },
   { 
     id: 4, 
     name: 'DALLE3',
     description: 'Advanced image generation model',
-    type: 'image'
+    type: 'image',
+    custom: true
   },
   // Custom Models
   { 
@@ -397,6 +401,7 @@ const models = [
     name: 'BOT005',
     description: 'Helps with academic research and paper writing',
     type: 'text',
+    custom: true
   }
 ]
 
@@ -415,7 +420,20 @@ const fetchUserBots = async () => {
   }
 }
 
-// 添加一个计算属性来过滤显示的模型
+// 添加获取官方bot ID的函数
+const fetchOfficialBotIds = async () => {
+  try {
+    const response = await axios.get('/bots/official')
+    officialBotIds.value = response.data
+    // 更新models数组中的custom属性
+    models.forEach(model => {
+      model.custom = !officialBotIds.value.includes(model.id)
+    })
+  } catch (error) {
+    console.error('Error fetching official bot IDs:', error)
+  }
+}
+
 const filteredModels = computed(() => {
   return models.filter(model => {
     // 官方模型始终显示
@@ -436,6 +454,7 @@ const chatContainer = ref(null)
 const fileInput = ref(null)
 const sessionId = ref(null)
 const currentUserId = ref(null)
+const officialBotIds = ref([])
 
 const store = useStore()
 
@@ -456,10 +475,13 @@ const getCurrentUserId = async () => {
     return null
   }
 }
+
 onMounted(async () => {
   await fetchUserBots()
   currentUserId.value = await getCurrentUserId()
+  await fetchOfficialBotIds()  // 获取官方bot并更新custom属性
 })
+
 // 监听 currentSessionId 的变化
 watch(
   () => store.state.currentSessionId,
@@ -496,7 +518,7 @@ watch(
         messageHistory.value = []
       }
     } else {
-      // 清空天记录
+      // 清空记录
       messageHistory.value = []
     }
   },
@@ -607,7 +629,7 @@ const updateLastBotMessage = (content, isStreaming) => {
 // 添加 WebSocket 相关的代码
 const socket = ref(null)
 
-// 添加新的 ref 用于存储 txt 内容
+// 添加新的 ref 于存储 txt 内容
 const txtInput = ref(null)
 const txtContent = ref('')
 const txtFileName = ref('')
@@ -649,7 +671,7 @@ const sendMsg = async () => {
   // 构建显示的消息内容 - 只显示用户输入的文本
   const displayContent = text.value || 'Uploaded knowledge base file'
   
-  // 构建发送给API的完整消息内容
+  // 构建发送给API的完整消息内
   let apiMessageContent = text.value
   if (txtContent.value) {
     apiMessageContent = apiMessageContent ? 
@@ -730,7 +752,7 @@ const sendMsg = async () => {
         currentContent = imageUrl;
         updateLastBotMessage(currentContent, false);
       } else {
-        // 使用完���的 apiMessageContent 发送给 API
+        // 使用完的 apiMessageContent 发送给 API
         const messages = formatMessages(apiMessageContent, uploadedImageUrl.value)
         for await (const chunk of chatService.streamMessage(messages, (content) => {
           currentContent += content
@@ -937,7 +959,7 @@ const startFinetune = async () => {
     })
     
     // TODO: 实现实际的微调逻辑
-    // 可以在这里添加与后端的通信代码
+    // 可以在里添加与后端的通信代码
     
     // 示例：
     // const response = await axios.post('/api/finetune', {
