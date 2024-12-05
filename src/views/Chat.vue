@@ -363,14 +363,14 @@ const models = [  // 保持为普通数组
   },
   { 
     id: 7, 
-    name: 'testBOT',
+    name: 'Llama-3.2-1B-Instruct',
     description: 'Specialized in bots',
     type: 'text',
     custom: true
   },
   { 
     id: 8, 
-    name: 'BOT001',
+    name: 'gemma-2-2b-it',
     description: 'Expert in programming and code review',
     type: 'text',
     custom: true
@@ -707,12 +707,9 @@ const sendMsg = async () => {
       const msgObj = {
         type: "chat",
         value: {
-          base: "Llama_3_2_Instruct",
-          id: "meta-llama/Llama-3.2-1B-Instruct",
-          lora: store.state.lora,
+          id: "Llama-3.2-1B-Instruct",
           query: text.value,
           history: null,
-          
         },
       }
       socket.value.send(JSON.stringify(msgObj))
