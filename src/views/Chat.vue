@@ -9,7 +9,7 @@
         Clear Chat History
       </button>
     </div>
-    <div style="overflow: auto; height: 200px;" ref="chatContainer">
+    <div style="overflow: auto; height: 300px;" ref="chatContainer">
       <div v-for="message in messageHistory" :key="message.id" class="chat-row" :style="getRowStyle()">
         <template v-if="message.type === 'human'">
           <div class="chat-message" style="flex: 1; text-align: right; padding-right: 10px;">
