@@ -9,7 +9,7 @@ const router = createRouter({
 	routes: [
 		{
 			path: '/',
-			component: HomePage
+			component: LandingPage
 		},
 		{
 			path: '/chat',
