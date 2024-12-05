@@ -103,7 +103,7 @@ const isSubmitting = ref(false)
 const socket = ref(null)
 
 const goToMainPage = () => {
-  router.push('/')
+  router.push('/Home')
 }
 
 const handleSubmit = async () => {
