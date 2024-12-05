@@ -58,7 +58,7 @@ const showBots = ref([]);
 const allBots = ref([]);
 const isShowBotModal = ref(false); // 显示bot信息的模态框
 
-function getFormattedDate(date, format = "YYYY-MM-DD hh:mm:ss") {
+function getFormattedDate(date, format = "YYYY-MM-DD HH:mm:ss") {
   return date ? dayjs(date.slice(0,19)).format(format) : null;
 }
 
