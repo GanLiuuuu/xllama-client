@@ -84,14 +84,14 @@ const store = useStore()
 
 // 数据集选项
 const datasets = [
-  { id: 'Abirate/english_quotes', name: 'English Quotes Dataset' },
-  { id: 'meme/1_typer', name: 'Meme Typer Dataset' }
+  { id: 'english_quotes', name: 'English Quotes Dataset' },
+  { id: 'meme_typer', name: 'Meme Typer Dataset' }
 ]
 
 // 基础模型选项
 const baseModels = [
-  { id: 'Gemma_2', name: 'Gemma 2' },
-  { id: 'Llama_3_2', name: 'Llama 3.2' }
+  { id: 'gemma-2-2b', name: 'Gemma 2' },
+  { id: 'llama-3-2-1B', name: 'Llama 3.2' }
 ]
 
 const finetuneSettings = ref({
@@ -127,13 +127,15 @@ const handleSubmit = async () => {
         reject(error)
       }
     })
-    
+
     // 发送微调请求
     const msgObj = {
       type: "finetune",
       value: {
-        dataset: finetuneSettings.value.selectedDataset,
+        id: "Finetuned", //TODO
         base: finetuneSettings.value.selectedBaseModel,
+        dataset: finetuneSettings.value.selectedDataset,
+        steps: 2, //TODO
       }
     }
     
@@ -151,7 +153,8 @@ const handleSubmit = async () => {
     })
     
     // 存储lora路径到vuex
-    store.commit('setLora', response.value.lora)
+    // store.commit('setLora', response.value.lora) // no need
+    // all info will be processed by llm server
     
     // 显示成功消息
     await Swal.fire({
