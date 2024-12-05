@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div v-if="officialBot">
     <div class="hidden xl:fixed xl:inset-y-0 xl:z-50 xl:flex xl:w-72 xl:flex-col">
       <div class="flex grow flex-col gap-y-5 overflow-y-auto bg-black/10 px-6 ring-1 ring-white/5">
         <div class="flex h-16 shrink-0 items-center">
@@ -62,7 +62,7 @@
             </div>
           </div>
 
-          <div style="" class="border-b border-gray-200 pb-5 sm:flex sm:items-center sm:justify-between">            <!-- 标题 -->
+          <div style="margin-bottom: 20px" class="border-b border-gray-200 pb-5 sm:flex sm:items-center sm:justify-between">            <!-- 标题 -->
             <p class="text-base font-semibold text-indigo-100">Administrative authority</p>
             <div class="mt-3 sm:ml-4 sm:mt-0 flex space-x-4">
               <button type="button" @click="Incentive" class="inline-flex items-center rounded-md bg-indigo-600 px-4 py-2 text-sm font-semibold text-white shadow hover:bg-indigo-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-600 mr-2">
@@ -74,6 +74,18 @@
             </div>
           </div>
 
+          <div style="" class="border-b border-gray-200 pb-5 sm:flex sm:items-center sm:justify-between ">            <!-- 标题 -->
+            <p class="text-base font-semibold text-indigo-100">Current Default Bot</p>
+            <div class="font-bold text-xl text-white flex items-center ">
+              <img class="w-14 h-14 rounded-full bg-gray-700 border-4 border-indigo-400 shadow-sm hover:scale-105 transition-transform duration-300" :src="officialBot.avatarUrl" alt="用户头像" style="max-width: 56px; max-height: 56px; object-fit: cover;"/>
+
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-indigo-400 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M5.121 17.804A10.97 10.97 0 012 12C2 6.477 6.477 2 12 2s10 4.477 10 10c0 1.57-.363 3.057-1.006 4.389"/>
+              </svg>
+              {{ officialBot.name }}
+            </div>
+          </div>
+
 
 
           <SearchView_admin></SearchView_admin>
@@ -81,8 +93,6 @@
 
         <div style="padding: 20px" v-if="currentNavItem == 'Check' ">
             <check-view_admin></check-view_admin>
-
-
         </div>
 
       </main>
@@ -98,6 +108,8 @@ import SearchView_admin from "./SearchView_admin.vue";
 import CheckView_admin from "./CheckView_admin.vue";
 import Swal from "sweetalert2";
 import { useRouter } from 'vue-router';
+import { onMounted, onUnmounted } from 'vue';
+
 
 const router = useRouter();
 
@@ -109,6 +121,33 @@ const navigation = ref([
 
 const currentNavItem = ref('Search')
 
+const officialBot = ref()
+let intervalId = null;
+
+onMounted(() => {
+  // 定义轮询函数
+  const fetchOfficialBot = async () => {
+    try {
+      const response = await axios.get('/admin/getOfficial');
+      officialBot.value = response.data;
+    } catch (error) {
+      console.error('Error fetching official bot:', error);
+    }
+  };
+
+  // 第一次立即调用
+  fetchOfficialBot();
+
+  // 每0.5秒触发一次
+  intervalId = setInterval(fetchOfficialBot, 500);
+});
+
+onUnmounted(() => {
+  // 清理定时器
+  if (intervalId) {
+    clearInterval(intervalId);
+  }
+});
 
 function selectNavItem(item) {
   currentNavItem.value = item.name

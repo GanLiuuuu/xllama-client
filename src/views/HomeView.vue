@@ -368,9 +368,6 @@ const store = useStore();
 import { useRouter } from 'vue-router';
 
 const router = useRouter();
-
-
-
 const editBotFAQ = ref(null)
 const isEditingFAQ = ref(false)
 

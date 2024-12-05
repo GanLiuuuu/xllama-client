@@ -1,6 +1,9 @@
 <template>
-  <div class="bg-white rounded-xl">
-    <div class="mx-auto px-4 py-16 sm:px-6 sm:py-24 lg:max-w-7xl lg:px-8">
+  <div class="bg-white rounded-xl w-full relative">
+    <div class="mx-auto px-4 py-16 sm:px-6 sm:py-24 lg:max-w-7xl lg:px-8 relative">
+      <button type="buttom" @click="SetAsCustom" class=" absolute inline-flex items-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 right-1">
+        Default
+      </button>
       <!-- Product -->
       <div class="lg:grid lg:grid-cols-7 lg:grid-rows-1 lg:gap-x-8 lg:gap-y-10 xl:gap-x-16">
         <!-- Product image -->
@@ -9,8 +12,10 @@
             class="aspect-[4/3] w-full rounded-lg bg-gray-100 object-cover" />
         </div> -->
 
+
         <!-- Product details -->
         <div class="mt-14 max-w-2xl sm:mt-16 lg:col-span-5 lg:col-start-2 lg:row-span-2 lg:row-end-2 lg:mt-0 lg:max-w-none">
+
           <div class="flex flex-col-reverse">
             <div class="mt-4">
               <h1 class="text-2xl font-bold tracking-tight text-gray-900 sm:text-3xl">{{ product.name }}</h1>
@@ -274,6 +279,7 @@ async function ifSubscribedBot(email, botId) {
   }
 }
 
+
 onMounted(async () => {
   try{
     product.value = await fetchBotDetail(props.botId); // 加载数据
@@ -373,7 +379,42 @@ export default {
           });
           throw new Error(error.response?.data?.message || 'Failed to post comment');
         }
-    }
+    },
+    async SetAsCustom() {
+      try {
+        const formData = new FormData();
+        formData.append('bot', this.props.botId);
+
+        await axios.post(`admin/setCustom`, formData, {
+          headers: {
+            'Content-Type': 'multipart/form-data'
+          }
+        }).then(() => {
+          Swal.fire({
+            title: 'Success!',
+            html: `<p style="font-family: poppins;">Pass check successfully!</p>`,
+            icon: 'success',
+            confirmButtonText: 'OK',
+            showCancelButton: true,
+            allowOutsideClick: false,
+            allowEscapeKey: false
+          });
+        }).catch((error) => {
+          console.log(error.response.data);
+        });
+      } catch (error) {
+        Swal.fire({
+          title: 'Oops!',
+          html: `<p style="font-family: poppins;">Thers's some thing wrong!</p>`,
+          icon: 'error',
+          confirmButtonText: 'OK',
+          allowOutsideClick: false,
+          allowEscapeKey: false
+        });
+        throw new Error(error.response?.data?.message || 'Failed to post comment');
+      }
+    },
   },
+
 }
 </script>
