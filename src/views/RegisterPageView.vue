@@ -32,6 +32,7 @@
 
 <script>
 import axios from "axios";
+import Swal from "sweetalert2";
 
 export default {
   data() {
@@ -47,7 +48,12 @@ export default {
         "email": this.email,
         "password": this.password
       }).then(response => {
-        alert(response.data); // 注册成功，显示成功信息
+        Swal.fire({
+          icon: 'success',
+          title: 'Success!',
+          confirmButtonText: 'OK',
+          text: response.data,
+        })
         this.$router.push('/login');
       })
       .catch(error => {

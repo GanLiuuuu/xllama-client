@@ -366,6 +366,7 @@ import { PlusIcon } from '@heroicons/vue/20/solid'
 import { useStore } from 'vuex';
 const store = useStore();
 import { useRouter } from 'vue-router';
+import Swal from 'sweetalert2';
 
 const router = useRouter();
 const editBotFAQ = ref(null)
@@ -422,16 +423,31 @@ function confirmRecharge() {
   if (chargeAmount.value !== '') {
     store.dispatch('recharge', chargeAmount.value).then(success => {
       if (success) {
-        alert(`Recharged successfully! Current points: ${store.state.user.points}`);
+        Swal.fire({
+          icon: 'success',
+          title: 'Success!',
+          confirmButtonText: 'OK',
+          text: `Recharged successfully! Current points: ${store.state.user.points}`,
+        })
       } else {
-        alert("Recharge failed.");
+        Swal.fire({
+          icon: 'error',
+          title: 'Error!',
+          confirmButtonText: 'OK',
+          text: 'Recharge failed.',
+        })
       }
     }).catch(error => {
       console.log("An error occurred during recharge:", error);
     });
     showChargeModal.value = false;
   } else {
-    alert('Please enter points to recharge');
+    Swal.fire({
+      icon: 'error',
+      title: 'Error!',
+      confirmButtonText: 'OK',
+      text: 'Please enter points to recharge',
+    })
   }
 }
 
@@ -446,9 +462,19 @@ function convertPointsToTokens() {
     if (pointsToConvert <= store.state.user.points) {
       store.dispatch('redeem', pointsToConvert).then(success => {
         if (success) {
-          alert(`redeem successfully! Current points: ${store.state.user.points}`);
+          Swal.fire({
+            icon: 'susccess',
+            title: 'Success!',
+            confirmButtonText: 'OK',
+            text: `Redeem successfully! Current points: ${store.state.user.points}`,
+          })
         } else {
-          alert("redeem failed.");
+          Swal.fire({
+            icon: 'error',
+            title: 'Error!',
+            confirmButtonText: 'OK',
+            text: 'Redeem failed.',
+          })
         }
 
       }).catch(error => {
@@ -457,10 +483,20 @@ function convertPointsToTokens() {
       this.closeConvertPopup();
 
     } else {
-      alert('Insufficient points');
+      Swal.fire({
+        icon: 'error',
+        title: 'Error!',
+        confirmButtonText: 'OK',
+        text: 'Insufficient points',
+      })
     }
   } else {
-    alert("Enter points to redeem");
+    Swal.fire({
+      icon: 'error',
+      title: 'Error!',
+      confirmButtonText: 'OK',
+      text: 'Please enter points to redeem',
+    })
   }
 }
 function selectRecommendationSubNavItem(item) {
@@ -743,9 +779,19 @@ export default {
     confirmEditBio() {
       this.$store.dispatch('updateBio', this.editForm.bio).then(success => {
         if (success) {
-          alert(`updateBio successfully!`);
+          Swal.fire({
+            icon: 'success',
+            title: 'Success!',
+            confirmButtonText: 'OK',
+            text: `updateBio successfully!`,
+          })
         } else {
-          alert("updateBio failed.");
+          Swal.fire({
+            icon: 'error',
+            title: 'Error!',
+            confirmButtonText: 'OK',
+            text: 'updateBio failed.',
+          })
         }
       }).catch(error => {
         console.log("An error occurred during updateBio:", error);
@@ -755,9 +801,19 @@ export default {
     confirmRename() {
       this.$store.dispatch('rename', this.editForm.username).then(success => {
         if (success) {
-          alert(`rename successfully!`);
+          Swal.fire({
+            icon: 'success',
+            title: 'Success!',
+            confirmButtonText: 'OK',
+            text: `rename successfully!`,
+          })
         } else {
-          alert("rename failed.");
+          Swal.fire({
+            icon: 'error',
+            title: 'Error!',
+            confirmButtonText: 'OK',
+            text: 'rename failed.',
+          })
         }
       }).catch(error => {
         console.log("An error occurred during rename:", error);
@@ -768,16 +824,31 @@ export default {
       if (this.editForm.selectedFile !== null) {
         this.$store.dispatch('EditAvatars', this.editForm.selectedFile).then(success => {
           if (success) {
-            alert(`EditAvatars successfully!`);
+            Swal.fire({
+              icon: 'success',
+              title: 'Success!',
+              confirmButtonText: 'OK',
+              text: `EditAvatars successfully!`,
+            })
           } else {
-            alert("EditAvatars failed.");
+            Swal.fire({
+              icon: 'error',
+              title: 'Error!',
+              confirmButtonText: 'OK',
+              text: 'EditAvatars failed.',
+            })
           }
         }).catch(error => {
           console.log("An error occurred during EditAvatars:", error);
         });
         this.showEditAvatars = false;
       } else {
-        alert("please upload a picture");
+        Swal.fire({
+          icon: 'error',
+          title: 'Error!',
+          confirmButtonText: 'OK',
+          text: 'please upload a picture',
+        })
       }
 
     },
@@ -788,9 +859,19 @@ export default {
 
           this.$store.dispatch('redeem', pointsToConvert).then(success => {
             if (success) {
-              alert(`redeem successfully! Current points: ${this.user.points}`);
+              Swal.fire({
+                icon: 'success',
+                title: 'Success!',
+                confirmButtonText: 'OK',
+                text: `redeem successfully! Current points: ${this.user.points}`,
+              })
             } else {
-              alert("redeem failed.");
+              Swal.fire({
+                icon: 'error',
+                title: 'Error!',
+                confirmButtonText: 'OK',
+                text: 'redeem failed.',
+              })
             }
           }).catch(error => {
             console.log("An error occurred during recharge:", error);
@@ -798,10 +879,20 @@ export default {
           this.closeConvertPopup();
 
         } else {
-          alert('Insufficient points');
+          Swal.fire({
+            icon: 'error',
+            title: 'Error!',
+            confirmButtonText: 'OK',
+            text: 'Insufficient points',
+          })
         }
       } else {
-        alert("Enter points to redeem");
+        Swal.fire({
+          icon: 'error',
+          title: 'Error!',
+          confirmButtonText: 'OK',
+          text: 'Please enter points to redeem',
+        })
       }
     },
     closeConvertPopup() {

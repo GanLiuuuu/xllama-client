@@ -146,13 +146,23 @@ export default {
             // 校验 Version 格式
             const versionPattern = /^\d+\.\d+(\.\d+)?$/; // 匹配 x.x 或 x.x.x 格式
             if (!versionPattern.test(this.product.version)) {
-                alert('Version must be in the format x.x (e.g., 1.0)');
+                Swal.fire({
+                  icon: 'error',
+                  title: 'Error!',
+                  confirmButtonText: 'OK',
+                  text: 'Version must be in the format x.x (e.g., 1.0)',
+                })
                 return;
             }
 
             // 校验 Highlights
             if (!this.product.highlights.trim()) {
-                alert('Highlights are required.');
+                Swal.fire({
+                  icon: 'error',
+                  title: 'Error!',
+                  confirmButtonText: 'OK',
+                  text: 'Highlights are required.',
+                })
                 return;
             }
 
@@ -163,14 +173,24 @@ export default {
                 .filter(item => item); // 移除空字符串
 
             if (highlightsArray.length === 0) {
-                alert('Highlights must include at least one valid item.');
+                Swal.fire({
+                  icon: 'error',
+                  title: 'Error!',
+                  confirmButtonText: 'OK',
+                  text: 'Highlights must include at least one valid item.',
+                })
                 return;
             }
 
 
             // 校验 Description
             if (!this.product.description.trim()) {
-                alert('Description is required.');
+                Swal.fire({
+                  icon: 'error',
+                  title: 'Error!',
+                  confirmButtonText: 'OK',
+                  text: 'Description is required.',
+                })
                 return;
             }
 
@@ -179,19 +199,34 @@ export default {
 
             console.log('Avatar file:', avatarFile);
             if (!avatarFile) {
-                alert('Avatar file is required.');
+                Swal.fire({
+                  icon: 'error',
+                  title: 'Error!',
+                  confirmButtonText: 'OK',
+                  text: 'Avatar file is required.',
+                })
                 return;
             }
 
             if (!this.botFileURL) {
-                alert('Bot file URL is required.');
+                Swal.fire({
+                  icon: 'error',
+                  title: 'Error!',
+                  confirmButtonText: 'OK',
+                  text: 'Bot file URL is required.',
+                })
                 return;
             }
 
             // 校验头像文件类型（必须是图片）
             const avatarFileType = avatarFile.type;
             if (!avatarFileType.startsWith('image/')) {
-                alert('Avatar file must be an image (e.g., .jpg, .png).');
+                Swal.fire({
+                  icon: 'error',
+                  title: 'Error!',
+                  confirmButtonText: 'OK',
+                  text: 'Avatar file must be an image (e.g., .jpg, .png).',
+                })
                 return;
             }
 

@@ -314,6 +314,7 @@ import PromptSuggestions from '../components/PromptSuggestions.vue'
 import { useStore } from 'vuex'
 import axios from "axios";
 import PromptRefinement from '../components/PromptRefinement.vue'
+import Swal from 'sweetalert2'
 
 // Model options
 const models = [  // 保持为普通数组
@@ -652,13 +653,23 @@ const handleTxtUpload = async (event) => {
     txtFileName.value = file.name
     
     // 提示用户文件已上传
-    alert(`File "${file.name}" uploaded successfully. It will be sent with your next message.`)
+    Swal.fire({
+      icon: 'success',
+      title: 'Success!',
+      confirmButtonText: 'OK',
+      text: `File "${file.name}" uploaded successfully. It will be sent with your next message.`,
+    })
     
     // 清除文件输入
     event.target.value = ''
   } catch (error) {
     console.error('Error reading txt file:', error)
-    alert('Failed to read txt file. Please try again.')
+    Swal.fire({
+      icon: 'error',
+      title: 'Error!',
+      confirmButtonText: 'OK',
+      text: 'Failed to read txt file. Please try again.',
+    })
   }
 }
 
@@ -802,7 +813,12 @@ const handleFileUpload = async (event) => {
     text.value = text.value || 'What is in this image?'
   } catch (error) {
     console.error('Error processing image:', error)
-    alert('Failed to process image. Please try again.')
+    Swal.fire({
+      icon: 'error',
+      title: 'Error!',
+      confirmButtonText: 'OK',
+      text: 'Failed to process image. Please try again.',
+    })
   }
 }
 
@@ -834,10 +850,20 @@ const saveChatInteraction = async (interaction) => {
     }
   } catch (error) {
     if (error.response?.status === 402) {  // Payment Required
-      alert('Insufficient tokens. Please recharge.')
+      Swal.fire({
+        icon: 'error',
+        title: 'Error!',
+        confirmButtonText: 'OK',
+        text: 'Insufficient tokens. Please recharge.',
+      })
     } else {
       console.error('Error saving chat interaction:', error.response?.data || error.message)
-      alert('Failed to save chat interaction. Please try again.')
+      Swal.fire({
+        icon: 'error',
+        title: 'Error!',
+        confirmButtonText: 'OK',
+        text: 'Failed to save chat interaction. Please try again.',
+      })
     }
     throw error  // 重新抛出错误，让调用者知道保存失败
   }
@@ -966,10 +992,20 @@ const startFinetune = async () => {
 
     // TODO: 加新bots
     // 成功提示
-    alert('Fine-tuning started successfully!')
+    Swal.fire({
+      icon: 'success',
+      title: 'Success!',
+      confirmButtonText: 'OK',
+      text: 'Fine-tuning started successfully!',
+    })
   } catch (error) {
     console.error('Error starting fine-tuning:', error)
-    alert('Failed to start fine-tuning. Please try again.')
+    Swal.fire({
+      icon: 'error',
+      title: 'Error!',
+      confirmButtonText: 'OK',
+      text: 'Failed to start fine-tuning. Please try again.',
+    })
   }
 }
 

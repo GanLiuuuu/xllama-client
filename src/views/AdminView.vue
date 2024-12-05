@@ -167,7 +167,12 @@ const handleFileUpload = (event) => {
 // 上传文件
 const uploadFile = async () => {
   if (!selectedFile.value) {
-    alert('Please select a file!');
+    Swal.fire({
+      icon: 'error',
+      title: 'Error!',
+      confirmButtonText: 'OK',
+      text: 'Please select a file!',
+    })
     return;
   }
 
@@ -182,13 +187,28 @@ const uploadFile = async () => {
     });
 
     if (response.status === 200) {
-      alert('File uploaded and database updated successfully!');
+      Swal.fire({
+        icon: 'success',
+        title: 'Success!',
+        confirmButtonText: 'OK',
+        text: 'File uploaded and database updated successfully!',
+      })
     } else {
-      alert('Failed to upload file!');
+      Swal.fire({
+        icon: 'error',
+        title: 'Error!',
+        confirmButtonText: 'OK',
+        text: 'Failed to upload file!',
+      })
     }
   } catch (error) {
     console.error('Error uploading file:', error);
-    alert('An error occurred while uploading the file.');
+    Swal.fire({
+      icon: 'error',
+      title: 'Error!',
+      confirmButtonText: 'OK',
+      text: 'An error occurred while uploading the file.',
+    })
   }
 };
 

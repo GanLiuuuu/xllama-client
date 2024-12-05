@@ -143,6 +143,7 @@ import { useStore } from 'vuex';
 import {reactive, ref} from 'vue';
 import { PhotoIcon, UserCircleIcon } from '@heroicons/vue/24/solid'
 import axios from "axios";
+import Swal from "sweetalert2";
 
 const store = useStore();
 
@@ -162,15 +163,30 @@ const EditInfo = reactive({
 function handleCoverPhotoUpload(event) {
   const file = event.target.files[0];
   if (!file) {
-    alert('No file selected.');
+    Swal.fire({
+      icon: 'error',
+      title: 'Error!',
+      confirmButtonText: 'OK',
+      text: 'No file selected.',
+    })
     return;
   }
   if (!['image/png', 'image/jpeg', 'image/gif'].includes(file.type)) {
-    alert('Only PNG, JPG, or GIF files are allowed.');
+    Swal.fire({
+      icon: 'error',
+      title: 'Error!',
+      confirmButtonText: 'OK',
+      text: 'Only PNG, JPG, or GIF files are allowed.',
+    })
     return;
   }
   if (file.size > 10 * 1024 * 1024) {
-    alert('File size exceeds the 10MB limit.');
+    Swal.fire({
+      icon: 'error',
+      title: 'Error!',
+      confirmButtonText: 'OK',
+      text: 'File size exceeds the 10MB limit.',
+    })
     return;
   }
 
@@ -235,12 +251,28 @@ async function saveForm() {
       },
     });
     console.log('Save successful:', response.data);
-    alert('Save successful!');
+    Swal.fire({
+      icon: 'success',
+      title: 'Success!',
+      confirmButtonText: 'OK',
+      text: 'Save successful!',
+    }).then((result) => {
+      if (result.isConfirmed) {
+        window.location.reload();
+      }
+    });
   } catch (error) {
     console.error('Save failed:', error);
-    alert('Save failed. Please try again.');
-  } finally {
-    window.location.reload();
+    Swal.fire({
+      icon: 'error',
+      title: 'Error!',
+      confirmButtonText: 'OK',
+      text: 'Save failed. Please try again.',
+    }).then((result) => {
+      if (result.isConfirmed) {
+        window.location.reload();
+      }
+    });
   }
 }
 
@@ -252,15 +284,30 @@ function handlePhotoUpload(event) {
   const file = event.target.files[0];
 
   if (!file) {
-    alert('No file selected.');
+    Swal.fire({
+      icon: 'error',
+      title: 'Error!',
+      confirmButtonText: 'OK',
+      text: 'No file selected.',
+    })
     return;
   }
   if (!['image/png', 'image/jpeg', 'image/gif'].includes(file.type)) {
-    alert('Only PNG, JPG, or GIF files are allowed.');
+    Swal.fire({
+      icon: 'error',
+      title: 'Error!',
+      confirmButtonText: 'OK',
+      text: 'Only PNG, JPG, or GIF files are allowed.',
+    })
     return;
   }
   if (file.size > 10 * 1024 * 1024) {
-    alert('File size exceeds the 10MB limit.');
+    Swal.fire({
+      icon: 'error',
+      title: 'Error!',
+      confirmButtonText: 'OK',
+      text: 'File size exceeds the 10MB limit.',
+    })
     return;
   }
 

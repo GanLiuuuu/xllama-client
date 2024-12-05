@@ -72,7 +72,12 @@ export default {
 
             const isValid = this.QA.every(item => item.question && item.answer);
             if (!isValid) {
-                alert('Please fill out all questions and answers!');
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error!',
+                    confirmButtonText: 'OK',
+                    text: 'Please fill out all questions and answers!',
+                })
                 return;
             }
             // 提交数据

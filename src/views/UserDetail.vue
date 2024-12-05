@@ -188,6 +188,7 @@ import {ref, onMounted, computed} from 'vue';
 import EditForm2 from "../components/EditForm2.vue";
 import axios from "axios";
 import router from "../router";
+import Swal from "sweetalert2";
 
 const isModalOpen = ref(false);
 const comment = ref('');
@@ -301,15 +302,30 @@ const setRating = (star) => {
 // 提交评论
 const submitComment = () => {
   if (!comment.value.trim()) {
-    alert('Please enter a comment.');
+    Swal.fire({
+      icon: 'error',
+      title: 'Error!',
+      confirmButtonText: 'OK',
+      text: 'Please enter a comment.',
+    });
     return;
   }
   if (rating.value === 0) {
-    alert('Please select a rating.');
+    Swal.fire({
+      icon: 'error',
+      title: 'Error!',
+      confirmButtonText: 'OK',
+      text: 'Please select a rating.',
+    });
     return;
   }
 
-  alert(`Comment: ${comment.value}, Rating: ${rating.value}`);
+  Swal.fire({
+    icon: 'success',
+    title: 'Success!',
+    confirmButtonText: 'OK',
+    text: `Comment: ${comment.value}, Rating: ${rating.value}`,
+  });
 
   // 示例：Axios 请求
   axios.post('user/writeComments', {
@@ -319,13 +335,25 @@ const submitComment = () => {
     email2: store.state.user.email
   })
       .then(() =>{
-        alert('Comment submitted successfully!')
+        Swal.fire({
+          icon: 'success',
+          title: 'Success!',
+          confirmButtonText: 'OK',
+          text: 'Comment submitted successfully!',
+        });
         return axios.get(`/user/comments?email=${props.email}`);
       })
       .then((response) => {
         reviews.value = response.data;
       })
-      .catch(() => alert('Failed to submit comment.'));
+      .catch(() => 
+        Swal.fire({
+          icon: 'error',
+          title: 'Error!',
+          confirmButtonText: 'OK',
+          text: 'Failed to submit comment.',
+        })
+      );
 
   closeModal();
 };

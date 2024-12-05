@@ -46,6 +46,7 @@
 </template>
 
 <script>
+import Swal from "sweetalert2";
 export default {
   data() {
     return {
@@ -63,10 +64,20 @@ export default {
         password: this.password
       }).then(success => {
         if (success) {
-          alert("Logged in successfully");
+          Swal.fire({
+            icon: 'success',
+            title: 'Success!',
+            confirmButtonText: 'OK',
+            text: 'Logged in successfully',
+          })
           this.$router.push('/Home');  // 登录成功后跳转到个人主页
         } else {
-          alert("Login failed. Please check your credentials.");
+          Swal.fire({
+            icon: 'error',
+            title: 'Error!',
+            confirmButtonText: 'OK',
+            text: 'Login failed. Please check your credentials.',
+          })
         }
       }).catch(error => {
         console.log("An error occurred during login:", error);
