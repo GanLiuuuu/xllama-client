@@ -9,7 +9,7 @@
         Clear Chat History
       </button>
     </div>
-    <div style="overflow: auto; height: 550px;" ref="chatContainer">
+    <div style="overflow: auto; height: 200px;" ref="chatContainer">
       <div v-for="message in messageHistory" :key="message.id" class="chat-row" :style="getRowStyle()">
         <template v-if="message.type === 'human'">
           <div class="chat-message" style="flex: 1; text-align: right; padding-right: 10px;">
@@ -57,6 +57,9 @@
             </button>
             <button @click="triggerTxtInput" type="button" class="inline-flex items-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50">
               Upload txt
+            </button>
+            <button @click="triggerTxtInput" type="button" class="inline-flex items-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50">
+              Knowledge Base
             </button>
           </div>
         </div>
@@ -436,7 +439,7 @@ watch(
           // 修改映射逻辑，每条消息创建一对人类和机器人的消息
           const messages = []
           response.data.forEach(interaction => {
-            // 添加用户消息
+            // ���加用户消息
             messages.push({
               id: `${interaction.interaction_id}-human`,
               type: 'human',
@@ -609,15 +612,19 @@ const sendMsg = async () => {
     return
   }
 
-  // 构建消息内容
-  let messageContent = text.value
+  // 构建显示的消息内容 - 只显示用户输入的文本
+  const displayContent = text.value || 'Uploaded knowledge base file'
+  
+  // 构建发送给API的完整消息内容
+  let apiMessageContent = text.value
   if (txtContent.value) {
-    messageContent = messageContent ? 
-      `${messageContent}\n\nFile content from "${txtFileName.value}":\n${txtContent.value}` :
+    apiMessageContent = apiMessageContent ? 
+      `${apiMessageContent}\n\nFile content from "${txtFileName.value}":\n${txtContent.value}` :
       `File content from "${txtFileName.value}":\n${txtContent.value}`
   }
 
-  addMessage('human', messageContent)
+  // 显示给用户的消息只包含文本输入，不包含文件内容
+  addMessage('human', displayContent)
   addMessage('bot', '', true)
   
   let currentContent = ''
@@ -677,7 +684,6 @@ const sendMsg = async () => {
       socket.value = null
 
     } else {
-      // 使用原来的方法
       const chatService = new ChatService(selected.value.name)
       chatService.setSettings({
         temperature: modelSettings.value.temperature,
@@ -685,13 +691,13 @@ const sendMsg = async () => {
         systemMessage: modelSettings.value.systemMessage
       })
       
-      // 根据模型类型处理消息
       if (selected.value.type === 'image') {
         const imageUrl = await chatService.handleImageGeneration(text.value);
         currentContent = imageUrl;
         updateLastBotMessage(currentContent, false);
       } else {
-        const messages = formatMessages(text.value, uploadedImageUrl.value)
+        // 使用完整的 apiMessageContent 发送给 API
+        const messages = formatMessages(apiMessageContent, uploadedImageUrl.value)
         for await (const chunk of chatService.streamMessage(messages, (content) => {
           currentContent += content
           updateLastBotMessage(currentContent, true)
@@ -700,8 +706,9 @@ const sendMsg = async () => {
         }
       }
 
+      // 保存聊天记录时使用完整的消息内容
       await saveChatInteraction({
-        request: messageContent,
+        request: apiMessageContent,
         response: currentContent
       })
       updateLastBotMessage(currentContent, false)
@@ -709,7 +716,6 @@ const sendMsg = async () => {
   } catch (error) {
     console.error('Error with API:', error)
     updateLastBotMessage('Sorry, I couldn\'t process that request.', false)
-    // 确保在发生错误时也关闭 WebSocket
     if (socket.value) {
       socket.value.close()
       socket.value = null
