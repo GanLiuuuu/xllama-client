@@ -138,7 +138,7 @@ export default {
 
         
         goToMainPage() {
-            this.$router.push('/'); // 跳转到主页
+            this.$router.push('/Home'); // 跳转到主页
         },
         handleSubmit() {
             this.isSubmitting = true; // 设置正在提交状态
