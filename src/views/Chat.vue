@@ -362,7 +362,41 @@ const models = [
     name: 'testBOT',
     description: 'Specialized in bots',
     type: 'text',
-    
+    custom: true
+  },
+  { 
+    id: 8, 
+    name: 'BOT001',
+    description: 'Expert in programming and code review',
+    type: 'text',
+    custom: true
+  },
+  { 
+    id: 9, 
+    name: 'BOT002',
+    description: 'Specialized in legal advice and document analysis',
+    type: 'text',
+    custom: true
+  },
+  { 
+    id: 10, 
+    name: 'BOT003',
+    description: 'Healthcare and medical information specialist',
+    type: 'text',
+    custom: true
+  },
+  { 
+    id: 11, 
+    name: 'BOT004',
+    description: 'Expert in business strategy and market analysis',
+    type: 'text',
+    custom: true
+  },
+  { 
+    id: 12, 
+    name: 'BOT005',
+    description: 'Helps with academic research and paper writing',
+    type: 'text',
   }
 ]
 
@@ -439,7 +473,7 @@ watch(
           // 修改映射逻辑，每条消息创建一对人类和机器人的消息
           const messages = []
           response.data.forEach(interaction => {
-            // ���加用户消息
+            // 加用户消息
             messages.push({
               id: `${interaction.interaction_id}-human`,
               type: 'human',
@@ -696,7 +730,7 @@ const sendMsg = async () => {
         currentContent = imageUrl;
         updateLastBotMessage(currentContent, false);
       } else {
-        // 使用完整的 apiMessageContent 发送给 API
+        // 使用完���的 apiMessageContent 发送给 API
         const messages = formatMessages(apiMessageContent, uploadedImageUrl.value)
         for await (const chunk of chatService.streamMessage(messages, (content) => {
           currentContent += content
